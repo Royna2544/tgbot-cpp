@@ -22,7 +22,7 @@ class EventHandler;
 class TGBOT_API TgLongPoll {
 
 public:
-    TgLongPoll(const Bot& bot, std::int32_t limit = 100, std::int32_t timeout = 10, const std::shared_ptr<std::vector<std::string>>& allowUpdates = nullptr);
+    TgLongPoll(const Bot& bot, std::int32_t limit = 100, std::int32_t timeout = 10, std::vector<std::string> allowedUpdates = {});
 
     /**
      * @brief Starts long poll. After new update will come, this method will parse it and send to EventHandler which invokes your listeners. Designed to be executed in a loop.
@@ -35,7 +35,7 @@ private:
     std::int32_t _lastUpdateId = 0;
     std::int32_t _limit;
     std::int32_t _timeout;
-    std::shared_ptr<std::vector<std::string>> _allowUpdates;
+    std::vector<std::string> _allowUpdates;
 
     std::vector<Update::Ptr> _updates;
 };
