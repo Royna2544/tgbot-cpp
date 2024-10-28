@@ -221,7 +221,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendMessage(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view text,
         LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
         ReplyParameters::Ptr replyParameters = nullptr,
@@ -253,8 +253,8 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr forwardMessage(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<std::int64_t, std::string> fromChatId,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> fromChatId,
         std::int32_t messageId, bool disableNotification = false,
         bool protectContent = false,
         std::int32_t messageThreadId = 0) const override;
@@ -285,8 +285,8 @@ class TGBOT_API ApiImpl : public Api {
      * returned.
      */
     std::vector<MessageId::Ptr> forwardMessages(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<std::int64_t, std::string> fromChatId,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> fromChatId,
         const std::vector<std::int32_t>& messageIds,
         std::int32_t messageThreadId = 0, bool disableNotification = false,
         bool protectContent = false) const override;
@@ -332,8 +332,8 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns the MessageId of the sent message on success.
      */
     MessageId::Ptr copyMessage(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<std::int64_t, std::string> fromChatId,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> fromChatId,
         std::int32_t messageId, const std::string_view caption = "",
         const std::string_view parseMode = "",
         const std::vector<MessageEntity::Ptr>& captionEntities =
@@ -375,8 +375,8 @@ class TGBOT_API ApiImpl : public Api {
      * returned.
      */
     std::vector<MessageId::Ptr> copyMessages(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<std::int64_t, std::string> fromChatId,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> fromChatId,
         const std::vector<std::int32_t>& messageIds,
         std::int32_t messageThreadId = 0, bool disableNotification = false,
         bool protectContent = false, bool removeCaption = false) const override;
@@ -423,8 +423,8 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendPhoto(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> photo,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> photo,
         const std::string_view caption = "",
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -492,11 +492,11 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendAudio(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> audio,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> audio,
         const std::string_view caption = "", std::int32_t duration = 0,
         const std::string_view performer = "", const std::string_view title = "",
-        boost::variant<InputFile::Ptr, std::string> thumbnail = "",
+        std::variant<InputFile::Ptr, std::string> thumbnail = "",
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         const std::string_view parseMode = "", bool disableNotification = false,
@@ -558,9 +558,9 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendDocument(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> document,
-        boost::variant<InputFile::Ptr, std::string> thumbnail = "",
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> document,
+        std::variant<InputFile::Ptr, std::string> thumbnail = "",
         const std::string_view caption = "",
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -629,11 +629,11 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendVideo(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> video,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> video,
         bool supportsStreaming = false, std::int32_t duration = 0,
         std::int32_t width = 0, std::int32_t height = 0,
-        boost::variant<InputFile::Ptr, std::string> thumbnail = "",
+        std::variant<InputFile::Ptr, std::string> thumbnail = "",
         const std::string_view caption = "",
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -700,11 +700,11 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendAnimation(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> animation,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> animation,
         std::int32_t duration = 0, std::int32_t width = 0,
         std::int32_t height = 0,
-        boost::variant<InputFile::Ptr, std::string> thumbnail = "",
+        std::variant<InputFile::Ptr, std::string> thumbnail = "",
         const std::string_view caption = "",
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -760,8 +760,8 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendVoice(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> voice,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> voice,
         const std::string_view caption = "", std::int32_t duration = 0,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -816,12 +816,12 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendVideoNote(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> videoNote,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> videoNote,
         ReplyParameters::Ptr replyParameters = nullptr,
         bool disableNotification = false, std::int32_t duration = 0,
         std::int32_t length = 0,
-        boost::variant<InputFile::Ptr, std::string> thumbnail = "",
+        std::variant<InputFile::Ptr, std::string> thumbnail = "",
         GenericReply::Ptr replyMarkup = nullptr,
         std::int32_t messageThreadId = 0, bool protectContent = false,
         const std::string_view businessConnectionId = "") const override;
@@ -850,7 +850,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, an array of Messages that were sent is returned.
      */
     std::vector<Message::Ptr> sendMediaGroup(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::vector<InputMedia::Ptr>& media,
         bool disableNotification = false,
         ReplyParameters::Ptr replyParameters = nullptr,
@@ -894,7 +894,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendLocation(
-        boost::variant<std::int64_t, std::string> chatId, float latitude,
+        std::variant<std::int64_t, std::string> chatId, float latitude,
         float longitude, std::int32_t livePeriod = 0,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -932,7 +932,7 @@ class TGBOT_API ApiImpl : public Api {
      */
     Message::Ptr editMessageLiveLocation(
         float latitude, float longitude,
-        boost::variant<std::int64_t, std::string> chatId = "",
+        std::variant<std::int64_t, std::string> chatId = "",
         std::int32_t messageId = 0, const std::string_view inlineMessageId = "",
         InlineKeyboardMarkup::Ptr replyMarkup =
             std::make_shared<InlineKeyboardMarkup>(),
@@ -956,7 +956,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the edited Message is returned.
      */
     Message::Ptr stopMessageLiveLocation(
-        boost::variant<std::int64_t, std::string> chatId = "",
+        std::variant<std::int64_t, std::string> chatId = "",
         std::int32_t messageId = 0, const std::string_view inlineMessageId = "",
         InlineKeyboardMarkup::Ptr replyMarkup =
             std::make_shared<InlineKeyboardMarkup>()) const override;
@@ -997,7 +997,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendVenue(
-        boost::variant<std::int64_t, std::string> chatId, float latitude,
+        std::variant<std::int64_t, std::string> chatId, float latitude,
         float longitude, const std::string_view title, const std::string_view address,
         const std::string_view foursquareId = "",
         const std::string_view foursquareType = "",
@@ -1039,7 +1039,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendContact(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view phoneNumber, const std::string_view firstName,
         const std::string_view lastName = "", const std::string_view vcard = "",
         bool disableNotification = false,
@@ -1099,7 +1099,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendPoll(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view question, const std::vector<std::string>& options,
         bool disableNotification = false,
         ReplyParameters::Ptr replyParameters = nullptr,
@@ -1144,7 +1144,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendDice(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         bool disableNotification = false,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr, const std::string_view emoji = "",
@@ -1172,7 +1172,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setMessageReaction(boost::variant<std::int64_t, std::string> chatId,
+    bool setMessageReaction(std::variant<std::int64_t, std::string> chatId,
                             std::int32_t messageId = 0,
                             const std::vector<ReactionType::Ptr>& reaction =
                                 std::vector<ReactionType::Ptr>(),
@@ -1273,7 +1273,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool banChatMember(boost::variant<std::int64_t, std::string> chatId,
+    bool banChatMember(std::variant<std::int64_t, std::string> chatId,
                        std::int64_t userId, std::int32_t untilDate = 0,
                        bool revokeMessages = true) const override;
 
@@ -1296,7 +1296,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool unbanChatMember(boost::variant<std::int64_t, std::string> chatId,
+    bool unbanChatMember(std::variant<std::int64_t, std::string> chatId,
                          std::int64_t userId,
                          bool onlyIfBanned = false) const override;
 
@@ -1325,7 +1325,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool restrictChatMember(
-        boost::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
         ChatPermissions::Ptr permissions, std::uint32_t untilDate = 0,
         bool useIndependentChatPermissions = false) const override;
 
@@ -1378,7 +1378,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool promoteChatMember(
-        boost::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
         bool canChangeInfo = false, bool canPostMessages = false,
         bool canEditMessages = false, bool canDeleteMessages = false,
         bool canInviteUsers = false, bool canPinMessages = false,
@@ -1401,7 +1401,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool setChatAdministratorCustomTitle(
-        boost::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
         const std::string_view customTitle) const override;
 
     /**
@@ -1419,7 +1419,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool banChatSenderChat(boost::variant<std::int64_t, std::string> chatId,
+    bool banChatSenderChat(std::variant<std::int64_t, std::string> chatId,
                            std::int64_t senderChatId) const override;
 
     /**
@@ -1435,7 +1435,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool unbanChatSenderChat(boost::variant<std::int64_t, std::string> chatId,
+    bool unbanChatSenderChat(std::variant<std::int64_t, std::string> chatId,
                              std::int64_t senderChatId) const override;
 
     /**
@@ -1458,7 +1458,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool setChatPermissions(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         ChatPermissions::Ptr permissions,
         bool useIndependentChatPermissions = false) const override;
 
@@ -1482,7 +1482,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns the new invite link as String on success.
      */
     std::string exportChatInviteLink(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to create an additional invite link for a chat.
@@ -1506,7 +1506,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns the new invite link as ChatInviteLink object.
      */
     ChatInviteLink::Ptr createChatInviteLink(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int32_t expireDate = 0, std::int32_t memberLimit = 0,
         const std::string_view name = "",
         bool createsJoinRequest = false) const override;
@@ -1534,7 +1534,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns the edited invite link as a ChatInviteLink object.
      */
     ChatInviteLink::Ptr editChatInviteLink(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view inviteLink, std::int32_t expireDate = 0,
         std::int32_t memberLimit = 0, const std::string_view name = "",
         bool createsJoinRequest = false) const override;
@@ -1553,7 +1553,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns the revoked invite link as ChatInviteLink object.
      */
     ChatInviteLink::Ptr revokeChatInviteLink(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view inviteLink) const override;
 
     /**
@@ -1569,7 +1569,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool approveChatJoinRequest(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int64_t userId) const override;
 
     /**
@@ -1585,7 +1585,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return True on success.
      */
     bool declineChatJoinRequest(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int64_t userId) const override;
 
     /**
@@ -1601,7 +1601,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setChatPhoto(boost::variant<std::int64_t, std::string> chatId,
+    bool setChatPhoto(std::variant<std::int64_t, std::string> chatId,
                       InputFile::Ptr photo) const override;
 
     /**
@@ -1617,7 +1617,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool deleteChatPhoto(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to change the title of a chat.
@@ -1632,7 +1632,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setChatTitle(boost::variant<std::int64_t, std::string> chatId,
+    bool setChatTitle(std::variant<std::int64_t, std::string> chatId,
                       const std::string_view title) const override;
 
     /**
@@ -1648,7 +1648,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setChatDescription(boost::variant<std::int64_t, std::string> chatId,
+    bool setChatDescription(std::variant<std::int64_t, std::string> chatId,
                             const std::string_view description = "") const override;
 
     /**
@@ -1669,7 +1669,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool pinChatMessage(boost::variant<std::int64_t, std::string> chatId,
+    bool pinChatMessage(std::variant<std::int64_t, std::string> chatId,
                         std::int32_t messageId,
                         bool disableNotification = false) const override;
 
@@ -1690,7 +1690,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool unpinChatMessage(boost::variant<std::int64_t, std::string> chatId,
+    bool unpinChatMessage(std::variant<std::int64_t, std::string> chatId,
                           std::int32_t messageId = 0) const override;
 
     /**
@@ -1707,7 +1707,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool unpinAllChatMessages(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method for your bot to leave a group, supergroup or
@@ -1719,7 +1719,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool leaveChat(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to get up to date information about the chat.
@@ -1730,7 +1730,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns a Chat object on success.
      */
     Chat::Ptr getChat(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to get a list of administrators in a chat, which
@@ -1742,7 +1742,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns an Array of ChatMember objects.
      */
     std::vector<ChatMember::Ptr> getChatAdministrators(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to get the number of members in a chat.
@@ -1753,7 +1753,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns Int on success.
      */
     std::int32_t getChatMemberCount(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to get information about a member of a chat.
@@ -1768,7 +1768,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns a ChatMember object on success.
      */
     ChatMember::Ptr getChatMember(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int64_t userId) const override;
 
     /**
@@ -1786,7 +1786,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setChatStickerSet(boost::variant<std::int64_t, std::string> chatId,
+    bool setChatStickerSet(std::variant<std::int64_t, std::string> chatId,
                            const std::string_view stickerSetName) const override;
 
     /**
@@ -1803,7 +1803,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool deleteChatStickerSet(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to get custom emoji stickers, which can be used as
@@ -1834,7 +1834,7 @@ class TGBOT_API ApiImpl : public Api {
      * object.
      */
     ForumTopic::Ptr createForumTopic(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view name, std::int32_t iconColor = 0,
         const std::string_view iconCustomEmojiId = "") const override;
 
@@ -1859,10 +1859,10 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool editForumTopic(boost::variant<std::int64_t, std::string> chatId,
+    bool editForumTopic(std::variant<std::int64_t, std::string> chatId,
                         std::int32_t messageThreadId,
                         const std::string_view name = "",
-                        boost::variant<std::int32_t, std::string>
+                        std::variant<std::int32_t, std::string>
                             iconCustomEmojiId = 0) const override;
 
     /**
@@ -1879,7 +1879,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool closeForumTopic(boost::variant<std::int64_t, std::string> chatId,
+    bool closeForumTopic(std::variant<std::int64_t, std::string> chatId,
                          std::int32_t messageThreadId) const override;
 
     /**
@@ -1897,7 +1897,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool reopenForumTopic(boost::variant<std::int64_t, std::string> chatId,
+    bool reopenForumTopic(std::variant<std::int64_t, std::string> chatId,
                           std::int32_t messageThreadId) const override;
 
     /**
@@ -1914,7 +1914,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool deleteForumTopic(boost::variant<std::int64_t, std::string> chatId,
+    bool deleteForumTopic(std::variant<std::int64_t, std::string> chatId,
                           std::int32_t messageThreadId) const override;
 
     /**
@@ -1932,7 +1932,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool unpinAllForumTopicMessages(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int32_t messageThreadId) const override;
 
     /**
@@ -1948,7 +1948,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool editGeneralForumTopic(boost::variant<std::int64_t, std::string> chatId,
+    bool editGeneralForumTopic(std::variant<std::int64_t, std::string> chatId,
                                std::string name) const override;
 
     /**
@@ -1964,7 +1964,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool closeGeneralForumTopic(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to reopen a closed 'General' topic in a forum
@@ -1980,7 +1980,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool reopenGeneralForumTopic(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to hide the 'General' topic in a forum supergroup
@@ -1996,7 +1996,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool hideGeneralForumTopic(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to unhide the 'General' topic in a forum
@@ -2011,7 +2011,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool unhideGeneralForumTopic(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to clear the list of pinned messages in a General
@@ -2026,7 +2026,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool unpinAllGeneralForumTopicMessages(
-        boost::variant<std::int64_t, std::string> chatId) const override;
+        std::variant<std::int64_t, std::string> chatId) const override;
 
     /**
      * @brief Use this method to send answers to callback queries sent from
@@ -2075,7 +2075,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns a UserChatBoosts object.
      */
     UserChatBoosts::Ptr getUserChatBoosts(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int32_t userId) const override;
 
     /**
@@ -2315,7 +2315,7 @@ class TGBOT_API ApiImpl : public Api {
      */
     Message::Ptr editMessageText(
         const std::string_view text,
-        boost::variant<std::int64_t, std::string> chatId = 0,
+        std::variant<std::int64_t, std::string> chatId = 0,
         std::int32_t messageId = 0, const std::string_view inlineMessageId = "",
         const std::string_view parseMode = "",
         LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
@@ -2347,7 +2347,7 @@ class TGBOT_API ApiImpl : public Api {
      * edited Message is returned, otherwise nullptr is returned.
      */
     Message::Ptr editMessageCaption(
-        boost::variant<std::int64_t, std::string> chatId = 0,
+        std::variant<std::int64_t, std::string> chatId = 0,
         std::int32_t messageId = 0, const std::string_view caption = "",
         const std::string_view inlineMessageId = "",
         GenericReply::Ptr replyMarkup = nullptr,
@@ -2382,7 +2382,7 @@ class TGBOT_API ApiImpl : public Api {
      */
     Message::Ptr editMessageMedia(
         InputMedia::Ptr media,
-        boost::variant<std::int64_t, std::string> chatId = 0,
+        std::variant<std::int64_t, std::string> chatId = 0,
         std::int32_t messageId = 0, const std::string_view inlineMessageId = "",
         GenericReply::Ptr replyMarkup = nullptr) const override;
 
@@ -2403,7 +2403,7 @@ class TGBOT_API ApiImpl : public Api {
      * edited Message is returned, otherwise nullptr is returned.
      */
     Message::Ptr editMessageReplyMarkup(
-        boost::variant<std::int64_t, std::string> chatId = 0,
+        std::variant<std::int64_t, std::string> chatId = 0,
         std::int32_t messageId = 0, const std::string_view inlineMessageId = "",
         GenericReply::Ptr replyMarkup = nullptr) const override;
 
@@ -2419,7 +2419,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the stopped Poll is returned.
      */
     Poll::Ptr stopPoll(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         std::int64_t messageId,
         InlineKeyboardMarkup::Ptr replyMarkup =
             std::make_shared<InlineKeyboardMarkup>()) const override;
@@ -2449,7 +2449,7 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool deleteMessage(boost::variant<std::int64_t, std::string> chatId,
+    bool deleteMessage(std::variant<std::int64_t, std::string> chatId,
                        std::int32_t messageId) const override;
 
     /**
@@ -2466,7 +2466,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return Returns True on success.
      */
     bool deleteMessages(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::vector<std::int32_t>& messageIds) const override;
 
     /**
@@ -2506,8 +2506,8 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendSticker(
-        boost::variant<std::int64_t, std::string> chatId,
-        boost::variant<InputFile::Ptr, std::string> sticker,
+        std::variant<std::int64_t, std::string> chatId,
+        std::variant<InputFile::Ptr, std::string> sticker,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         bool disableNotification = false, std::int32_t messageThreadId = 0,
@@ -2730,7 +2730,7 @@ class TGBOT_API ApiImpl : public Api {
      */
     bool setStickerSetThumbnail(const std::string_view name, std::int64_t userId,
                                 const std::string_view format,
-                                boost::variant<InputFile::Ptr, std::string>
+                                std::variant<InputFile::Ptr, std::string>
                                     thumbnail = "") const override;
 
     /**
@@ -2868,7 +2868,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the sent Message is returned.
      */
     Message::Ptr sendInvoice(
-        boost::variant<std::int64_t, std::string> chatId,
+        std::variant<std::int64_t, std::string> chatId,
         const std::string_view title, const std::string_view description,
         const std::string_view payload, const std::string_view providerToken,
         const std::string_view currency,

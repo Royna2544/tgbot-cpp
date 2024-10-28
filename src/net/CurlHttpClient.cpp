@@ -1,31 +1,34 @@
+
 #ifdef HAVE_CURL
 
 #include "tgbot/net/CurlHttpClient.h"
 
 #include <cstddef>
+#include <cstring>
+#include <stdexcept>
 #include <string>
 
 namespace TgBot {
 
 CurlHttpClient::CurlHttpClient() : _httpParser() {
     curlSettings = curl_easy_init();
-    
+
     curl_easy_setopt(curlSettings, CURLOPT_CONNECTTIMEOUT, 20);
     curl_easy_setopt(curlSettings, CURLOPT_TIMEOUT, _timeout);
 }
 
-CurlHttpClient::~CurlHttpClient() {
-    curl_easy_cleanup(curlSettings);
-}
+CurlHttpClient::~CurlHttpClient() { curl_easy_cleanup(curlSettings); }
 
-static std::size_t curlWriteString(char* ptr, std::size_t size, std::size_t nmemb, void* userdata) {
+static std::size_t curlWriteString(char* ptr, std::size_t size,
+                                   std::size_t nmemb, void* userdata) {
     static_cast<std::string*>(userdata)->append(ptr, size * nmemb);
     return size * nmemb;
 }
 
-std::string CurlHttpClient::makeRequest(const Url& url, const std::vector<HttpReqArg>& args) const {
-    // Copy settings for each call because we change CURLOPT_URL and other stuff.
-    // This also protects multithreaded case.
+std::string CurlHttpClient::makeRequest(
+    const Url& url, const std::vector<HttpReqArg>& args) const {
+    // Copy settings for each call because we change CURLOPT_URL and other
+    // stuff. This also protects multithreaded case.
     auto curl = curl_easy_duphandle(curlSettings);
 
     std::string u = url.protocol + "://" + url.host + url.path;
@@ -60,7 +63,7 @@ std::string CurlHttpClient::makeRequest(const Url& url, const std::vector<HttpRe
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteString);
 
-    char errbuf[CURL_ERROR_SIZE] {};
+    char errbuf[CURL_ERROR_SIZE]{};
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
 
     auto res = curl_easy_perform(curl);
@@ -75,9 +78,9 @@ std::string CurlHttpClient::makeRequest(const Url& url, const std::vector<HttpRe
         size_t len = strlen(errbuf);
         std::string errmsg;
         if (len) {
-            errmsg = std::string(errbuf) + ((errbuf[len - 1] != '\n') ? "\n" : "");
-        }
-        else {
+            errmsg =
+                std::string(errbuf) + ((errbuf[len - 1] != '\n') ? "\n" : "");
+        } else {
             errmsg = curl_easy_strerror(res);
         }
         throw std::runtime_error(std::string("curl error: ") + errmsg);
@@ -86,6 +89,6 @@ std::string CurlHttpClient::makeRequest(const Url& url, const std::vector<HttpRe
     return _httpParser.extractBody(response);
 }
 
-}
+}  // namespace TgBot
 
 #endif
