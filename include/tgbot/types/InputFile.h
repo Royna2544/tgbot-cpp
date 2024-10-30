@@ -3,8 +3,12 @@
 
 #include "tgbot/export.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
+#include <filesystem>
+#include <fstream>
+#include <utility>
 
 namespace TgBot {
 
@@ -36,7 +40,14 @@ public:
     /**
      * @brief Creates new InputFile::Ptr from an existing file.
      */
-    static InputFile::Ptr fromFile(const std::string& filePath, const std::string& mimeType);
+    static InputFile::Ptr fromFile(const std::filesystem::path& filePath, std::string mimeType) {
+        auto result(std::make_shared<InputFile>());
+        std::ifstream file(filePath);
+        result->data = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+        result->mimeType = std::move(mimeType);
+        result->fileName = filePath.filename().string();
+        return result;
+    }
 };
 
 }

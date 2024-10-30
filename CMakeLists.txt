@@ -35,9 +35,7 @@ set(SRC_LIST
     src/net/HttpParser.cpp
     src/net/TgLongPoll.cpp
     src/net/Url.cpp
-    src/tools/FileTools.cpp
-    src/tools/StringTools.cpp
-    src/types/InputFile.cpp)
+    src/tools/StringTools.cpp)
 
 # libs
 ## threads
