@@ -2,6 +2,7 @@
 #define TGBOT_TGTYPEPARSER_H
 
 #include <json/json.h>
+
 #include <memory>
 #include <sstream>
 #include <string>
@@ -227,16 +228,9 @@ constexpr bool is_vector_v = is_vector<T>::value;
 
 // primitive
 template <typename T>
-struct is_primitive : std::false_type {};
-template <>
-struct is_primitive<std::string> : std::true_type {};
-template <>
-struct is_primitive<int> : std::true_type {};
-template <>
-struct is_primitive<bool> : std::true_type {};
-
-template <typename T>
-constexpr bool is_primitive_v = is_primitive<T>::value;
+constexpr bool is_primitive_v =
+    std::is_same_v<T, bool> || std::is_same_v<T, std::string> ||
+    std::is_integral_v<T> || std::is_floating_point_v<T>;
 
 // Matrix
 template <typename T>
@@ -255,7 +249,7 @@ template <typename T>
 std::shared_ptr<T> parse(const Json::Value &data) = delete;
 
 #define DECLARE_PARSER_FROM_JSON(TYPE) \
-    template <>                         \
+    template <>                        \
     TYPE::Ptr parse(const Json::Value &data)
 
 // Grab array of T from JSON array.
@@ -270,7 +264,8 @@ std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data) {
 
 // Parse array from a key.
 template <typename T>
-std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data, const std::string &key) {
+std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data,
+                                           const std::string &key) {
     if (!data.isMember(key)) {
         return {};
     }
@@ -288,7 +283,8 @@ Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data) {
 }
 
 template <typename T>
-Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data, const std::string &key) {
+Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data,
+                                       const std::string &key) {
     if (!data.isMember(key)) {
         return {};
     }
@@ -297,7 +293,8 @@ Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data, const std::strin
 
 // Parse an array of primitive types.
 template <typename T>
-std::vector<T> parsePrimitiveArray(const Json::Value &data, const std::string &key) {
+std::vector<T> parsePrimitiveArray(const Json::Value &data,
+                                   const std::string &key) {
     if (!data.isMember(key)) {
         return {};
     }
@@ -313,7 +310,7 @@ template <typename T>
 Json::Value put(const T &value) = delete;
 
 #define DECLARE_PARSER_TO_JSON(TYPE) \
-    template <>                       \
+    template <>                      \
     Json::Value put(const TYPE::Ptr &object)
 
 // Helper to put base class shared_ptr to derived T.
@@ -336,7 +333,8 @@ Json::Value put(const std::vector<T> &vector) {
         } else if constexpr (std::is_same_v<std::string_view, T>) {
             dataArray.append(std::string(item));
         } else {
-            dataArray.append(put(item));  // Recursively call put for non-primitives
+            dataArray.append(
+                put(item));  // Recursively call put for non-primitives
         }
     }
     return dataArray;
@@ -359,8 +357,7 @@ std::string putJSON(const T &object) {
     return Json::writeString(writer, put(object));
 }
 
-
-#define IMPLEMENT_PARSERS(type)      \
+#define IMPLEMENT_PARSERS(type)     \
     DECLARE_PARSER_FROM_JSON(type); \
     DECLARE_PARSER_TO_JSON(type)
 IMPLEMENT_PARSERS(Animation);
