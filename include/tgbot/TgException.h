@@ -31,7 +31,7 @@ public:
 
     explicit TgException(const std::string& description, ErrorCode errorCode);
 
-    const ErrorCode errorCode;
+    ErrorCode errorCode;
 };
 
 }
