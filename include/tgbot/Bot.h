@@ -3,15 +3,14 @@
 
 #include "tgbot/Api.h"
 #include "tgbot/EventHandler.h"
+#include "tgbot/net/HttpClient.h"
 
 #include <memory>
 #include <string>
-#include <utility>
 
 namespace TgBot {
 
 class EventBroadcaster;
-class HttpClient;
 
 /**
  * @brief This object holds other objects specific for this bot instance.
