@@ -31,6 +31,8 @@ public:
 
     explicit TgException(const std::string& description, ErrorCode errorCode);
 
+    static TgException invalidType(const std::string_view name, const std::string_view type);
+
     ErrorCode errorCode;
 };
 

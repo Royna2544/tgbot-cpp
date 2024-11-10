@@ -61,39 +61,44 @@ struct JsonWrapper {
 };
 
 template <typename T, std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
-T parsePrimitive(const Json::Value& data, const std::string& key, T def = {}) {
+T parsePrimitive(const Json::Value &data, const std::string &key, T def = {}) {
     if (data[key].is<T>()) {
         return data[key].as<T>();
     }
     return def;
 }
 
-
 // Pre-defined parsing functions for known types.
 DECLARE_PARSER_FROM_JSON(Message) {
     auto result = std::make_shared<Message>();
     result->messageId = parsePrimitive<std::int32_t>(data, "message_id");
-    result->messageThreadId = parsePrimitive<std::int32_t>(data, "message_thread_id");
+    result->messageThreadId =
+        parsePrimitive<std::int32_t>(data, "message_thread_id");
     result->from = parse<User>(data, "from");
     result->senderChat = parse<Chat>(data, "sender_chat");
-    result->senderBoostCount = parsePrimitive<std::int32_t>(data, "sender_boost_count");
+    result->senderBoostCount =
+        parsePrimitive<std::int32_t>(data, "sender_boost_count");
     result->senderBusinessBot = parse<User>(data, "sender_business_bot");
     result->date = parsePrimitive<std::uint32_t>(data, "date");
-    result->businessConnectionId = parsePrimitive<std::string>(data, "business_connection_id");
+    result->businessConnectionId =
+        parsePrimitive<std::string>(data, "business_connection_id");
     result->chat = parse<Chat>(data, "chat");
     result->forwardOrigin = parse<MessageOrigin>(data, "forward_origin");
     result->isTopicMessage = parsePrimitive<bool>(data, "is_topic_message");
-    result->isAutomaticForward = parsePrimitive<bool>(data, "is_automatic_forward");
+    result->isAutomaticForward =
+        parsePrimitive<bool>(data, "is_automatic_forward");
     result->replyToMessage = parse<Message>(data, "reply_to_message");
     result->externalReply = parse<ExternalReplyInfo>(data, "external_reply");
     result->quote = parse<TextQuote>(data, "quote");
     result->replyToStory = parse<Story>(data, "reply_to_story");
     result->viaBot = parse<User>(data, "via_bot");
     result->editDate = parsePrimitive<std::uint32_t>(data, "edit_date");
-    result->hasProtectedContent = parsePrimitive<bool>(data, "has_protected_content");
+    result->hasProtectedContent =
+        parsePrimitive<bool>(data, "has_protected_content");
     result->isFromOffline = parsePrimitive<bool>(data, "is_from_offline");
     result->mediaGroupId = parsePrimitive<std::string>(data, "media_group_id");
-    result->authorSignature = parsePrimitive<std::string>(data, "author_signature");
+    result->authorSignature =
+        parsePrimitive<std::string>(data, "author_signature");
     result->text = parsePrimitive<std::string>(data, "text");
     result->entities = parseArray<MessageEntity>(data, "entities");
     result->linkPreviewOptions =
@@ -123,20 +128,25 @@ DECLARE_PARSER_FROM_JSON(Message) {
     result->newChatPhoto = parseArray<PhotoSize>(data, "new_chat_photo");
     result->deleteChatPhoto = parsePrimitive<bool>(data, "delete_chat_photo");
     result->groupChatCreated = parsePrimitive<bool>(data, "group_chat_created");
-    result->supergroupChatCreated = parsePrimitive<bool>(data, "supergroup_chat_created");
-    result->channelChatCreated = parsePrimitive<bool>(data, "channel_chat_created");
+    result->supergroupChatCreated =
+        parsePrimitive<bool>(data, "supergroup_chat_created");
+    result->channelChatCreated =
+        parsePrimitive<bool>(data, "channel_chat_created");
     result->messageAutoDeleteTimerChanged =
         parse<MessageAutoDeleteTimerChanged>(
             data, "message_auto_delete_timer_changed");
-    result->migrateToChatId = parsePrimitive<std::int64_t>(data, "migrate_to_chat_id");
-    result->migrateFromChatId = parsePrimitive<std::int64_t>(data, "migrate_from_chat_id");
+    result->migrateToChatId =
+        parsePrimitive<std::int64_t>(data, "migrate_to_chat_id");
+    result->migrateFromChatId =
+        parsePrimitive<std::int64_t>(data, "migrate_from_chat_id");
     result->pinnedMessage = parse<Message>(data, "pinned_message");
     result->invoice = parse<Invoice>(data, "invoice");
     result->successfulPayment =
         parse<SuccessfulPayment>(data, "successful_payment");
     result->usersShared = parse<UsersShared>(data, "users_shared");
     result->chatShared = parse<ChatShared>(data, "chat_shared");
-    result->connectedWebsite = parsePrimitive<std::string>(data, "connected_website");
+    result->connectedWebsite =
+        parsePrimitive<std::string>(data, "connected_website");
     result->writeAccessAllowed =
         parse<WriteAccessAllowed>(data, "write_access_allowed");
     result->passportData = parse<PassportData>(data, "passport_data");
@@ -337,14 +347,19 @@ DECLARE_PARSER_TO_JSON(Update) {
 DECLARE_PARSER_FROM_JSON(WebhookInfo) {
     auto result(std::make_shared<WebhookInfo>());
     result->url = parsePrimitive<std::string>(data, "url");
-    result->hasCustomCertificate = parsePrimitive<bool>(data, "has_custom_certificate");
-    result->pendingUpdateCount = parsePrimitive<std::int32_t>(data, "pending_update_count");
+    result->hasCustomCertificate =
+        parsePrimitive<bool>(data, "has_custom_certificate");
+    result->pendingUpdateCount =
+        parsePrimitive<std::int32_t>(data, "pending_update_count");
     result->ipAddress = parsePrimitive<std::string>(data, "ip_address");
-    result->lastErrorDate = parsePrimitive<std::int32_t>(data, "last_error_date");
-    result->lastErrorMessage = parsePrimitive<std::string>(data, "last_error_message");
+    result->lastErrorDate =
+        parsePrimitive<std::int32_t>(data, "last_error_date");
+    result->lastErrorMessage =
+        parsePrimitive<std::string>(data, "last_error_message");
     result->lastSynchronizationErrorDate =
         parsePrimitive<std::int32_t>(data, "last_synchronization_error_date");
-    result->maxConnections = parsePrimitive<std::int32_t>(data, "max_connections");
+    result->maxConnections =
+        parsePrimitive<std::int32_t>(data, "max_connections");
     result->allowedUpdates =
         parsePrimitiveArray<std::string>(data, "allowed_updates");
     return result;
@@ -377,11 +392,15 @@ DECLARE_PARSER_FROM_JSON(User) {
     result->username = parsePrimitive<std::string>(data, "username");
     result->languageCode = parsePrimitive<std::string>(data, "language_code");
     result->isPremium = parsePrimitive<bool>(data, "is_premium");
-    result->addedToAttachmentMenu = parsePrimitive<bool>(data, "added_to_attachment_menu");
+    result->addedToAttachmentMenu =
+        parsePrimitive<bool>(data, "added_to_attachment_menu");
     result->canJoinGroups = parsePrimitive<bool>(data, "can_join_groups");
-    result->canReadAllGroupMessages = parsePrimitive<bool>(data, "can_read_all_group_messages");
-    result->supportsInlineQueries = parsePrimitive<bool>(data, "supports_inline_queries");
-    result->canConnectToBusiness = parsePrimitive<bool>(data, "can_connect_to_business");
+    result->canReadAllGroupMessages =
+        parsePrimitive<bool>(data, "can_read_all_group_messages");
+    result->supportsInlineQueries =
+        parsePrimitive<bool>(data, "supports_inline_queries");
+    result->canConnectToBusiness =
+        parsePrimitive<bool>(data, "can_connect_to_business");
     return result;
 }
 
@@ -435,34 +454,47 @@ DECLARE_PARSER_FROM_JSON(Chat) {
     result->personalChat = parse<Chat>(data, "personal_chat");
     result->availableReactions =
         parseArray<ReactionType>(data, "available_reactions");
-    result->accentColorId = parsePrimitive<std::int32_t>(data, "accent_color_id");
-    result->backgroundCustomEmojiId = parsePrimitive<std::string>(data, "background_custom_emoji_id");
-    result->profileAccentColorId = parsePrimitive<std::int32_t>(data, "profile_accent_color_id");
+    result->accentColorId =
+        parsePrimitive<std::int32_t>(data, "accent_color_id");
+    result->backgroundCustomEmojiId =
+        parsePrimitive<std::string>(data, "background_custom_emoji_id");
+    result->profileAccentColorId =
+        parsePrimitive<std::int32_t>(data, "profile_accent_color_id");
     result->profileBackgroundCustomEmojiId =
         parsePrimitive<std::string>(data, "profile_background_custom_emoji_id");
     result->emojiStatusCustomEmojiId =
         parsePrimitive<std::string>(data, "emoji_status_custom_emoji_id");
-    result->emojiStatusExpirationDate = parsePrimitive<std::uint32_t>(data, "emoji_status_expiration_date");
+    result->emojiStatusExpirationDate =
+        parsePrimitive<std::uint32_t>(data, "emoji_status_expiration_date");
     result->bio = parsePrimitive<std::string>(data, "bio");
-    result->hasPrivateForwards = parsePrimitive<bool>(data, "has_private_forwards");
+    result->hasPrivateForwards =
+        parsePrimitive<bool>(data, "has_private_forwards");
     result->hasRestrictedVoiceAndVideoMessages =
         parsePrimitive<bool>(data, "has_restricted_voice_and_video_messages");
-    result->joinToSendMessages = parsePrimitive<bool>(data, "join_to_send_messages");
+    result->joinToSendMessages =
+        parsePrimitive<bool>(data, "join_to_send_messages");
     result->joinByRequest = parsePrimitive<bool>(data, "join_by_request");
     result->description = parsePrimitive<std::string>(data, "description");
     result->inviteLink = parsePrimitive<std::string>(data, "invite_link");
     result->pinnedMessage = parse<Message>(data, "pinned_message");
     result->permissions = parse<ChatPermissions>(data, "permissions");
-    result->slowModeDelay = parsePrimitive<std::int32_t>(data, "slow_mode_delay");
-    result->unrestrictBoostCount = parsePrimitive<std::int32_t>(data, "unrestrict_boost_count");
-    result->messageAutoDeleteTime = parsePrimitive<std::int32_t>(data, "message_auto_delete_time");
+    result->slowModeDelay =
+        parsePrimitive<std::int32_t>(data, "slow_mode_delay");
+    result->unrestrictBoostCount =
+        parsePrimitive<std::int32_t>(data, "unrestrict_boost_count");
+    result->messageAutoDeleteTime =
+        parsePrimitive<std::int32_t>(data, "message_auto_delete_time");
     result->hasAggressiveAntiSpamEnabled =
         parsePrimitive<bool>(data, "has_aggressive_anti_spam_enabled");
     result->hasHiddenMembers = parsePrimitive<bool>(data, "has_hidden_members");
-    result->hasProtectedContent = parsePrimitive<bool>(data, "has_protected_content");
-    result->hasVisibleHistory = parsePrimitive<bool>(data, "has_visible_history");
-    result->stickerSetName = parsePrimitive<std::string>(data, "sticker_set_name");
-    result->canSetStickerSet = parsePrimitive<bool>(data, "can_set_sticker_set");
+    result->hasProtectedContent =
+        parsePrimitive<bool>(data, "has_protected_content");
+    result->hasVisibleHistory =
+        parsePrimitive<bool>(data, "has_visible_history");
+    result->stickerSetName =
+        parsePrimitive<std::string>(data, "sticker_set_name");
+    result->canSetStickerSet =
+        parsePrimitive<bool>(data, "can_set_sticker_set");
     result->customEmojiStickerSetName =
         parsePrimitive<std::string>(data, "custom_emoji_sticker_set_name");
     result->linkedChatId = parsePrimitive<std::int64_t>(data, "linked_chat_id");
@@ -564,7 +596,7 @@ DECLARE_PARSER_FROM_JSON(InaccessibleMessage) {
     auto result(std::make_shared<InaccessibleMessage>());
     result->chat = parse<Chat>(data, "chat");
     result->messageId = parsePrimitive<std::int32_t>(data, "message_id");
-    result->date = (std::uint8_t) parsePrimitive<std::int32_t>(data, "date");
+    result->date = (std::uint8_t)parsePrimitive<std::int32_t>(data, "date");
     return result;
 }
 
@@ -625,7 +657,8 @@ DECLARE_PARSER_FROM_JSON(MessageEntity) {
     result->url = parsePrimitive<std::string>(data, "url");
     result->user = parse<User>(data, "user");
     result->language = parsePrimitive<std::string>(data, "language");
-    result->customEmojiId = parsePrimitive<std::string>(data, "custom_emoji_id");
+    result->customEmojiId =
+        parsePrimitive<std::string>(data, "custom_emoji_id");
     return result;
 }
 
@@ -787,11 +820,14 @@ DECLARE_PARSER_FROM_JSON(ReplyParameters) {
     auto result(std::make_shared<ReplyParameters>());
     result->messageId = parsePrimitive<std::int32_t>(data, "message_id");
     result->chatId = parsePrimitive<std::int64_t>(data, "chat_id");
-    result->allowSendingWithoutReply = parsePrimitive<bool>(data, "allow_sending_without_reply");
+    result->allowSendingWithoutReply =
+        parsePrimitive<bool>(data, "allow_sending_without_reply");
     result->quote = parsePrimitive<std::string>(data, "quote");
-    result->quoteParseMode = parsePrimitive<std::string>(data, "quote_parse_mode");
+    result->quoteParseMode =
+        parsePrimitive<std::string>(data, "quote_parse_mode");
     result->quoteEntities = parseArray<MessageEntity>(data, "quote_entities");
-    result->quotePosition = parsePrimitive<std::int32_t>(data, "quote_position");
+    result->quotePosition =
+        parsePrimitive<std::int32_t>(data, "quote_position");
     return result;
 }
 
@@ -817,19 +853,15 @@ DECLARE_PARSER_FROM_JSON(MessageOrigin) {
     MessageOrigin::Ptr result;
 
     if (type == MessageOriginUser::TYPE) {
-        result = std::static_pointer_cast<MessageOrigin>(
-            parse<MessageOriginUser>(data));
+        result = parse<MessageOriginUser>(data);
     } else if (type == MessageOriginHiddenUser::TYPE) {
-        result = std::static_pointer_cast<MessageOrigin>(
-            parse<MessageOriginHiddenUser>(data));
+        result = parse<MessageOriginHiddenUser>(data);
     } else if (type == MessageOriginChat::TYPE) {
-        result = std::static_pointer_cast<MessageOrigin>(
-            parse<MessageOriginChat>(data));
+        result = parse<MessageOriginChat>(data);
     } else if (type == MessageOriginChannel::TYPE) {
-        result = std::static_pointer_cast<MessageOrigin>(
-            parse<MessageOriginChannel>(data));
+        result = parse<MessageOriginChannel>(data);
     } else {
-        result = std::make_shared<MessageOrigin>();
+        throw TgBot::TgException::invalidType("MessageOrigin", type);
     }
 
     result->type = type;
@@ -853,6 +885,9 @@ DECLARE_PARSER_TO_JSON(MessageOrigin) {
             json.put("origin", put<MessageOriginChat>(object));
         } else if (object->type == MessageOriginChannel::TYPE) {
             json.put("origin", put<MessageOriginChannel>(object));
+        } else {
+            throw TgBot::TgException::invalidType("MessageOrigin",
+                                                  object->type);
         }
     }
 
@@ -877,7 +912,8 @@ DECLARE_PARSER_TO_JSON(MessageOriginUser) {
 
 DECLARE_PARSER_FROM_JSON(MessageOriginHiddenUser) {
     auto result(std::make_shared<MessageOriginHiddenUser>());
-    result->senderUserName = parsePrimitive<std::string>(data, "sender_user_name");
+    result->senderUserName =
+        parsePrimitive<std::string>(data, "sender_user_name");
     return result;
 }
 
@@ -894,7 +930,8 @@ DECLARE_PARSER_FROM_JSON(MessageOriginChat) {
     // NOTE: This function will be called by parseJsonAndGetMessageOrigin().
     auto result(std::make_shared<MessageOriginChat>());
     result->senderChat = parse<Chat>(data, "sender_chat");
-    result->authorSignature = parsePrimitive<std::string>(data, "author_signature");
+    result->authorSignature =
+        parsePrimitive<std::string>(data, "author_signature");
     return result;
 }
 
@@ -914,7 +951,8 @@ DECLARE_PARSER_FROM_JSON(MessageOriginChannel) {
     auto result(std::make_shared<MessageOriginChannel>());
     result->chat = parse<Chat>(data, "chat");
     result->messageId = parsePrimitive<std::int32_t>(data, "message_id");
-    result->authorSignature = parsePrimitive<std::string>(data, "author_signature");
+    result->authorSignature =
+        parsePrimitive<std::string>(data, "author_signature");
     return result;
 }
 
@@ -1227,12 +1265,15 @@ DECLARE_PARSER_FROM_JSON(Poll) {
     result->id = parsePrimitive<std::string>(data, "id");
     result->question = parsePrimitive<std::string>(data, "question");
     result->options = parseArray<PollOption>(data, "options");
-    result->totalVoterCount = parsePrimitive<std::int32_t>(data, "total_voter_count");
+    result->totalVoterCount =
+        parsePrimitive<std::int32_t>(data, "total_voter_count");
     result->isClosed = parsePrimitive<bool>(data, "is_closed");
     result->isAnonymous = parsePrimitive<bool>(data, "is_anonymous");
     result->type = parsePrimitive<std::string>(data, "type");
-    result->allowsMultipleAnswers = parsePrimitive<bool>(data, "allows_multiple_answers");
-    result->correctOptionId = parsePrimitive<std::int32_t>(data, "correct_option_id");
+    result->allowsMultipleAnswers =
+        parsePrimitive<bool>(data, "allows_multiple_answers");
+    result->correctOptionId =
+        parsePrimitive<std::int32_t>(data, "correct_option_id");
     result->explanation = parsePrimitive<std::string>(data, "explanation");
     result->explanationEntities =
         parseArray<MessageEntity>(data, "explanation_entities");
@@ -1263,12 +1304,14 @@ DECLARE_PARSER_TO_JSON(Poll) {
 
 DECLARE_PARSER_FROM_JSON(Location) {
     auto result(std::make_shared<Location>());
-    result->latitude = (float) parsePrimitive<double>(data, "latitude");
-    result->longitude = (float) parsePrimitive<double>(data, "longitude");
-    result->horizontalAccuracy = (float) parsePrimitive<double>(data, "horizontal_accuracy");
+    result->latitude = (float)parsePrimitive<double>(data, "latitude");
+    result->longitude = (float)parsePrimitive<double>(data, "longitude");
+    result->horizontalAccuracy =
+        (float)parsePrimitive<double>(data, "horizontal_accuracy");
     result->livePeriod = parsePrimitive<std::int32_t>(data, "live_period");
     result->heading = parsePrimitive<std::int32_t>(data, "heading");
-    result->proximityAlertRadius = parsePrimitive<std::int32_t>(data, "proximity_alert_radius");
+    result->proximityAlertRadius =
+        parsePrimitive<std::int32_t>(data, "proximity_alert_radius");
     return result;
 }
 
@@ -1290,9 +1333,12 @@ DECLARE_PARSER_FROM_JSON(Venue) {
     result->title = parsePrimitive<std::string>(data, "title");
     result->address = parsePrimitive<std::string>(data, "address");
     result->foursquareId = parsePrimitive<std::string>(data, "foursquare_id");
-    result->foursquareType = parsePrimitive<std::string>(data, "foursquare_type");
-    result->googlePlaceId = parsePrimitive<std::string>(data, "google_place_id");
-    result->googlePlaceType = parsePrimitive<std::string>(data, "google_place_type");
+    result->foursquareType =
+        parsePrimitive<std::string>(data, "foursquare_type");
+    result->googlePlaceId =
+        parsePrimitive<std::string>(data, "google_place_id");
+    result->googlePlaceType =
+        parsePrimitive<std::string>(data, "google_place_type");
     return result;
 }
 
@@ -1346,7 +1392,8 @@ DECLARE_PARSER_TO_JSON(ProximityAlertTriggered) {
 
 DECLARE_PARSER_FROM_JSON(MessageAutoDeleteTimerChanged) {
     auto result = std::make_shared<MessageAutoDeleteTimerChanged>();
-    result->messageAutoDeleteTime = parsePrimitive<std::int32_t>(data, "message_auto_delete_time");
+    result->messageAutoDeleteTime =
+        parsePrimitive<std::int32_t>(data, "message_auto_delete_time");
     return result;
 }
 
@@ -1376,7 +1423,8 @@ DECLARE_PARSER_FROM_JSON(ForumTopicCreated) {
     auto result = std::make_shared<ForumTopicCreated>();
     result->name = parsePrimitive<std::string>(data, "name");
     result->iconColor = parsePrimitive<std::int32_t>(data, "icon_color");
-    result->iconCustomEmojiId = parsePrimitive<std::string>(data, "icon_custom_emoji_id");
+    result->iconCustomEmojiId =
+        parsePrimitive<std::string>(data, "icon_custom_emoji_id");
     return result;
 }
 
@@ -1401,7 +1449,8 @@ DECLARE_PARSER_TO_JSON(ForumTopicClosed) {
 DECLARE_PARSER_FROM_JSON(ForumTopicEdited) {
     auto result = std::make_shared<ForumTopicEdited>();
     result->name = parsePrimitive<std::string>(data, "name");
-    result->iconCustomEmojiId = parsePrimitive<std::string>(data, "icon_custom_emoji_id");
+    result->iconCustomEmojiId =
+        parsePrimitive<std::string>(data, "icon_custom_emoji_id");
     return result;
 }
 
@@ -1500,7 +1549,8 @@ DECLARE_PARSER_FROM_JSON(WriteAccessAllowed) {
     auto result = std::make_shared<WriteAccessAllowed>();
     result->fromRequest = parsePrimitive<bool>(data, "from_request");
     result->webAppName = parsePrimitive<std::string>(data, "web_app_name");
-    result->fromAttachmentMenu = parsePrimitive<bool>(data, "from_attachment_menu");
+    result->fromAttachmentMenu =
+        parsePrimitive<bool>(data, "from_attachment_menu");
     return result;
 }
 
@@ -1577,11 +1627,13 @@ DECLARE_PARSER_TO_JSON(GiveawayCreated) {
 DECLARE_PARSER_FROM_JSON(Giveaway) {
     auto result = std::make_shared<Giveaway>();
     result->chats = parseArray<Chat>(data, "chats");
-    result->winnersSelectionDate = parsePrimitive<std::uint32_t>(data, "winners_selection_date");
+    result->winnersSelectionDate =
+        parsePrimitive<std::uint32_t>(data, "winners_selection_date");
     result->winnerCount = parsePrimitive<std::int32_t>(data, "winner_count");
     result->onlyNewMembers = parsePrimitive<bool>(data, "only_new_members");
     result->hasPublicWinners = parsePrimitive<bool>(data, "has_public_winners");
-    result->prizeDescription = parsePrimitive<std::string>(data, "prize_description");
+    result->prizeDescription =
+        parsePrimitive<std::string>(data, "prize_description");
     result->countryCodes =
         parsePrimitiveArray<std::string>(data, "country_codes");
     result->premiumSubscriptionMonthCount =
@@ -1609,17 +1661,22 @@ DECLARE_PARSER_TO_JSON(Giveaway) {
 DECLARE_PARSER_FROM_JSON(GiveawayWinners) {
     auto result = std::make_shared<GiveawayWinners>();
     result->chat = parse<Chat>(data, "chat");
-    result->giveawayMessageId = parsePrimitive<std::int32_t>(data, "giveaway_message_id");
-    result->winnersSelectionDate = parsePrimitive<std::uint32_t>(data, "winners_selection_date");
+    result->giveawayMessageId =
+        parsePrimitive<std::int32_t>(data, "giveaway_message_id");
+    result->winnersSelectionDate =
+        parsePrimitive<std::uint32_t>(data, "winners_selection_date");
     result->winnerCount = parsePrimitive<std::int32_t>(data, "winner_count");
     result->winners = parseArray<User>(data, "winners");
-    result->additionalChatCount = parsePrimitive<std::int32_t>(data, "additional_chat_count");
+    result->additionalChatCount =
+        parsePrimitive<std::int32_t>(data, "additional_chat_count");
     result->premiumSubscriptionMonthCount =
         parsePrimitive<std::int32_t>(data, "premium_subscription_month_count");
-    result->unclaimedPrizeCount = parsePrimitive<std::int32_t>(data, "unclaimed_prize_count");
+    result->unclaimedPrizeCount =
+        parsePrimitive<std::int32_t>(data, "unclaimed_prize_count");
     result->onlyNewMembers = parsePrimitive<bool>(data, "only_new_members");
     result->wasRefunded = parsePrimitive<bool>(data, "was_refunded");
-    result->prizeDescription = parsePrimitive<std::string>(data, "prize_description");
+    result->prizeDescription =
+        parsePrimitive<std::string>(data, "prize_description");
     return result;
 }
 
@@ -1644,7 +1701,8 @@ DECLARE_PARSER_TO_JSON(GiveawayWinners) {
 DECLARE_PARSER_FROM_JSON(GiveawayCompleted) {
     auto result = std::make_shared<GiveawayCompleted>();
     result->winnerCount = parsePrimitive<std::int32_t>(data, "winner_count");
-    result->unclaimedPrizeCount = parsePrimitive<std::int32_t>(data, "unclaimed_prize_count");
+    result->unclaimedPrizeCount =
+        parsePrimitive<std::int32_t>(data, "unclaimed_prize_count");
     result->giveawayMessage = parse<Message>(data, "giveaway_message");
     return result;
 }
@@ -1742,7 +1800,8 @@ DECLARE_PARSER_FROM_JSON(ReplyKeyboardMarkup) {
     result->isPersistent = parsePrimitive<bool>(data, "is_persistent");
     result->resizeKeyboard = parsePrimitive<bool>(data, "resize_keyboard");
     result->oneTimeKeyboard = parsePrimitive<bool>(data, "one_time_keyboard");
-    result->inputFieldPlaceholder = parsePrimitive<std::string>(data, "input_field_placeholder");
+    result->inputFieldPlaceholder =
+        parsePrimitive<std::string>(data, "input_field_placeholder");
     result->selective = parsePrimitive<bool>(data, "selective");
     return result;
 }
@@ -1795,7 +1854,8 @@ DECLARE_PARSER_FROM_JSON(KeyboardButtonRequestUsers) {
     result->requestId = parsePrimitive<std::int32_t>(data, "request_id");
     result->userIsBot = parsePrimitive<bool>(data, "user_is_bot");
     result->userIsPremium = parsePrimitive<bool>(data, "user_is_premium");
-    result->maxQuantity = (std::uint8_t) parsePrimitive<std::int32_t>(data, "max_quantity");
+    result->maxQuantity =
+        (std::uint8_t)parsePrimitive<std::int32_t>(data, "max_quantity");
     result->requestName = parsePrimitive<bool>(data, "request_name");
     result->requestUsername = parsePrimitive<bool>(data, "request_username");
     result->requestPhoto = parsePrimitive<bool>(data, "request_photo");
@@ -1899,7 +1959,8 @@ DECLARE_PARSER_TO_JSON(InlineKeyboardMarkup) {
 DECLARE_PARSER_FROM_JSON(ForceReply) {
     auto result = std::make_shared<ForceReply>();
     result->forceReply = parsePrimitive<bool>(data, "force_reply");
-    result->inputFieldPlaceholder = parsePrimitive<std::string>(data, "input_field_placeholder");
+    result->inputFieldPlaceholder =
+        parsePrimitive<std::string>(data, "input_field_placeholder");
     result->selective = parsePrimitive<bool>(data, "selective");
     return result;
 }
@@ -1916,9 +1977,11 @@ DECLARE_PARSER_TO_JSON(ForceReply) {
 DECLARE_PARSER_FROM_JSON(ChatPhoto) {
     auto result = std::make_shared<ChatPhoto>();
     result->smallFileId = parsePrimitive<std::string>(data, "small_file_id");
-    result->smallFileUniqueId = parsePrimitive<std::string>(data, "small_file_unique_id");
+    result->smallFileUniqueId =
+        parsePrimitive<std::string>(data, "small_file_unique_id");
     result->bigFileId = parsePrimitive<std::string>(data, "big_file_id");
-    result->bigFileUniqueId = parsePrimitive<std::string>(data, "big_file_unique_id");
+    result->bigFileUniqueId =
+        parsePrimitive<std::string>(data, "big_file_unique_id");
     return result;
 }
 
@@ -1936,13 +1999,15 @@ DECLARE_PARSER_FROM_JSON(ChatInviteLink) {
     auto result = std::make_shared<ChatInviteLink>();
     result->inviteLink = parsePrimitive<std::string>(data, "invite_link");
     result->creator = parse<User>(data, "creator");
-    result->createsJoinRequest = parsePrimitive<bool>(data, "creates_join_request");
+    result->createsJoinRequest =
+        parsePrimitive<bool>(data, "creates_join_request");
     result->isPrimary = parsePrimitive<bool>(data, "is_primary");
     result->isRevoked = parsePrimitive<bool>(data, "is_revoked");
     result->name = parsePrimitive<std::string>(data, "name");
     result->expireDate = parsePrimitive<std::uint32_t>(data, "expire_date");
     result->memberLimit = parsePrimitive<std::uint32_t>(data, "member_limit");
-    result->pendingJoinRequestCount = parsePrimitive<std::uint32_t>(data, "pending_join_request_count");
+    result->pendingJoinRequestCount =
+        parsePrimitive<std::uint32_t>(data, "pending_join_request_count");
     return result;
 }
 
@@ -1965,10 +2030,14 @@ DECLARE_PARSER_FROM_JSON(ChatAdministratorRights) {
     auto result = std::make_shared<ChatAdministratorRights>();
     result->isAnonymous = parsePrimitive<bool>(data, "is_anonymous");
     result->canManageChat = parsePrimitive<bool>(data, "can_manage_chat");
-    result->canDeleteMessages = parsePrimitive<bool>(data, "can_delete_messages");
-    result->canManageVideoChats = parsePrimitive<bool>(data, "can_manage_video_chats");
-    result->canRestrictMembers = parsePrimitive<bool>(data, "can_restrict_members");
-    result->canPromoteMembers = parsePrimitive<bool>(data, "can_promote_members");
+    result->canDeleteMessages =
+        parsePrimitive<bool>(data, "can_delete_messages");
+    result->canManageVideoChats =
+        parsePrimitive<bool>(data, "can_manage_video_chats");
+    result->canRestrictMembers =
+        parsePrimitive<bool>(data, "can_restrict_members");
+    result->canPromoteMembers =
+        parsePrimitive<bool>(data, "can_promote_members");
     result->canChangeInfo = parsePrimitive<bool>(data, "can_change_info");
     result->canInviteUsers = parsePrimitive<bool>(data, "can_invite_users");
     result->canPostStories = parsePrimitive<bool>(data, "can_post_stories");
@@ -2009,7 +2078,8 @@ DECLARE_PARSER_FROM_JSON(ChatMemberUpdated) {
     result->oldChatMember = parse<ChatMember>(data, "old_chat_member");
     result->newChatMember = parse<ChatMember>(data, "new_chat_member");
     result->inviteLink = parse<ChatInviteLink>(data, "invite_link");
-    result->viaChatFolderInviteLink = parsePrimitive<bool>(data, "via_chat_folder_invite_link");
+    result->viaChatFolderInviteLink =
+        parsePrimitive<bool>(data, "via_chat_folder_invite_link");
     return result;
 }
 
@@ -2089,10 +2159,14 @@ DECLARE_PARSER_FROM_JSON(ChatMemberAdministrator) {
     result->canBeEdited = parsePrimitive<bool>(data, "can_be_edited");
     result->isAnonymous = parsePrimitive<bool>(data, "is_anonymous");
     result->canManageChat = parsePrimitive<bool>(data, "can_manage_chat");
-    result->canDeleteMessages = parsePrimitive<bool>(data, "can_delete_messages");
-    result->canManageVideoChats = parsePrimitive<bool>(data, "can_manage_video_chats");
-    result->canRestrictMembers = parsePrimitive<bool>(data, "can_restrict_members");
-    result->canPromoteMembers = parsePrimitive<bool>(data, "can_promote_members");
+    result->canDeleteMessages =
+        parsePrimitive<bool>(data, "can_delete_messages");
+    result->canManageVideoChats =
+        parsePrimitive<bool>(data, "can_manage_video_chats");
+    result->canRestrictMembers =
+        parsePrimitive<bool>(data, "can_restrict_members");
+    result->canPromoteMembers =
+        parsePrimitive<bool>(data, "can_promote_members");
     result->canChangeInfo = parsePrimitive<bool>(data, "can_change_info");
     result->canInviteUsers = parsePrimitive<bool>(data, "can_invite_users");
     result->canPostStories = parsePrimitive<bool>(data, "can_post_stories");
@@ -2146,11 +2220,15 @@ DECLARE_PARSER_FROM_JSON(ChatMemberRestricted) {
     result->canSendDocuments = parsePrimitive<bool>(data, "can_send_documents");
     result->canSendPhotos = parsePrimitive<bool>(data, "can_send_photos");
     result->canSendVideos = parsePrimitive<bool>(data, "can_send_videos");
-    result->canSendVideoNotes = parsePrimitive<bool>(data, "can_send_video_notes");
-    result->canSendVoiceNotes = parsePrimitive<bool>(data, "can_send_voice_notes");
+    result->canSendVideoNotes =
+        parsePrimitive<bool>(data, "can_send_video_notes");
+    result->canSendVoiceNotes =
+        parsePrimitive<bool>(data, "can_send_voice_notes");
     result->canSendPolls = parsePrimitive<bool>(data, "can_send_polls");
-    result->canSendOtherMessages = parsePrimitive<bool>(data, "can_send_other_messages");
-    result->canAddWebPagePreviews = parsePrimitive<bool>(data, "can_add_web_page_previews");
+    result->canSendOtherMessages =
+        parsePrimitive<bool>(data, "can_send_other_messages");
+    result->canAddWebPagePreviews =
+        parsePrimitive<bool>(data, "can_add_web_page_previews");
     result->canChangeInfo = parsePrimitive<bool>(data, "can_change_info");
     result->canInviteUsers = parsePrimitive<bool>(data, "can_invite_users");
     result->canPinMessages = parsePrimitive<bool>(data, "can_pin_messages");
@@ -2233,11 +2311,15 @@ DECLARE_PARSER_FROM_JSON(ChatPermissions) {
     result->canSendDocuments = parsePrimitive<bool>(data, "can_send_documents");
     result->canSendPhotos = parsePrimitive<bool>(data, "can_send_photos");
     result->canSendVideos = parsePrimitive<bool>(data, "can_send_videos");
-    result->canSendVideoNotes = parsePrimitive<bool>(data, "can_send_video_notes");
-    result->canSendVoiceNotes = parsePrimitive<bool>(data, "can_send_voice_notes");
+    result->canSendVideoNotes =
+        parsePrimitive<bool>(data, "can_send_video_notes");
+    result->canSendVoiceNotes =
+        parsePrimitive<bool>(data, "can_send_voice_notes");
     result->canSendPolls = parsePrimitive<bool>(data, "can_send_polls");
-    result->canSendOtherMessages = parsePrimitive<bool>(data, "can_send_other_messages");
-    result->canAddWebPagePreviews = parsePrimitive<bool>(data, "can_add_web_page_previews");
+    result->canSendOtherMessages =
+        parsePrimitive<bool>(data, "can_send_other_messages");
+    result->canAddWebPagePreviews =
+        parsePrimitive<bool>(data, "can_add_web_page_previews");
     result->canChangeInfo = parsePrimitive<bool>(data, "can_change_info");
     result->canInviteUsers = parsePrimitive<bool>(data, "can_invite_users");
     result->canPinMessages = parsePrimitive<bool>(data, "can_pin_messages");
@@ -2266,9 +2348,9 @@ DECLARE_PARSER_TO_JSON(ChatPermissions) {
 }
 DECLARE_PARSER_FROM_JSON(Birthdate) {
     auto result = std::make_shared<Birthdate>();
-    result->day = (std::uint8_t) parsePrimitive<std::int32_t>(data, "day");
-    result->month = (std::uint8_t) parsePrimitive<std::int32_t>(data, "month");
-    result->year = (std::uint16_t) parsePrimitive<std::int32_t>(data, "year");
+    result->day = (std::uint8_t)parsePrimitive<std::int32_t>(data, "day");
+    result->month = (std::uint8_t)parsePrimitive<std::int32_t>(data, "month");
+    result->year = (std::uint16_t)parsePrimitive<std::int32_t>(data, "year");
     return result;
 }
 
@@ -2315,8 +2397,10 @@ DECLARE_PARSER_TO_JSON(BusinessLocation) {
 
 DECLARE_PARSER_FROM_JSON(BusinessOpeningHoursInterval) {
     auto result = std::make_shared<BusinessOpeningHoursInterval>();
-    result->openingMinute = parsePrimitive<std::int32_t>(data, "opening_minute");
-    result->closingMinute = parsePrimitive<std::int32_t>(data, "closing_minute");
+    result->openingMinute =
+        parsePrimitive<std::int32_t>(data, "opening_minute");
+    result->closingMinute =
+        parsePrimitive<std::int32_t>(data, "closing_minute");
     return result;
 }
 
@@ -2360,17 +2444,15 @@ DECLARE_PARSER_TO_JSON(ChatLocation) {
 }
 
 DECLARE_PARSER_FROM_JSON(ReactionType) {
-    std::string type = parsePrimitive<std::string>(data, "type");
+    auto type = parsePrimitive<std::string>(data, "type");
     ReactionType::Ptr result;
 
     if (type == ReactionTypeEmoji::TYPE) {
-        result = std::static_pointer_cast<ReactionType>(
-            parse<ReactionTypeEmoji>(data));
+        result = parse<ReactionTypeEmoji>(data);
     } else if (type == ReactionTypeCustomEmoji::TYPE) {
-        result = std::static_pointer_cast<ReactionType>(
-            parse<ReactionTypeCustomEmoji>(data));
+        result = parse<ReactionTypeCustomEmoji>(data);
     } else {
-        result = std::make_shared<ReactionType>();
+        throw TgBot::TgException::invalidType("reaction", type);
     }
 
     result->type = type;
@@ -2383,9 +2465,11 @@ DECLARE_PARSER_TO_JSON(ReactionType) {
     json.put("type", object->type);
 
     if (object->type == ReactionTypeEmoji::TYPE) {
-        json.put("emoji", put(object));
+        json += put<ReactionTypeEmoji>(object);
     } else if (object->type == ReactionTypeCustomEmoji::TYPE) {
-        json.put("custom_emoji", put(object));
+        json += put<ReactionTypeCustomEmoji>(object);
+    } else {
+        throw TgBot::TgException::invalidType("reaction", object->type);
     }
 
     return json;
@@ -2406,7 +2490,8 @@ DECLARE_PARSER_TO_JSON(ReactionTypeEmoji) {
 
 DECLARE_PARSER_FROM_JSON(ReactionTypeCustomEmoji) {
     auto result = std::make_shared<ReactionTypeCustomEmoji>();
-    result->customEmojiId = parsePrimitive<std::string>(data, "custom_emoji_id");
+    result->customEmojiId =
+        parsePrimitive<std::string>(data, "custom_emoji_id");
     return result;
 }
 
@@ -2478,10 +2563,12 @@ DECLARE_PARSER_TO_JSON(MessageReactionCountUpdated) {
 
 DECLARE_PARSER_FROM_JSON(ForumTopic) {
     auto result = std::make_shared<ForumTopic>();
-    result->messageThreadId = parsePrimitive<std::int32_t>(data, "message_thread_id");
+    result->messageThreadId =
+        parsePrimitive<std::int32_t>(data, "message_thread_id");
     result->name = parsePrimitive<std::string>(data, "name");
     result->iconColor = parsePrimitive<std::int32_t>(data, "icon_color");
-    result->iconCustomEmojiId = parsePrimitive<std::string>(data, "icon_custom_emoji_id");
+    result->iconCustomEmojiId =
+        parsePrimitive<std::string>(data, "icon_custom_emoji_id");
     return result;
 }
 
@@ -2513,32 +2600,25 @@ DECLARE_PARSER_TO_JSON(BotCommand) {
 }
 
 DECLARE_PARSER_FROM_JSON(BotCommandScope) {
-    std::string type = parsePrimitive<std::string>(data, "type");
+    auto type = parsePrimitive<std::string>(data, "type");
     BotCommandScope::Ptr result;
 
     if (type == BotCommandScopeDefault::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeDefault>(data));
+        result = parse<BotCommandScopeDefault>(data);
     } else if (type == BotCommandScopeAllPrivateChats::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeAllPrivateChats>(data));
+        result = parse<BotCommandScopeAllPrivateChats>(data);
     } else if (type == BotCommandScopeAllGroupChats::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeAllGroupChats>(data));
+        result = parse<BotCommandScopeAllGroupChats>(data);
     } else if (type == BotCommandScopeAllChatAdministrators::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeAllChatAdministrators>(data));
+        result = parse<BotCommandScopeAllChatAdministrators>(data);
     } else if (type == BotCommandScopeChat::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeChat>(data));
+        result = parse<BotCommandScopeChat>(data);
     } else if (type == BotCommandScopeChatAdministrators::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeChatAdministrators>(data));
+        result = parse<BotCommandScopeChatAdministrators>(data);
     } else if (type == BotCommandScopeChatMember::TYPE) {
-        result = std::static_pointer_cast<BotCommandScope>(
-            parse<BotCommandScopeChatMember>(data));
+        result = parse<BotCommandScopeChatMember>(data);
     } else {
-        result = std::make_shared<BotCommandScope>();
+        throw TgException::invalidType("BotCommandScope", type);
     }
 
     result->type = type;
@@ -2564,6 +2644,8 @@ DECLARE_PARSER_TO_JSON(BotCommandScope) {
         ptree += put<BotCommandScopeChatAdministrators>(object);
     } else if (object->type == BotCommandScopeChatMember::TYPE) {
         ptree += put<BotCommandScopeChatMember>(object);
+    } else {
+        throw TgException::invalidType("BotCommandScope", object->type);
     }
     return ptree;
 }
@@ -2653,7 +2735,8 @@ DECLARE_PARSER_TO_JSON(BotShortDescription) {
 
 DECLARE_PARSER_FROM_JSON(BotShortDescription) {
     auto result = std::make_shared<BotShortDescription>();
-    result->shortDescription = parsePrimitive<std::string>(data, "short_description");
+    result->shortDescription =
+        parsePrimitive<std::string>(data, "short_description");
     return result;
 }
 
@@ -2707,12 +2790,14 @@ DECLARE_PARSER_TO_JSON(MenuButton) {
         ptree += put<MenuButtonWebApp>(object);
     } else if (object->type == MenuButtonDefault::TYPE) {
         ptree += put<MenuButtonDefault>(object);
+    } else {
+        throw TgException::invalidType("MenuButton", object->type);
     }
     return ptree;
 }
 
 DECLARE_PARSER_FROM_JSON(MenuButton) {
-    std::string type = parsePrimitive<std::string>(data, "type");
+    auto type = parsePrimitive<std::string>(data, "type");
     MenuButton::Ptr result;
 
     if (type == MenuButtonCommands::TYPE) {
@@ -2722,7 +2807,7 @@ DECLARE_PARSER_FROM_JSON(MenuButton) {
     } else if (type == MenuButtonDefault::TYPE) {
         result = parse<MenuButtonDefault>(data);
     } else {
-        result = std::make_shared<MenuButton>();
+        throw TgException::invalidType("MenuButton", type);
     }
 
     result->type = type;
@@ -2744,7 +2829,8 @@ DECLARE_PARSER_FROM_JSON(ChatBoost) {
     auto result = std::make_shared<ChatBoost>();
     result->boostId = parsePrimitive<std::string>(data, "boost_id");
     result->addDate = parsePrimitive<std::uint32_t>(data, "add_date");
-    result->expirationDate = parsePrimitive<std::uint32_t>(data, "expiration_date");
+    result->expirationDate =
+        parsePrimitive<std::uint32_t>(data, "expiration_date");
     result->source = parse<ChatBoostSource>(data, "source");
     return result;
 }
@@ -2874,7 +2960,8 @@ DECLARE_PARSER_TO_JSON(ChatBoostSourceGiveaway) {
 
 DECLARE_PARSER_FROM_JSON(ChatBoostSourceGiveaway) {
     auto result = std::make_shared<ChatBoostSourceGiveaway>();
-    result->giveawayMessageId = parsePrimitive<std::int32_t>(data, "giveaway_message_id");
+    result->giveawayMessageId =
+        parsePrimitive<std::int32_t>(data, "giveaway_message_id");
     result->isUnclaimed = parsePrimitive<bool>(data, "is_unclaimed");
     return result;
 }
@@ -2915,7 +3002,8 @@ DECLARE_PARSER_TO_JSON(BusinessMessagesDeleted) {
 
 DECLARE_PARSER_FROM_JSON(BusinessMessagesDeleted) {
     auto result = std::make_shared<BusinessMessagesDeleted>();
-    result->businessConnectionId = parsePrimitive<std::string>(data, "business_connection_id");
+    result->businessConnectionId =
+        parsePrimitive<std::string>(data, "business_connection_id");
     result->chat = parse<Chat>(data, "chat");
     result->messageIds = parsePrimitiveArray<std::int32_t>(data, "message_ids");
     return result;
@@ -2932,7 +3020,8 @@ DECLARE_PARSER_TO_JSON(ResponseParameters) {
 
 DECLARE_PARSER_FROM_JSON(ResponseParameters) {
     auto result = std::make_shared<ResponseParameters>();
-    result->migrateToChatId = parsePrimitive<std::int64_t>(data, "migrate_to_chat_id");
+    result->migrateToChatId =
+        parsePrimitive<std::int64_t>(data, "migrate_to_chat_id");
     result->retryAfter = parsePrimitive<std::int32_t>(data, "retry_after");
     return result;
 }
@@ -2957,13 +3046,15 @@ DECLARE_PARSER_TO_JSON(InputMedia) {
         ptree += put<InputMediaAudio>(object);
     } else if (object->type == InputMediaDocument::TYPE) {
         ptree += put<InputMediaDocument>(object);
+    } else {
+        throw TgException::invalidType("InputMedia", object->type);
     }
 
     return ptree;
 }
 
 DECLARE_PARSER_FROM_JSON(InputMedia) {
-    std::string type = parsePrimitive<std::string>(data, "type");
+    auto type = parsePrimitive<std::string>(data, "type");
     InputMedia::Ptr result;
 
     if (type == InputMediaPhoto::TYPE) {
@@ -2977,7 +3068,7 @@ DECLARE_PARSER_FROM_JSON(InputMedia) {
     } else if (type == InputMediaDocument::TYPE) {
         result = parse<InputMediaDocument>(data);
     } else {
-        result = std::make_shared<InputMedia>();
+        throw TgException::invalidType("InputMedia", type);
     }
 
     result->type = parsePrimitive<std::string>(data, "type");
@@ -3023,7 +3114,8 @@ DECLARE_PARSER_FROM_JSON(InputMediaVideo) {
     result->width = parsePrimitive<std::int32_t>(data, "width");
     result->height = parsePrimitive<std::int32_t>(data, "height");
     result->duration = parsePrimitive<std::int32_t>(data, "duration");
-    result->supportsStreaming = parsePrimitive<bool>(data, "supports_streaming");
+    result->supportsStreaming =
+        parsePrimitive<bool>(data, "supports_streaming");
     result->hasSpoiler = parsePrimitive<bool>(data, "has_spoiler");
     return result;
 }
@@ -3110,8 +3202,10 @@ DECLARE_PARSER_FROM_JSON(Sticker) {
     result->setName = parsePrimitive<std::string>(data, "set_name");
     result->premiumAnimation = parse<File>(data, "premium_animation");
     result->maskPosition = parse<MaskPosition>(data, "mask_position");
-    result->customEmojiId = parsePrimitive<std::string>(data, "custom_emoji_id");
-    result->needsRepainting = parsePrimitive<bool>(data, "needs_repainting", true);
+    result->customEmojiId =
+        parsePrimitive<std::string>(data, "custom_emoji_id");
+    result->needsRepainting =
+        parsePrimitive<bool>(data, "needs_repainting", true);
     result->fileSize = parsePrimitive<std::int32_t>(data, "file_size");
     return result;
 }
@@ -3224,10 +3318,12 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     result->id = parsePrimitive<std::string>(data, "id");
     result->from = parse<User>(data, "from");
     result->message = parse<Message>(data, "message");
-    result->inlineMessageId = parsePrimitive<std::string>(data, "inline_message_id");
+    result->inlineMessageId =
+        parsePrimitive<std::string>(data, "inline_message_id");
     result->chatInstance = parsePrimitive<std::string>(data, "chat_instance");
     result->data = parsePrimitive<std::string>(data, "data");
-    result->gameShortName = parsePrimitive<std::string>(data, "game_short_name");
+    result->gameShortName =
+        parsePrimitive<std::string>(data, "game_short_name");
     return result;
 }
 
@@ -3248,9 +3344,9 @@ DECLARE_PARSER_TO_JSON(CallbackQuery) {
 DECLARE_PARSER_FROM_JSON(MaskPosition) {
     auto result = std::make_shared<MaskPosition>();
     result->point = parsePrimitive<std::string>(data, "point");
-    result->xShift = (float) parsePrimitive<double>(data, "x_shift");
-    result->yShift = (float) parsePrimitive<double>(data, "y_shift");
-    result->scale = (float) parsePrimitive<double>(data, "scale");
+    result->xShift = (float)parsePrimitive<double>(data, "x_shift");
+    result->yShift = (float)parsePrimitive<double>(data, "y_shift");
+    result->scale = (float)parsePrimitive<double>(data, "scale");
     return result;
 }
 
@@ -3298,7 +3394,8 @@ DECLARE_PARSER_FROM_JSON(InlineKeyboardButton) {
     result->callbackData = parsePrimitive<std::string>(data, "callback_data");
     result->webApp = parse<WebAppInfo>(data, "web_app");
     result->loginUrl = parse<LoginUrl>(data, "login_url");
-    result->switchInlineQuery = parsePrimitive<std::string>(data, "switch_inline_query");
+    result->switchInlineQuery =
+        parsePrimitive<std::string>(data, "switch_inline_query");
     result->switchInlineQueryCurrentChat =
         parsePrimitive<std::string>(data, "switch_inline_query_current_chat");
     result->switchInlineQueryChosenChat = parse<SwitchInlineQueryChosenChat>(
@@ -3380,6 +3477,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResult) {
             put<InlineQueryResultVideo, InlineQueryResultCachedVideo>(object);
     } else if (object->type == InlineQueryResultCachedSticker::TYPE) {
         ptree += put<InlineQueryResultCachedSticker>(object);
+    } else {
+        throw TgException::invalidType("InlineQueryResult", object->type);
     }
     return ptree;
 }
@@ -3414,7 +3513,8 @@ DECLARE_PARSER_FROM_JSON(SwitchInlineQueryChosenChat) {
     result->allowUserChats = parsePrimitive<bool>(data, "allow_user_chats");
     result->allowBotChats = parsePrimitive<bool>(data, "allow_bot_chats");
     result->allowGroupChats = parsePrimitive<bool>(data, "allow_group_chats");
-    result->allowChannelChats = parsePrimitive<bool>(data, "allow_channel_chats");
+    result->allowChannelChats =
+        parsePrimitive<bool>(data, "allow_channel_chats");
     return result;
 }
 
@@ -3438,7 +3538,8 @@ DECLARE_PARSER_FROM_JSON(LoginUrl) {
     result->url = parsePrimitive<std::string>(data, "url");
     result->forwardText = parsePrimitive<std::string>(data, "forward_text");
     result->botUsername = parsePrimitive<std::string>(data, "bot_username");
-    result->requestWriteAccess = parsePrimitive<bool>(data, "request_write_access");
+    result->requestWriteAccess =
+        parsePrimitive<bool>(data, "request_write_access");
     return result;
 }
 
@@ -3459,7 +3560,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultsButton) {
     auto result = std::make_shared<InlineQueryResultsButton>();
     result->text = parsePrimitive<std::string>(data, "text");
     result->webApp = parse<WebAppInfo>(data, "web_app");
-    result->startParameter = parsePrimitive<std::string>(data, "start_parameter");
+    result->startParameter =
+        parsePrimitive<std::string>(data, "start_parameter");
     return result;
 }
 
@@ -3483,8 +3585,10 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultArticle) {
     result->hideUrl = parsePrimitive<bool>(data, "hide_url");
     result->description = parsePrimitive<std::string>(data, "description");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailWidth = parsePrimitive<std::int32_t>(data, "thumbnail_width");
-    result->thumbnailHeight = parsePrimitive<std::int32_t>(data, "thumbnail_height");
+    result->thumbnailWidth =
+        parsePrimitive<std::int32_t>(data, "thumbnail_width");
+    result->thumbnailHeight =
+        parsePrimitive<std::int32_t>(data, "thumbnail_height");
     return result;
 }
 
@@ -3544,7 +3648,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultGif) {
     result->gifHeight = parsePrimitive<std::int32_t>(data, "gif_height");
     result->gifDuration = parsePrimitive<std::int32_t>(data, "gif_duration");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailMimeType = parsePrimitive<std::string>(data, "thumbnail_mime_type");
+    result->thumbnailMimeType =
+        parsePrimitive<std::string>(data, "thumbnail_mime_type");
     result->title = parsePrimitive<std::string>(data, "title");
     result->caption = parsePrimitive<std::string>(data, "caption");
     result->parseMode = parsePrimitive<std::string>(data, "parse_mode");
@@ -3577,9 +3682,11 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultMpeg4Gif) {
     result->mpeg4Url = parsePrimitive<std::string>(data, "mpeg4_url");
     result->mpeg4Width = parsePrimitive<std::int32_t>(data, "mpeg4_width");
     result->mpeg4Height = parsePrimitive<std::int32_t>(data, "mpeg4_height");
-    result->mpeg4Duration = parsePrimitive<std::int32_t>(data, "mpeg4_duration");
+    result->mpeg4Duration =
+        parsePrimitive<std::int32_t>(data, "mpeg4_duration");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailMimeType = parsePrimitive<std::string>(data, "thumbnail_mime_type");
+    result->thumbnailMimeType =
+        parsePrimitive<std::string>(data, "thumbnail_mime_type");
     result->title = parsePrimitive<std::string>(data, "title");
     result->caption = parsePrimitive<std::string>(data, "caption");
     result->parseMode = parsePrimitive<std::string>(data, "parse_mode");
@@ -3619,7 +3726,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultVideo) {
         parseArray<MessageEntity>(data, "caption_entities");
     result->videoWidth = parsePrimitive<std::int32_t>(data, "video_width");
     result->videoHeight = parsePrimitive<std::int32_t>(data, "video_height");
-    result->videoDuration = parsePrimitive<std::int32_t>(data, "video_duration");
+    result->videoDuration =
+        parsePrimitive<std::int32_t>(data, "video_duration");
     result->description = parsePrimitive<std::string>(data, "description");
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
@@ -3653,7 +3761,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultAudio) {
     result->captionEntities =
         parseArray<MessageEntity>(data, "caption_entities");
     result->performer = parsePrimitive<std::string>(data, "performer");
-    result->audioDuration = parsePrimitive<std::int32_t>(data, "audio_duration");
+    result->audioDuration =
+        parsePrimitive<std::int32_t>(data, "audio_duration");
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     return result;
@@ -3681,7 +3790,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultVoice) {
     result->parseMode = parsePrimitive<std::string>(data, "parse_mode");
     result->captionEntities =
         parseArray<MessageEntity>(data, "caption_entities");
-    result->voiceDuration = parsePrimitive<std::int32_t>(data, "voice_duration");
+    result->voiceDuration =
+        parsePrimitive<std::int32_t>(data, "voice_duration");
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     return result;
@@ -3713,8 +3823,10 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultDocument) {
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailWidth = parsePrimitive<std::int32_t>(data, "thumbnail_width");
-    result->thumbnailHeight = parsePrimitive<std::int32_t>(data, "thumbnail_height");
+    result->thumbnailWidth =
+        parsePrimitive<std::int32_t>(data, "thumbnail_width");
+    result->thumbnailHeight =
+        parsePrimitive<std::int32_t>(data, "thumbnail_height");
     return result;
 }
 
@@ -3737,18 +3849,22 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultDocument) {
 
 DECLARE_PARSER_FROM_JSON(InlineQueryResultLocation) {
     auto result = std::make_shared<InlineQueryResultLocation>();
-    result->latitude = (float) parsePrimitive<double>(data, "latitude");
-    result->longitude = (float) parsePrimitive<double>(data, "longitude");
+    result->latitude = (float)parsePrimitive<double>(data, "latitude");
+    result->longitude = (float)parsePrimitive<double>(data, "longitude");
     result->title = parsePrimitive<std::string>(data, "title");
-    result->horizontalAccuracy = (float) parsePrimitive<double>(data, "horizontal_accuracy");
+    result->horizontalAccuracy =
+        (float)parsePrimitive<double>(data, "horizontal_accuracy");
     result->livePeriod = parsePrimitive<std::int32_t>(data, "live_period");
     result->heading = parsePrimitive<std::int32_t>(data, "heading");
-    result->proximityAlertRadius = parsePrimitive<std::int32_t>(data, "proximity_alert_radius");
+    result->proximityAlertRadius =
+        parsePrimitive<std::int32_t>(data, "proximity_alert_radius");
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailWidth = parsePrimitive<std::int32_t>(data, "thumbnail_width");
-    result->thumbnailHeight = parsePrimitive<std::int32_t>(data, "thumbnail_height");
+    result->thumbnailWidth =
+        parsePrimitive<std::int32_t>(data, "thumbnail_width");
+    result->thumbnailHeight =
+        parsePrimitive<std::int32_t>(data, "thumbnail_height");
     return result;
 }
 
@@ -3771,19 +3887,24 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultLocation) {
 
 DECLARE_PARSER_FROM_JSON(InlineQueryResultVenue) {
     auto result = std::make_shared<InlineQueryResultVenue>();
-    result->latitude = (float) parsePrimitive<double>(data, "latitude");
-    result->longitude = (float) parsePrimitive<double>(data, "longitude");
+    result->latitude = (float)parsePrimitive<double>(data, "latitude");
+    result->longitude = (float)parsePrimitive<double>(data, "longitude");
     result->title = parsePrimitive<std::string>(data, "title");
     result->address = parsePrimitive<std::string>(data, "address");
     result->foursquareId = parsePrimitive<std::string>(data, "foursquare_id");
-    result->foursquareType = parsePrimitive<std::string>(data, "foursquare_type");
-    result->googlePlaceId = parsePrimitive<std::string>(data, "google_place_id");
-    result->googlePlaceType = parsePrimitive<std::string>(data, "google_place_type");
+    result->foursquareType =
+        parsePrimitive<std::string>(data, "foursquare_type");
+    result->googlePlaceId =
+        parsePrimitive<std::string>(data, "google_place_id");
+    result->googlePlaceType =
+        parsePrimitive<std::string>(data, "google_place_type");
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailWidth = parsePrimitive<std::int32_t>(data, "thumbnail_width");
-    result->thumbnailHeight = parsePrimitive<std::int32_t>(data, "thumbnail_height");
+    result->thumbnailWidth =
+        parsePrimitive<std::int32_t>(data, "thumbnail_width");
+    result->thumbnailHeight =
+        parsePrimitive<std::int32_t>(data, "thumbnail_height");
     return result;
 }
 
@@ -3814,8 +3935,10 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultContact) {
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     result->thumbnailUrl = parsePrimitive<std::string>(data, "thumbnail_url");
-    result->thumbnailWidth = parsePrimitive<std::int32_t>(data, "thumbnail_width");
-    result->thumbnailHeight = parsePrimitive<std::int32_t>(data, "thumbnail_height");
+    result->thumbnailWidth =
+        parsePrimitive<std::int32_t>(data, "thumbnail_width");
+    result->thumbnailHeight =
+        parsePrimitive<std::int32_t>(data, "thumbnail_height");
     return result;
 }
 
@@ -3835,7 +3958,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultContact) {
 
 DECLARE_PARSER_FROM_JSON(InlineQueryResultGame) {
     auto result = std::make_shared<InlineQueryResultGame>();
-    result->gameShortName = parsePrimitive<std::string>(data, "game_short_name");
+    result->gameShortName =
+        parsePrimitive<std::string>(data, "game_short_name");
     return result;
 }
 
@@ -3924,7 +4048,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedMpeg4Gif) {
 }
 DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedSticker) {
     auto result = std::make_shared<InlineQueryResultCachedSticker>();
-    result->stickerFileId = parsePrimitive<std::string>(data, "sticker_file_id");
+    result->stickerFileId =
+        parsePrimitive<std::string>(data, "sticker_file_id");
     result->inputMessageContent =
         parse<InputMessageContent>(data, "input_message_content");
     return result;
@@ -3941,7 +4066,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedSticker) {
 DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedDocument) {
     auto result = std::make_shared<InlineQueryResultCachedDocument>();
     result->title = parsePrimitive<std::string>(data, "title");
-    result->documentFileId = parsePrimitive<std::string>(data, "document_file_id");
+    result->documentFileId =
+        parsePrimitive<std::string>(data, "document_file_id");
     result->description = parsePrimitive<std::string>(data, "description");
     result->caption = parsePrimitive<std::string>(data, "caption");
     result->parseMode = parsePrimitive<std::string>(data, "parse_mode");
@@ -4044,7 +4170,7 @@ DECLARE_PARSER_FROM_JSON(InputMessageContent) {
     InputMessageContent::Ptr result;
 
     std::string messageText = parsePrimitive<std::string>(data, "message_text");
-    float latitude = (float) parsePrimitive<double>(data, "latitude", 1000);
+    float latitude = (float)parsePrimitive<double>(data, "latitude", 1000);
     std::string address = parsePrimitive<std::string>(data, "address");
     std::string phoneNumber = parsePrimitive<std::string>(data, "phone_number");
     std::string description = parsePrimitive<std::string>(data, "description");
@@ -4082,6 +4208,8 @@ DECLARE_PARSER_TO_JSON(InputMessageContent) {
         ptree = put<InputContactMessageContent>(object);
     } else if (object->type == InputInvoiceMessageContent::TYPE) {
         ptree = put<InputInvoiceMessageContent>(object);
+    } else {
+        throw TgException::invalidType("InputMessageContent", object->type);
     }
 
     return ptree;
@@ -4109,12 +4237,14 @@ DECLARE_PARSER_TO_JSON(InputTextMessageContent) {
 
 DECLARE_PARSER_FROM_JSON(InputLocationMessageContent) {
     auto result = std::make_shared<InputLocationMessageContent>();
-    result->latitude = (float) parsePrimitive<double>(data, "latitude");
-    result->longitude = (float) parsePrimitive<double>(data, "longitude");
-    result->horizontalAccuracy = (float) parsePrimitive<double>(data, "horizontal_accuracy");
+    result->latitude = (float)parsePrimitive<double>(data, "latitude");
+    result->longitude = (float)parsePrimitive<double>(data, "longitude");
+    result->horizontalAccuracy =
+        (float)parsePrimitive<double>(data, "horizontal_accuracy");
     result->livePeriod = parsePrimitive<std::int32_t>(data, "live_period");
     result->heading = parsePrimitive<std::int32_t>(data, "heading");
-    result->proximityAlertRadius = parsePrimitive<std::int32_t>(data, "proximity_alert_radius");
+    result->proximityAlertRadius =
+        parsePrimitive<std::int32_t>(data, "proximity_alert_radius");
     return result;
 }
 
@@ -4132,14 +4262,17 @@ DECLARE_PARSER_TO_JSON(InputLocationMessageContent) {
 
 DECLARE_PARSER_FROM_JSON(InputVenueMessageContent) {
     auto result = std::make_shared<InputVenueMessageContent>();
-    result->latitude = (float) parsePrimitive<double>(data, "latitude");
-    result->longitude = (float) parsePrimitive<double>(data, "longitude");
+    result->latitude = (float)parsePrimitive<double>(data, "latitude");
+    result->longitude = (float)parsePrimitive<double>(data, "longitude");
     result->title = parsePrimitive<std::string>(data, "title");
     result->address = parsePrimitive<std::string>(data, "address");
     result->foursquareId = parsePrimitive<std::string>(data, "foursquare_id");
-    result->foursquareType = parsePrimitive<std::string>(data, "foursquare_type");
-    result->googlePlaceId = parsePrimitive<std::string>(data, "google_place_id");
-    result->googlePlaceType = parsePrimitive<std::string>(data, "google_place_type");
+    result->foursquareType =
+        parsePrimitive<std::string>(data, "foursquare_type");
+    result->googlePlaceId =
+        parsePrimitive<std::string>(data, "google_place_id");
+    result->googlePlaceType =
+        parsePrimitive<std::string>(data, "google_place_type");
     return result;
 }
 
@@ -4195,10 +4328,12 @@ DECLARE_PARSER_FROM_JSON(InputInvoiceMessageContent) {
     result->needName = parsePrimitive<bool>(data, "need_name");
     result->needPhoneNumber = parsePrimitive<bool>(data, "need_phone_number");
     result->needEmail = parsePrimitive<bool>(data, "need_email");
-    result->needShippingAddress = parsePrimitive<bool>(data, "need_shipping_address");
+    result->needShippingAddress =
+        parsePrimitive<bool>(data, "need_shipping_address");
     result->sendPhoneNumberToProvider =
         parsePrimitive<bool>(data, "send_phone_number_to_provider");
-    result->sendEmailToProvider = parsePrimitive<bool>(data, "send_email_to_provider");
+    result->sendEmailToProvider =
+        parsePrimitive<bool>(data, "send_email_to_provider");
     result->isFlexible = parsePrimitive<bool>(data, "is_flexible");
     return result;
 }
@@ -4235,7 +4370,8 @@ DECLARE_PARSER_FROM_JSON(ChosenInlineResult) {
     result->resultId = parsePrimitive<std::string>(data, "result_id");
     result->from = parse<User>(data, "from");
     result->location = parse<Location>(data, "location");
-    result->inlineMessageId = parsePrimitive<std::string>(data, "inline_message_id");
+    result->inlineMessageId =
+        parsePrimitive<std::string>(data, "inline_message_id");
     result->query = parsePrimitive<std::string>(data, "query");
     return result;
 }
@@ -4253,7 +4389,8 @@ DECLARE_PARSER_TO_JSON(ChosenInlineResult) {
 
 DECLARE_PARSER_FROM_JSON(SentWebAppMessage) {
     auto result = std::make_shared<SentWebAppMessage>();
-    result->inlineMessageId = parsePrimitive<std::string>(data, "inline_message_id");
+    result->inlineMessageId =
+        parsePrimitive<std::string>(data, "inline_message_id");
     return result;
 }
 
@@ -4283,7 +4420,8 @@ DECLARE_PARSER_FROM_JSON(Invoice) {
     auto result = std::make_shared<Invoice>();
     result->title = parsePrimitive<std::string>(data, "title");
     result->description = parsePrimitive<std::string>(data, "description");
-    result->startParameter = parsePrimitive<std::string>(data, "start_parameter");
+    result->startParameter =
+        parsePrimitive<std::string>(data, "start_parameter");
     result->currency = parsePrimitive<std::string>(data, "currency");
     result->totalAmount = parsePrimitive<std::int32_t>(data, "total_amount");
     return result;
@@ -4365,11 +4503,15 @@ DECLARE_PARSER_FROM_JSON(SuccessfulPayment) {
     auto result = std::make_shared<SuccessfulPayment>();
     result->currency = parsePrimitive<std::string>(data, "currency");
     result->totalAmount = parsePrimitive<std::int32_t>(data, "total_amount");
-    result->invoicePayload = parsePrimitive<std::string>(data, "invoice_payload");
-    result->shippingOptionId = parsePrimitive<std::string>(data, "shipping_option_id");
+    result->invoicePayload =
+        parsePrimitive<std::string>(data, "invoice_payload");
+    result->shippingOptionId =
+        parsePrimitive<std::string>(data, "shipping_option_id");
     result->orderInfo = parse<OrderInfo>(data, "order_info");
-    result->telegramPaymentChargeId = parsePrimitive<std::string>(data, "telegram_payment_charge_id");
-    result->providerPaymentChargeId = parsePrimitive<std::string>(data, "provider_payment_charge_id");
+    result->telegramPaymentChargeId =
+        parsePrimitive<std::string>(data, "telegram_payment_charge_id");
+    result->providerPaymentChargeId =
+        parsePrimitive<std::string>(data, "provider_payment_charge_id");
     return result;
 }
 
@@ -4391,7 +4533,8 @@ DECLARE_PARSER_FROM_JSON(ShippingQuery) {
     auto result = std::make_shared<ShippingQuery>();
     result->id = parsePrimitive<std::string>(data, "id");
     result->from = parse<User>(data, "from");
-    result->invoicePayload = parsePrimitive<std::string>(data, "invoice_payload");
+    result->invoicePayload =
+        parsePrimitive<std::string>(data, "invoice_payload");
     result->shippingAddress = parse<ShippingAddress>(data, "shipping_address");
     return result;
 }
@@ -4413,8 +4556,10 @@ DECLARE_PARSER_FROM_JSON(PreCheckoutQuery) {
     result->from = parse<User>(data, "from");
     result->currency = parsePrimitive<std::string>(data, "currency");
     result->totalAmount = parsePrimitive<std::int32_t>(data, "total_amount");
-    result->invoicePayload = parsePrimitive<std::string>(data, "invoice_payload");
-    result->shippingOptionId = parsePrimitive<std::string>(data, "shipping_option_id");
+    result->invoicePayload =
+        parsePrimitive<std::string>(data, "invoice_payload");
+    result->shippingOptionId =
+        parsePrimitive<std::string>(data, "shipping_option_id");
     result->orderInfo = parse<OrderInfo>(data, "order_info");
     return result;
 }
@@ -4520,22 +4665,18 @@ DECLARE_PARSER_TO_JSON(EncryptedCredentials) {
 
 // PassportElementError
 DECLARE_PARSER_FROM_JSON(PassportElementError) {
-    std::string source = parsePrimitive<std::string>(data, "source");
+    auto source = parsePrimitive<std::string>(data, "source");
     PassportElementError::Ptr result;
     if (source == PassportElementErrorDataField::SOURCE) {
-        result = std::static_pointer_cast<PassportElementError>(
-            parse<PassportElementErrorDataField>(data));
+        result = parse<PassportElementErrorDataField>(data);
     } else if (source == PassportElementErrorFrontSide::SOURCE) {
-        result = std::static_pointer_cast<PassportElementError>(
-            parse<PassportElementErrorFrontSide>(data));
+        result = parse<PassportElementErrorFrontSide>(data);
     } else if (source == PassportElementErrorReverseSide::SOURCE) {
-        result = std::static_pointer_cast<PassportElementError>(
-            parse<PassportElementErrorReverseSide>(data));
+        result = parse<PassportElementErrorReverseSide>(data);
     } else if (source == PassportElementErrorSelfie::SOURCE) {
-        result = std::static_pointer_cast<PassportElementError>(
-            parse<PassportElementErrorSelfie>(data));
+        result = parse<PassportElementErrorSelfie>(data);
     } else {
-        result = std::make_shared<PassportElementError>();
+        return {};
     }
     result->source = parsePrimitive<std::string>(data, "source");
     result->type = parsePrimitive<std::string>(data, "type");
