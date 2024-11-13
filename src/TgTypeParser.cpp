@@ -21,16 +21,17 @@ std::shared_ptr<T> parse(const Json::Value &data, const std::string &key) {
 struct JsonWrapper {
     JsonWrapper() = default;
 
-    template <typename T, int N>
-    void put(const char (&key)[N], T &&value) {
-        static_assert(N > 1, "Key must not be empty");
-        data_[key] = std::forward<decltype(value)>(value);
+    template <typename T>
+    void put(const std::string_view key, T value) {
+        if (value == std::decay_t<T>{}) {
+            return;
+        }
+        data_[key.data()] = std::move(value);
     }
     // Overload for JSON::Value to avoid null values.
-    template <int N>
-    void put(const char (&key)[N], Json::Value &&value) {
+    void put(const std::string_view key, Json::Value value) {
         if (value.type() != Json::nullValue) {
-            data_[key] = std::forward<decltype(value)>(value);
+            data_[key.data()] = std::move(value);
         }
     }
 
