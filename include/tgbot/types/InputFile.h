@@ -40,7 +40,7 @@ public:
     /**
      * @brief Creates new InputFile::Ptr from an existing file.
      */
-    static InputFile::Ptr fromFile(const std::filesystem::path& filePath, std::string mimeType) {
+    static inline InputFile::Ptr fromFile(const std::filesystem::path& filePath, std::string mimeType) {
         auto result(std::make_shared<InputFile>());
         std::ifstream file(filePath, std::ios::binary);
         if (!file) {
