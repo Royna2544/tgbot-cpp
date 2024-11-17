@@ -1,11 +1,11 @@
 #ifndef TGBOT_TGEXCEPTION_H
 #define TGBOT_TGEXCEPTION_H
 
-#include "tgbot/export.h"
-
-#include <string>
-#include <stdexcept>
 #include <cstdint>
+#include <stdexcept>
+#include <string>
+
+#include "tgbot/export.h"
 
 namespace TgBot {
 
@@ -15,27 +15,30 @@ namespace TgBot {
  * @ingroup general
  */
 class TGBOT_API TgException : public std::runtime_error {
-
-public:
-
+   public:
     /**
-     * @brief Enum of possible errors from Api requests 
+     * @brief Enum of possible errors from Api requests
      */
     enum class ErrorCode : std::int32_t {
         Undefined = 0,
-        BadRequest = 400, Unauthorized = 401, 
-        Forbidden = 403, NotFound = 404, 
-        Flood = 402, Conflict = 409, Internal = 500,
-        HtmlResponse = 100, InvalidJson = 101
+        BadRequest = 400,
+        Unauthorized = 401,
+        Forbidden = 403,
+        NotFound = 404,
+        Flood = 402,
+        Conflict = 409,
+        Internal = 500,
+        HtmlResponse = 100,
+        InvalidJson = 101
     };
 
-    explicit TgException(const std::string& description, ErrorCode errorCode);
-
-    static TgException invalidType(const std::string_view name, const std::string_view type);
+    explicit inline TgException(const std::string& description,
+                                ErrorCode errorCode)
+        : runtime_error(description), errorCode(errorCode) {}
 
     ErrorCode errorCode;
 };
 
-}
+}  // namespace TgBot
 
-#endif //TGBOT_TGEXCEPTION_H
+#endif  // TGBOT_TGEXCEPTION_H

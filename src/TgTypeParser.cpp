@@ -18,6 +18,13 @@ std::shared_ptr<T> parse(const Json::Value &data, const std::string &key) {
     return parse<T>(data[key]);
 }
 
+TgException invalidType(const std::string_view name,
+                        const std::string_view type) {
+    std::stringstream ss;
+    ss << "Invalid type for " << name << ": " << type;
+    return TgException(ss.str(), TgException::ErrorCode::Internal);
+}
+
 struct JsonWrapper {
     JsonWrapper() = default;
 
@@ -862,7 +869,7 @@ DECLARE_PARSER_FROM_JSON(MessageOrigin) {
     } else if (type == MessageOriginChannel::TYPE) {
         result = parse<MessageOriginChannel>(data);
     } else {
-        throw TgBot::TgException::invalidType("MessageOrigin", type);
+        throw invalidType("MessageOrigin", type);
     }
 
     result->type = type;
@@ -887,7 +894,7 @@ DECLARE_PARSER_TO_JSON(MessageOrigin) {
         } else if (object->type == MessageOriginChannel::TYPE) {
             json.put("origin", put<MessageOriginChannel>(object));
         } else {
-            throw TgBot::TgException::invalidType("MessageOrigin",
+            throw invalidType("MessageOrigin",
                                                   object->type);
         }
     }
@@ -2453,7 +2460,7 @@ DECLARE_PARSER_FROM_JSON(ReactionType) {
     } else if (type == ReactionTypeCustomEmoji::TYPE) {
         result = parse<ReactionTypeCustomEmoji>(data);
     } else {
-        throw TgBot::TgException::invalidType("reaction", type);
+        throw invalidType("reaction", type);
     }
 
     result->type = type;
@@ -2470,7 +2477,7 @@ DECLARE_PARSER_TO_JSON(ReactionType) {
     } else if (object->type == ReactionTypeCustomEmoji::TYPE) {
         json += put<ReactionTypeCustomEmoji>(object);
     } else {
-        throw TgBot::TgException::invalidType("reaction", object->type);
+        throw invalidType("reaction", object->type);
     }
 
     return json;
@@ -2619,7 +2626,7 @@ DECLARE_PARSER_FROM_JSON(BotCommandScope) {
     } else if (type == BotCommandScopeChatMember::TYPE) {
         result = parse<BotCommandScopeChatMember>(data);
     } else {
-        throw TgException::invalidType("BotCommandScope", type);
+        throw invalidType("BotCommandScope", type);
     }
 
     result->type = type;
@@ -2646,7 +2653,7 @@ DECLARE_PARSER_TO_JSON(BotCommandScope) {
     } else if (object->type == BotCommandScopeChatMember::TYPE) {
         ptree += put<BotCommandScopeChatMember>(object);
     } else {
-        throw TgException::invalidType("BotCommandScope", object->type);
+        throw invalidType("BotCommandScope", object->type);
     }
     return ptree;
 }
@@ -2792,7 +2799,7 @@ DECLARE_PARSER_TO_JSON(MenuButton) {
     } else if (object->type == MenuButtonDefault::TYPE) {
         ptree += put<MenuButtonDefault>(object);
     } else {
-        throw TgException::invalidType("MenuButton", object->type);
+        throw invalidType("MenuButton", object->type);
     }
     return ptree;
 }
@@ -2808,7 +2815,7 @@ DECLARE_PARSER_FROM_JSON(MenuButton) {
     } else if (type == MenuButtonDefault::TYPE) {
         result = parse<MenuButtonDefault>(data);
     } else {
-        throw TgException::invalidType("MenuButton", type);
+        throw invalidType("MenuButton", type);
     }
 
     result->type = type;
@@ -3048,7 +3055,7 @@ DECLARE_PARSER_TO_JSON(InputMedia) {
     } else if (object->type == InputMediaDocument::TYPE) {
         ptree += put<InputMediaDocument>(object);
     } else {
-        throw TgException::invalidType("InputMedia", object->type);
+        throw invalidType("InputMedia", object->type);
     }
 
     return ptree;
@@ -3069,7 +3076,7 @@ DECLARE_PARSER_FROM_JSON(InputMedia) {
     } else if (type == InputMediaDocument::TYPE) {
         result = parse<InputMediaDocument>(data);
     } else {
-        throw TgException::invalidType("InputMedia", type);
+        throw invalidType("InputMedia", type);
     }
 
     result->type = parsePrimitive<std::string>(data, "type");
@@ -3479,7 +3486,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResult) {
     } else if (object->type == InlineQueryResultCachedSticker::TYPE) {
         ptree += put<InlineQueryResultCachedSticker>(object);
     } else {
-        throw TgException::invalidType("InlineQueryResult", object->type);
+        throw invalidType("InlineQueryResult", object->type);
     }
     return ptree;
 }
@@ -4210,7 +4217,7 @@ DECLARE_PARSER_TO_JSON(InputMessageContent) {
     } else if (object->type == InputInvoiceMessageContent::TYPE) {
         ptree = put<InputInvoiceMessageContent>(object);
     } else {
-        throw TgException::invalidType("InputMessageContent", object->type);
+        throw invalidType("InputMessageContent", object->type);
     }
 
     return ptree;
