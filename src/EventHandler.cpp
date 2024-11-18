@@ -1,4 +1,5 @@
 #include "tgbot/EventHandler.h"
+#include "tgbot/tools/StringTools.h"
 
 namespace TgBot {
 
@@ -7,48 +8,48 @@ void EventHandler::handleUpdate(const Update::Ptr& update) const {
         handleMessage(update->message);
     }
     if (update->editedMessage != nullptr) {
-        _broadcaster.broadcastEditedMessage(update->editedMessage);
+        _broadcaster->broadcastEditedMessage(update->editedMessage);
     }
     if (update->channelPost != nullptr) {
         handleMessage(update->channelPost);
     }
     if (update->editedChannelPost != nullptr) {
-        _broadcaster.broadcastEditedMessage(update->editedChannelPost);
+        _broadcaster->broadcastEditedMessage(update->editedChannelPost);
     }
     if (update->inlineQuery != nullptr) {
-        _broadcaster.broadcastInlineQuery(update->inlineQuery);
+        _broadcaster->broadcastInlineQuery(update->inlineQuery);
     }
     if (update->chosenInlineResult != nullptr) {
-        _broadcaster.broadcastChosenInlineResult(update->chosenInlineResult);
+        _broadcaster->broadcastChosenInlineResult(update->chosenInlineResult);
     }
     if (update->callbackQuery != nullptr) {
-        _broadcaster.broadcastCallbackQuery(update->callbackQuery);
+        _broadcaster->broadcastCallbackQuery(update->callbackQuery);
     }
     if (update->shippingQuery != nullptr) {
-        _broadcaster.broadcastShippingQuery(update->shippingQuery);
+        _broadcaster->broadcastShippingQuery(update->shippingQuery);
     }
     if (update->preCheckoutQuery != nullptr) {
-        _broadcaster.broadcastPreCheckoutQuery(update->preCheckoutQuery);
+        _broadcaster->broadcastPreCheckoutQuery(update->preCheckoutQuery);
     }
     if (update->poll != nullptr) {
-        _broadcaster.broadcastPoll(update->poll);
+        _broadcaster->broadcastPoll(update->poll);
     }
     if (update->pollAnswer != nullptr) {
-        _broadcaster.broadcastPollAnswer(update->pollAnswer);
+        _broadcaster->broadcastPollAnswer(update->pollAnswer);
     }
     if (update->myChatMember != nullptr) {
-        _broadcaster.broadcastMyChatMember(update->myChatMember);
+        _broadcaster->broadcastMyChatMember(update->myChatMember);
     }
     if (update->chatMember != nullptr) {
-        _broadcaster.broadcastChatMember(update->chatMember);
+        _broadcaster->broadcastChatMember(update->chatMember);
     }
     if (update->chatJoinRequest != nullptr) {
-        _broadcaster.broadcastChatJoinRequest(update->chatJoinRequest);
+        _broadcaster->broadcastChatJoinRequest(update->chatJoinRequest);
     }
 }
 
 void EventHandler::handleMessage(const Message::Ptr& message) const {
-    _broadcaster.broadcastAnyMessage(message);
+    _broadcaster->broadcastAnyMessage(message);
 
     if (message->text && StringTools::startsWith(message->text.value(), "/")) {
         std::size_t splitPosition;
@@ -66,11 +67,11 @@ void EventHandler::handleMessage(const Message::Ptr& message) const {
             splitPosition = std::min(spacePosition, atSymbolPosition);
         }
         std::string command = message->text->substr(1, splitPosition - 1);
-        if (!_broadcaster.broadcastCommand(command, message)) {
-            _broadcaster.broadcastUnknownCommand(message);
+        if (!_broadcaster->broadcastCommand(command, message)) {
+            _broadcaster->broadcastUnknownCommand(message);
         }
     } else {
-        _broadcaster.broadcastNonCommandMessage(message);
+        _broadcaster->broadcastNonCommandMessage(message);
     }
 }
 

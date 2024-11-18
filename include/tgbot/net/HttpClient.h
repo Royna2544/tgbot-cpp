@@ -20,6 +20,8 @@ class TGBOT_API HttpClient {
 public:
     virtual ~HttpClient() = default;
 
+    constexpr static std::int32_t kDefaultTimeout = 10;
+
     /**
      * @brief Sends a request to the url.
      *
@@ -29,6 +31,13 @@ public:
     virtual std::string makeRequest(const Url& url, const std::vector<HttpReqArg>& args) const = 0;
 
     std::int32_t _timeout = 25;
+
+    std::int32_t timeout() const {
+      return _timeout;
+    }
+    void timeout(std::int32_t newTimeout) {
+      _timeout = newTimeout + 5;
+    }
 
     /**
       * @brief Get the maximum number of makeRequest() retries before giving up and throwing an exception.

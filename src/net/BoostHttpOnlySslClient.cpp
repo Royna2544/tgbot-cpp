@@ -12,11 +12,11 @@ using namespace boost::asio::ip;
 
 namespace TgBot {
 
-BoostHttpOnlySslClient::BoostHttpOnlySslClient() : _httpParser() {
+BoostHttpOnlySslClient::BoostHttpOnlySslClient(std::int32_t timeout) : _httpParser() {
+    _timeout = timeout;
 }
 
-BoostHttpOnlySslClient::~BoostHttpOnlySslClient() {
-}
+BoostHttpOnlySslClient::~BoostHttpOnlySslClient() = default;
 
 string BoostHttpOnlySslClient::makeRequest(const Url& url, const vector<HttpReqArg>& args) const {
     tcp::resolver resolver(_ioService);

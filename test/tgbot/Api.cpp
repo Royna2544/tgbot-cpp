@@ -30,10 +30,10 @@ public:
 };
 
 bool Request(TgErrorCode expectedCode, const string& response) {
-    auto httpClientMock = std::make_unique<HttpClientMock>();
-    httpClientMock->response = response;
+    HttpClientMock httpClientMock;
+    httpClientMock.response = response;
 
-    TestableApi api("token", std::move(httpClientMock), "url");
+    TestableApi api("token", &httpClientMock, "url");
 
     try {
         api.sendRequest("", vector<HttpReqArg>());

@@ -33,10 +33,10 @@ int main() {
         printf("Bot username: %s\n", bot.getApi().getMe()->username->c_str());
         bot.getApi().deleteWebhook();
 
-        TgLongPoll longPoll(bot);
+        auto longPoll = bot.createLongPoll();
         while (true) {
             printf("Long poll started\n");
-            longPoll.start();
+            longPoll->start();
         }
     } catch (exception& e) {
         printf("error: %s\n", e.what());

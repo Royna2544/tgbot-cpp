@@ -23,7 +23,7 @@ namespace TgBot {
 class TGBOT_API CurlHttpClient : public HttpClient {
 
 public:
-    CurlHttpClient();
+    explicit CurlHttpClient(std::int32_t timeout = kDefaultTimeout);
     ~CurlHttpClient() override;
 
     /**
@@ -40,7 +40,7 @@ public:
     CURL* curlSettings;
 
 private:
-    const HttpParser _httpParser;
+    HttpParser _httpParser;
 };
 
 }

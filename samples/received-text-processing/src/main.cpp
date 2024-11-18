@@ -18,7 +18,7 @@ int main() {
     bool test_text_state = false;
 
     Bot bot(token);
-    TgLongPoll long_poll(bot);
+    auto long_poll = bot.createLongPoll();
 
     bot.getEvents().onCommand("start", [&bot](Message::Ptr message) {
         bot.getApi().sendMessage(message->chat->id, "Hi!");
@@ -51,7 +51,7 @@ int main() {
 
         while (true) {
             printf("Long poll started\n");
-            long_poll.start();
+            long_poll->start();
         }
     } catch (exception& e) {
         printf("error: %s\n", e.what());

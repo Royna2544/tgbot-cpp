@@ -9,11 +9,12 @@
 
 namespace TgBot {
 
-Bot::Bot(std::string token, std::unique_ptr<HttpClient> httpClient, const std::string& url)
+Bot::Bot(std::string token, std::unique_ptr<HttpClient> httpClient, std::string url)
     : _token(std::move(token))
-    , _api(std::make_unique<ApiImpl>(_token, std::move(httpClient), url))
+    , _httpClient(std::move(httpClient))
+    , _api(std::make_unique<ApiImpl>(_token, _httpClient.get(), std::move(url)))
     , _eventBroadcaster(std::make_unique<EventBroadcaster>())
-    , _eventHandler(getEvents()) {
+    , _eventHandler(std::make_unique<EventHandler>(_eventBroadcaster.get())) {
 }
 
 std::unique_ptr<HttpClient> Bot::_getDefaultHttpClient() {

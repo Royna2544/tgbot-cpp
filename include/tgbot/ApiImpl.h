@@ -21,8 +21,7 @@ class TGBOT_API ApiImpl : public Api {
     friend class Bot;
 
    public:
-    ApiImpl(std::string token, std::unique_ptr<HttpClient> httpClient,
-            std::string url);
+    ApiImpl(std::string token, HttpClient* httpClient, std::string url);
     ~ApiImpl() override = default;
 
     /**
@@ -3141,7 +3140,7 @@ class TGBOT_API ApiImpl : public Api {
      */
     bool blockedByUser(std::int64_t chatId) const override;
 
-    std::unique_ptr<HttpClient> _httpClient;
+    HttpClient* _httpClient;
 
    protected:
     Json::Value sendRequest(

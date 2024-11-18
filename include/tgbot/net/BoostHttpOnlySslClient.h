@@ -21,7 +21,7 @@ namespace TgBot {
 class TGBOT_API BoostHttpOnlySslClient : public HttpClient {
 
 public:
-    BoostHttpOnlySslClient();
+    explicit BoostHttpOnlySslClient(std::int32_t timeout = kDefaultTimeout);
     ~BoostHttpOnlySslClient() override;
 
     /**
@@ -34,7 +34,7 @@ public:
 
 private:
     mutable boost::asio::io_service _ioService;
-    const HttpParser _httpParser;
+    HttpParser _httpParser;
 };
 
 }

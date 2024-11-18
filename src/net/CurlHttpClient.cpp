@@ -10,9 +10,9 @@
 
 namespace TgBot {
 
-CurlHttpClient::CurlHttpClient() : _httpParser() {
-    curlSettings = curl_easy_init();
-
+CurlHttpClient::CurlHttpClient(std::int32_t timeout)
+    : curlSettings(curl_easy_init()), _httpParser() {
+    _timeout = timeout;
     curl_easy_setopt(curlSettings, CURLOPT_CONNECTTIMEOUT, 20);
     curl_easy_setopt(curlSettings, CURLOPT_TIMEOUT, _timeout);
 }
@@ -29,7 +29,7 @@ std::string CurlHttpClient::makeRequest(
     const Url& url, const std::vector<HttpReqArg>& args) const {
     // Copy settings for each call because we change CURLOPT_URL and other
     // stuff. This also protects multithreaded case.
-    auto curl = curl_easy_duphandle(curlSettings);
+    auto *curl = curl_easy_duphandle(curlSettings);
 
     std::string u = url.protocol + "://" + url.host + url.path;
     if (args.empty()) {
@@ -42,8 +42,8 @@ std::string CurlHttpClient::makeRequest(
     headers = curl_slist_append(headers, "Connection: close");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-    curl_mime* mime;
-    curl_mimepart* part;
+    curl_mime* mime = nullptr;
+    curl_mimepart* part = nullptr;
     mime = curl_mime_init(curl);
     if (!args.empty()) {
         for (const HttpReqArg& a : args) {

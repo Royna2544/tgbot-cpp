@@ -49,9 +49,9 @@ TgBot::HttpReqArg handleInputFileOrString(
 }  // namespace
 namespace TgBot {
 
-ApiImpl::ApiImpl(std::string token, std::unique_ptr<HttpClient> httpClient,
+ApiImpl::ApiImpl(std::string token, HttpClient* httpClient,
                  std::string url)
-    : _httpClient(std::move(httpClient)),
+    : _httpClient(httpClient),
       _token(std::move(token)),
       _url(std::move(url)) {}
 
