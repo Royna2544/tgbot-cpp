@@ -57,7 +57,7 @@ ApiImpl::ApiImpl(std::string token, std::unique_ptr<HttpClient> httpClient,
 
 std::vector<Update::Ptr> ApiImpl::getUpdates(
     std::int32_t offset, std::int32_t limit, std::int32_t timeout,
-    const std::vector<std::string_view> &allowedUpdates) const {
+    const std::vector<std::string> &allowedUpdates) const {
     std::vector<HttpReqArg> args;
     args.reserve(4);
 

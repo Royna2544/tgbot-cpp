@@ -101,7 +101,7 @@ class TGBOT_API Api {
     virtual std::vector<Update::Ptr> getUpdates(
         std::int32_t offset = 0, std::int32_t limit = 100,
         std::int32_t timeout = 0,
-        const std::vector<std::string_view>& allowedUpdates = {}) const = 0;
+        const std::vector<std::string>& allowedUpdates = {}) const = 0;
 
     /**
      * @brief Use this method to specify a URL and receive incoming updates via

@@ -59,11 +59,10 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns an Array of Update objects.
      */
-    std::vector<Update::Ptr> getUpdates(std::int32_t offset = 0,
-                                        std::int32_t limit = 100,
-                                        std::int32_t timeout = 0,
-                                        const std::vector<std::string_view>&
-                                            allowedUpdates = {}) const override;
+    std::vector<Update::Ptr> getUpdates(
+        std::int32_t offset = 0, std::int32_t limit = 100,
+        std::int32_t timeout = 0,
+        const std::vector<std::string>& allowedUpdates = {}) const override;
 
     /**
      * @brief Use this method to specify a URL and receive incoming updates via
@@ -495,7 +494,8 @@ class TGBOT_API ApiImpl : public Api {
         std::variant<std::int64_t, std::string> chatId,
         std::variant<InputFile::Ptr, std::string> audio,
         const std::string_view caption = "", std::int32_t duration = 0,
-        const std::string_view performer = "", const std::string_view title = "",
+        const std::string_view performer = "",
+        const std::string_view title = "",
         std::variant<InputFile::Ptr, std::string> thumbnail = "",
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -998,7 +998,8 @@ class TGBOT_API ApiImpl : public Api {
      */
     Message::Ptr sendVenue(
         std::variant<std::int64_t, std::string> chatId, float latitude,
-        float longitude, const std::string_view title, const std::string_view address,
+        float longitude, const std::string_view title,
+        const std::string_view address,
         const std::string_view foursquareId = "",
         const std::string_view foursquareType = "",
         bool disableNotification = false,
@@ -1100,12 +1101,14 @@ class TGBOT_API ApiImpl : public Api {
      */
     Message::Ptr sendPoll(
         std::variant<std::int64_t, std::string> chatId,
-        const std::string_view question, const std::vector<std::string>& options,
+        const std::string_view question,
+        const std::vector<std::string>& options,
         bool disableNotification = false,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr, bool isAnonymous = true,
         const std::string_view type = "", bool allowsMultipleAnswers = false,
-        std::int32_t correctOptionId = -1, const std::string_view explanation = "",
+        std::int32_t correctOptionId = -1,
+        const std::string_view explanation = "",
         const std::string_view explanationParseMode = "",
         const std::vector<MessageEntity::Ptr>& explanationEntities =
             std::vector<MessageEntity::Ptr>(),
@@ -1147,8 +1150,9 @@ class TGBOT_API ApiImpl : public Api {
         std::variant<std::int64_t, std::string> chatId,
         bool disableNotification = false,
         ReplyParameters::Ptr replyParameters = nullptr,
-        GenericReply::Ptr replyMarkup = nullptr, const std::string_view emoji = "",
-        std::int32_t messageThreadId = 0, bool protectContent = false,
+        GenericReply::Ptr replyMarkup = nullptr,
+        const std::string_view emoji = "", std::int32_t messageThreadId = 0,
+        bool protectContent = false,
         const std::string_view businessConnectionId = "") const override;
 
     /**
@@ -1568,9 +1572,8 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool approveChatJoinRequest(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t userId) const override;
+    bool approveChatJoinRequest(std::variant<std::int64_t, std::string> chatId,
+                                std::int64_t userId) const override;
 
     /**
      * @brief Use this method to decline a chat join request.
@@ -1584,9 +1587,8 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return True on success.
      */
-    bool declineChatJoinRequest(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t userId) const override;
+    bool declineChatJoinRequest(std::variant<std::int64_t, std::string> chatId,
+                                std::int64_t userId) const override;
 
     /**
      * @brief Use this method to set a new profile photo for the chat.
@@ -1648,8 +1650,9 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setChatDescription(std::variant<std::int64_t, std::string> chatId,
-                            const std::string_view description = "") const override;
+    bool setChatDescription(
+        std::variant<std::int64_t, std::string> chatId,
+        const std::string_view description = "") const override;
 
     /**
      * @brief Use this method to add a message to the list of pinned messages in
@@ -1786,8 +1789,9 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setChatStickerSet(std::variant<std::int64_t, std::string> chatId,
-                           const std::string_view stickerSetName) const override;
+    bool setChatStickerSet(
+        std::variant<std::int64_t, std::string> chatId,
+        const std::string_view stickerSetName) const override;
 
     /**
      * @brief Use this method to delete a group sticker set from a supergroup.
@@ -2125,8 +2129,9 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool deleteMyCommands(BotCommandScope::Ptr scope = nullptr,
-                          const std::string_view languageCode = "") const override;
+    bool deleteMyCommands(
+        BotCommandScope::Ptr scope = nullptr,
+        const std::string_view languageCode = "") const override;
 
     /**
      * @brief Use this method to get the current list of the bot's commands for
@@ -2167,7 +2172,8 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns BotName on success.
      */
-    BotName::Ptr getMyName(const std::string_view languageCode = "") const override;
+    BotName::Ptr getMyName(
+        const std::string_view languageCode = "") const override;
 
     /**
      * @brief Use this method to change the bot's description, which is shown in
@@ -2182,8 +2188,9 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setMyDescription(const std::string_view description = "",
-                          const std::string_view languageCode = "") const override;
+    bool setMyDescription(
+        const std::string_view description = "",
+        const std::string_view languageCode = "") const override;
 
     /**
      * @brief Use this method to get the current bot description for the given
@@ -2419,8 +2426,7 @@ class TGBOT_API ApiImpl : public Api {
      * @return On success, the stopped Poll is returned.
      */
     Poll::Ptr stopPoll(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t messageId,
+        std::variant<std::int64_t, std::string> chatId, std::int64_t messageId,
         InlineKeyboardMarkup::Ptr replyMarkup =
             std::make_shared<InlineKeyboardMarkup>()) const override;
 
@@ -2728,7 +2734,8 @@ class TGBOT_API ApiImpl : public Api {
      *
      * @return Returns True on success.
      */
-    bool setStickerSetThumbnail(const std::string_view name, std::int64_t userId,
+    bool setStickerSetThumbnail(const std::string_view name,
+                                std::int64_t userId,
                                 const std::string_view format,
                                 std::variant<InputFile::Ptr, std::string>
                                     thumbnail = "") const override;
@@ -2873,11 +2880,11 @@ class TGBOT_API ApiImpl : public Api {
         const std::string_view payload, const std::string_view providerToken,
         const std::string_view currency,
         const std::vector<LabeledPrice::Ptr>& prices,
-        const std::string_view providerData = "", const std::string_view photoUrl = "",
-        std::int32_t photoSize = 0, std::int32_t photoWidth = 0,
-        std::int32_t photoHeight = 0, bool needName = false,
-        bool needPhoneNumber = false, bool needEmail = false,
-        bool needShippingAddress = false,
+        const std::string_view providerData = "",
+        const std::string_view photoUrl = "", std::int32_t photoSize = 0,
+        std::int32_t photoWidth = 0, std::int32_t photoHeight = 0,
+        bool needName = false, bool needPhoneNumber = false,
+        bool needEmail = false, bool needShippingAddress = false,
         bool sendPhoneNumberToProvider = false,
         bool sendEmailToProvider = false, bool isFlexible = false,
         ReplyParameters::Ptr replyParameters = nullptr,
@@ -2945,11 +2952,11 @@ class TGBOT_API ApiImpl : public Api {
         std::int32_t maxTipAmount = 0,
         const std::vector<std::int32_t>& suggestedTipAmounts =
             std::vector<std::int32_t>(),
-        const std::string_view providerData = "", const std::string_view photoUrl = "",
-        std::int32_t photoSize = 0, std::int32_t photoWidth = 0,
-        std::int32_t photoHeight = 0, bool needName = false,
-        bool needPhoneNumber = false, bool needEmail = false,
-        bool needShippingAddress = false,
+        const std::string_view providerData = "",
+        const std::string_view photoUrl = "", std::int32_t photoSize = 0,
+        std::int32_t photoWidth = 0, std::int32_t photoHeight = 0,
+        bool needName = false, bool needPhoneNumber = false,
+        bool needEmail = false, bool needShippingAddress = false,
         bool sendPhoneNumberToProvider = false,
         bool sendEmailToProvider = false,
         bool isFlexible = false) const override;

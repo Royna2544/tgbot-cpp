@@ -35,7 +35,7 @@ private:
     std::int32_t _lastUpdateId = 0;
     std::int32_t _limit;
     std::int32_t _timeout;
-    std::vector<std::string> _allowUpdates;
+    std::vector<std::string> _allowedUpdates;
 
     std::vector<Update::Ptr> _updates;
 };
