@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -17,7 +18,7 @@ namespace TgBot {
 class ChatInviteLink {
 
 public:
-    typedef std::shared_ptr<ChatInviteLink> Ptr;
+    using Ptr = std::shared_ptr<ChatInviteLink>;
 
     /**
      * @brief The invite link.
@@ -48,22 +49,22 @@ public:
     /**
      * @brief Optional. Invite link name
      */
-    std::string name;
+    std::optional<std::string> name;
 
     /**
      * @brief Optional. Point in time (Unix timestamp) when the link will expire or has been expired
      */
-    std::uint32_t expireDate;
+    std::optional<std::uint32_t> expireDate;
 
     /**
      * @brief Optional. Maximum number of users that can be members of the chat simultaneously after joining the chat via this invite link; 1-99999
      */
-    std::uint32_t memberLimit;
+    std::optional<std::uint32_t> memberLimit;
 
     /**
      * @brief Optional. Number of pending join requests created using this link
      */
-    std::uint32_t pendingJoinRequestCount;
+    std::optional<std::uint32_t> pendingJoinRequestCount;
 };
 }
 

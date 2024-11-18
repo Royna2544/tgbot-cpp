@@ -40,14 +40,14 @@ public:
     /**
      * @brief Optional. Caption of the document to be sent, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the document caption.
      *
      * See [formatting options](https://core.telegram.org/bots/api#formatting-options) for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode
@@ -67,7 +67,7 @@ public:
     /**
      * @brief Optional. Short description of the result
      */
-    std::string description;
+    std::optional<std::string> description;
 
     /**
      * @brief Optional. Content of the message to be sent instead of the file
@@ -77,17 +77,17 @@ public:
     /**
      * @brief Optional. URL of the thumbnail (JPEG only) for the file
      */
-    std::string thumbnailUrl;
+    std::optional<std::string> thumbnailUrl;
 
     /**
      * @brief Optional. Thumbnail width
      */
-    std::int32_t thumbnailWidth{};
+    std::optional<std::int32_t> thumbnailWidth;
 
     /**
      * @brief Optional. Thumbnail height
      */
-    std::int32_t thumbnailHeight{};
+    std::optional<std::int32_t> thumbnailHeight;
 };
 }
 

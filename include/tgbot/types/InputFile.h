@@ -20,7 +20,7 @@ namespace TgBot {
 class TGBOT_API InputFile {
 
 public:
-    typedef std::shared_ptr<InputFile> Ptr;
+    using Ptr = std::shared_ptr<InputFile>;
 
     /**
      * @brief Contents of a file.

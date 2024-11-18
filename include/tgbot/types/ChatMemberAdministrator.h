@@ -4,6 +4,7 @@
 #include "tgbot/types/ChatMember.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -89,27 +90,27 @@ public:
     /**
      * @brief Optional. True, if the administrator can post messages in the channel, or access channel statistics; for channels only
      */
-    bool canPostMessages{};
+    std::optional<bool> canPostMessages;
 
     /**
      * @brief Optional. True, if the administrator can edit messages of other users and can pin messages; for channels only
      */
-    bool canEditMessages{};
+    std::optional<bool> canEditMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to pin messages; for groups and supergroups only
      */
-    bool canPinMessages{};
+    std::optional<bool> canPinMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; for supergroups only
      */
-    bool canManageTopics{};
+    std::optional<bool> canManageTopics;
 
     /**
      * @brief Optional. Custom title for this user
      */
-    std::string customTitle;
+    std::optional<std::string> customTitle;
 };
 }
 

@@ -4,6 +4,7 @@
 #include "tgbot/types/InputMessageContent.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -36,12 +37,12 @@ public:
     /**
      * @brief Optional. Contact's last name
      */
-    std::string lastName;
+    std::optional<std::string> lastName;
 
     /**
      * @brief Optional. Additional data about the contact in the form of a vCard, 0-2048 bytes
      */
-    std::string vcard;
+    std::optional<std::string> vcard;
 };
 }
 

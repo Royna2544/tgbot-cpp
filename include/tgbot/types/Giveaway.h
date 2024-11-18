@@ -18,7 +18,7 @@ namespace TgBot {
 class Giveaway {
 
 public:
-    typedef std::shared_ptr<Giveaway> Ptr;
+    using Ptr = std::shared_ptr<Giveaway>;
 
     /**
      * @brief The list of chats which the user must join to participate in the giveaway
@@ -38,17 +38,17 @@ public:
     /**
      * @brief Optional. True, if only users who join the chats after the giveaway started should be eligible to win
      */
-    bool onlyNewMembers;
+    std::optional<bool> onlyNewMembers;
 
     /**
      * @brief Optional. True, if the list of giveaway winners will be visible to everyone
      */
-    bool hasPublicWinners;
+    std::optional<bool> hasPublicWinners;
 
     /**
      * @brief Optional. Description of additional giveaway prize
      */
-    std::string prizeDescription;
+    std::optional<std::string> prizeDescription;
 
     /**
      * @brief Optional. A list of two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country codes indicating the countries from which eligible users for the giveaway must come.
@@ -61,7 +61,7 @@ public:
     /**
      * @brief Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
      */
-    std::int32_t premiumSubscriptionMonthCount;
+    std::optional<std::int32_t> premiumSubscriptionMonthCount;
 };
 }
 

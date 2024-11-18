@@ -17,7 +17,7 @@ namespace TgBot {
 class InlineKeyboardMarkup : public GenericReply {
 
 public:
-    typedef std::shared_ptr<InlineKeyboardMarkup> Ptr;
+    using Ptr = std::shared_ptr<InlineKeyboardMarkup>;
 
     /**
      * @brief Array of button rows, each represented by an Array of InlineKeyboardButton objects

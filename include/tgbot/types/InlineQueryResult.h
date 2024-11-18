@@ -40,11 +40,10 @@ namespace TgBot {
 class InlineQueryResult {
 
 public:
-    typedef std::shared_ptr<InlineQueryResult> Ptr;
+    using Ptr = std::shared_ptr<InlineQueryResult>;
 
-    InlineQueryResult() { }
-
-    virtual ~InlineQueryResult() { }
+    InlineQueryResult() = default;
+    virtual ~InlineQueryResult() = default;
 
     /**
      * @brief Type of the result

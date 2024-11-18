@@ -18,7 +18,7 @@ namespace TgBot {
 class MessageReactionCountUpdated {
 
 public:
-    typedef std::shared_ptr<MessageReactionCountUpdated> Ptr;
+    using Ptr = std::shared_ptr<MessageReactionCountUpdated>;
 
     /**
      * @brief The chat containing the message

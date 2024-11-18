@@ -15,7 +15,7 @@ namespace TgBot {
  */
 class CallbackQuery {
 public:
-    typedef std::shared_ptr<CallbackQuery> Ptr;
+    using Ptr = std::shared_ptr<CallbackQuery>;
 
     /**
      * @brief Unique identifier for this query.
@@ -50,7 +50,7 @@ public:
     /*
      * @brief Optional. Short name of a Game to be returned, serves as the unique identifier for the game
      */
-    std::string gameShortName;
+    std::optional<std::string> gameShortName;
 };
 }
 

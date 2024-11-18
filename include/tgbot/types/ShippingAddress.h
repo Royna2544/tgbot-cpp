@@ -14,7 +14,7 @@ namespace TgBot {
 class ShippingAddress {
 
 public:
-    typedef std::shared_ptr<ShippingAddress> Ptr;
+    using Ptr = std::shared_ptr<ShippingAddress>;
 
     /**
      * @brief Two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code

@@ -16,7 +16,7 @@ namespace TgBot {
 class VideoChatParticipantsInvited {
 
 public:
-    typedef std::shared_ptr<VideoChatParticipantsInvited> Ptr;
+    using Ptr = std::shared_ptr<VideoChatParticipantsInvited>;
 
     /**
      * @brief New members that were invited to the video chat

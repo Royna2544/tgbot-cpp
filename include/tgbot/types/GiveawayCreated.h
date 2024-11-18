@@ -15,7 +15,7 @@ namespace TgBot {
 class GiveawayCreated {
 
 public:
-    typedef std::shared_ptr<GiveawayCreated> Ptr;
+    using Ptr = std::shared_ptr<GiveawayCreated>;
 };
 }
 

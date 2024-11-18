@@ -4,6 +4,7 @@
 #include "tgbot/types/PhotoSize.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <memory>
 
@@ -17,7 +18,7 @@ namespace TgBot {
 class VideoNote {
 
 public:
-    typedef std::shared_ptr<VideoNote> Ptr;
+    using Ptr = std::shared_ptr<VideoNote>;
 
     /**
      * @brief Identifier for this file, which can be used to download or reuse the file
@@ -48,7 +49,7 @@ public:
     /**
      * @brief Optional. File size
      */
-    std::int32_t fileSize;
+    std::optional<std::int32_t> fileSize;
 };
 }
 

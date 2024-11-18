@@ -37,7 +37,7 @@ public:
      *
      * See [formatting options](https://core.telegram.org/bots/api#formatting-options) for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in message text, which can be specified instead of parseMode

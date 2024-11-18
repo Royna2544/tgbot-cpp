@@ -18,7 +18,7 @@ class InlineQueryResultGame : public InlineQueryResult {
 public:
     static constexpr std::string_view TYPE = "game";
 
-    typedef std::shared_ptr<InlineQueryResultGame> Ptr;
+    using Ptr = std::shared_ptr<InlineQueryResultGame>;
 
     InlineQueryResultGame() {
         this->type = TYPE;

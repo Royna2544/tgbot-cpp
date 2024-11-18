@@ -19,7 +19,7 @@ namespace TgBot {
 class GiveawayWinners {
 
 public:
-    typedef std::shared_ptr<GiveawayWinners> Ptr;
+    using Ptr = std::shared_ptr<GiveawayWinners>;
 
     /**
      * @brief The chat that created the giveaway
@@ -49,32 +49,32 @@ public:
     /**
      * @brief Optional. The number of other chats the user had to join in order to be eligible for the giveaway
      */
-    std::int32_t additionalChatCount;
+    std::optional<std::int32_t> additionalChatCount;
 
     /**
      * @brief Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
      */
-    std::int32_t premiumSubscriptionMonthCount;
+    std::optional<std::int32_t> premiumSubscriptionMonthCount;
 
     /**
      * @brief Optional. Number of undistributed prizes
      */
-    std::int32_t unclaimedPrizeCount;
+    std::optional<std::int32_t> unclaimedPrizeCount;
 
     /**
      * @brief Optional. True, if only users who had joined the chats after the giveaway started were eligible to win
      */
-    bool onlyNewMembers;
+    std::optional<bool> onlyNewMembers;
 
     /**
      * @brief Optional. True, if the giveaway was canceled because the payment for it was refunded
      */
-    bool wasRefunded;
+    std::optional<bool> wasRefunded;
 
     /**
      * @brief Optional. Description of additional giveaway prize
      */
-    std::string prizeDescription;
+    std::optional<std::string> prizeDescription;
 };
 }
 

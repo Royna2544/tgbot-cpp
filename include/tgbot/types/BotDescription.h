@@ -13,7 +13,7 @@ namespace TgBot {
  */
 class BotDescription {
 public:
-    typedef std::shared_ptr<BotDescription> Ptr;
+    using Ptr = std::shared_ptr<BotDescription>;
 
     /**
      * @brief The bot's description

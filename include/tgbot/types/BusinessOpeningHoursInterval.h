@@ -12,7 +12,7 @@ namespace TgBot {
 class BusinessOpeningHoursInterval {
 
 public:
-    typedef std::shared_ptr<BusinessOpeningHoursInterval> Ptr;
+    using Ptr = std::shared_ptr<BusinessOpeningHoursInterval>;
 
     /**
      * @brief The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7 * 24 * 60

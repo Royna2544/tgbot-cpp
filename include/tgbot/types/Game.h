@@ -20,7 +20,7 @@ namespace TgBot {
  */
 class Game {
 public:
-    typedef std::shared_ptr<Game> Ptr;
+    using Ptr = std::shared_ptr<Game>;
 
     /**
      * @brief Title of the game.
@@ -42,7 +42,7 @@ public:
      *
      * Can be automatically edited to include current high scores for the game when the bot calls setGameScore, or manually edited using editMessageText. 0-4096 characters.
      */
-    std::string text;
+    std::optional<std::string> text;
 
     /**
      * @brief Optional. Special entities that appear in text, such as usernames, URLs, bot commands, etc.

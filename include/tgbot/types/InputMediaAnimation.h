@@ -38,22 +38,22 @@ public:
     /**
      * @brief Optional. Animation width
      */
-    std::int32_t width{};
+    std::optional<std::int32_t> width;
 
     /**
      * @brief Optional. Animation height
      */
-    std::int32_t height{};
+    std::optional<std::int32_t> height;
 
     /**
      * @brief Optional. Animation duration in seconds
      */
-    std::int32_t duration{};
+    std::optional<std::int32_t> duration;
 
     /**
      * @brief Optional. Pass True if the animation needs to be covered with a spoiler animation
      */
-    bool hasSpoiler{};
+    std::optional<bool> hasSpoiler;
 };
 }
 

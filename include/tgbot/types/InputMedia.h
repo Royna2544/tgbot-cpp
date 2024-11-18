@@ -18,11 +18,10 @@ namespace TgBot {
  */
 class InputMedia {
 public:
-    typedef std::shared_ptr<InputMedia> Ptr;
+    using Ptr = std::shared_ptr<InputMedia>;
 
-    InputMedia() {}
-
-    virtual ~InputMedia() {}
+    InputMedia() = default;
+    virtual ~InputMedia() = default;
 
     /**
      * @brief Type of the result
@@ -40,14 +39,14 @@ public:
     /**
      * @brief Optional. Caption of the media to be sent, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the media caption.
      * 
      * See https://core.telegram.org/bots/api#formatting-options for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode

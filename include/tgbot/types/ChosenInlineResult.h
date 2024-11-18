@@ -4,6 +4,7 @@
 #include "tgbot/types/User.h"
 #include "tgbot/types/Location.h"
 
+#include <optional>
 #include <string>
 #include <memory>
 
@@ -16,7 +17,7 @@ namespace TgBot {
  */
 class ChosenInlineResult {
 public:
-    typedef std::shared_ptr<ChosenInlineResult> Ptr;
+    using Ptr = std::shared_ptr<ChosenInlineResult>;
 
     /**
      * @brief The unique identifier for the result that was chosen.
@@ -39,7 +40,7 @@ public:
      * Available only if there is an inline keyboard attached to the message.
      * Will be also received in callback queries and can be used to edit the message.
      */
-    std::string inlineMessageId;
+    std::optional<std::string> inlineMessageId;
 
     /**
      * @brief The query that was used to obtain the result.

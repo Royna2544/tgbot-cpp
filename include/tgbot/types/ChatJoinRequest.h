@@ -19,7 +19,7 @@ namespace TgBot {
 class ChatJoinRequest {
 
 public:
-    typedef std::shared_ptr<ChatJoinRequest> Ptr;
+    using Ptr = std::shared_ptr<ChatJoinRequest>;
 
     /**
      * @brief Chat to which the request was sent
@@ -48,7 +48,7 @@ public:
     /**
      * @brief Optional. Bio of the user.
      */
-    std::string bio;
+    std::optional<std::string> bio;
 
     /**
      * @brief Optional. Chat invite link that was used by the user to send the join request

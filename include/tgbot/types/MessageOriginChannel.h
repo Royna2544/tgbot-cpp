@@ -39,7 +39,7 @@ public:
     /**
      * @brief Optional. Signature of the original post author
      */
-    std::string authorSignature;
+    std::optional<std::string> authorSignature;
 };
 }
 

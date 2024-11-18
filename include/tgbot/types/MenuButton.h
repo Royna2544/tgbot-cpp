@@ -18,11 +18,10 @@ namespace TgBot {
  */
 class MenuButton {
 public:
-    typedef std::shared_ptr<MenuButton> Ptr;
+    using Ptr = std::shared_ptr<MenuButton>;
 
-    MenuButton() {}
-
-    virtual ~MenuButton() {}
+    MenuButton() = default;
+    virtual ~MenuButton() = default;
 
     /**
      * @brief Type of the button

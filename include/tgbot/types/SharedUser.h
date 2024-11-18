@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,7 @@ namespace TgBot {
 class SharedUser {
 
 public:
-    typedef std::shared_ptr<SharedUser> Ptr;
+    using Ptr = std::shared_ptr<SharedUser>;
 
     /**
      * @brief Identifier of the shared user.
@@ -32,17 +33,17 @@ public:
     /**
      * @brief Optional. First name of the user, if the name was requested by the bot
      */
-    std::string firstName;
+    std::optional<std::string> firstName;
 
     /**
      * @brief Optional. Last name of the user, if the name was requested by the bot
      */
-    std::string lastName;
+    std::optional<std::string> lastName;
 
     /**
      * @brief Optional. Username of the user, if the username was requested by the bot
      */
-    std::string username;
+    std::optional<std::string> username;
 
     /**
      * @brief Optional. Available sizes of the chat photo, if the photo was requested by the bot

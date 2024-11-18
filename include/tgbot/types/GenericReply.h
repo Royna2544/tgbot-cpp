@@ -12,9 +12,9 @@ namespace TgBot {
 class GenericReply {
 
 public:
-    typedef std::shared_ptr<GenericReply> Ptr;
+    using Ptr = std::shared_ptr<GenericReply>;
 
-    virtual ~GenericReply() { }
+    virtual ~GenericReply() = default;
 };
 
 }

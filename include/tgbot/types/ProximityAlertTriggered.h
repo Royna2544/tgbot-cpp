@@ -15,7 +15,7 @@ namespace TgBot {
 class ProximityAlertTriggered {
 
 public:
-    typedef std::shared_ptr<ProximityAlertTriggered> Ptr;
+    using Ptr = std::shared_ptr<ProximityAlertTriggered>;
 
     /**
      * @brief User that triggered the alert

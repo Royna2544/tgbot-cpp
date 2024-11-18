@@ -25,7 +25,7 @@ public:
     /**
      * @brief Optional. Pass True if the photo needs to be covered with a spoiler animation
      */
-    bool hasSpoiler{};
+    std::optional<bool> hasSpoiler;
 };
 }
 

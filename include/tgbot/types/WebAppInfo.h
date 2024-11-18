@@ -16,7 +16,7 @@ namespace TgBot {
 class WebAppInfo {
 
 public:
-    typedef std::shared_ptr<WebAppInfo> Ptr;
+    using Ptr = std::shared_ptr<WebAppInfo>;
 
     /**
      * @brief An HTTPS URL of a Web App to be opened with additional data as specified in Initializing Web Apps (https://core.telegram.org/bots/webapps#initializing-mini-apps)

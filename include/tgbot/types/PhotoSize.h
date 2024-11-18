@@ -2,6 +2,7 @@
 #define TGBOT_CPP_PHOTOSIZE_H
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <memory>
 
@@ -15,7 +16,7 @@ namespace TgBot {
 class PhotoSize {
 
 public:
-    typedef std::shared_ptr<PhotoSize> Ptr;
+    using Ptr = std::shared_ptr<PhotoSize>;
 
     /**
      * @brief Identifier for this file, which can be used to download or reuse the file
@@ -41,7 +42,7 @@ public:
     /**
      * @brief Optional. File size
      */
-    std::int32_t fileSize;
+    std::optional<std::int32_t> fileSize;
 };
 }
 

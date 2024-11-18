@@ -2,6 +2,7 @@
 #define TGBOT_FORUMTOPIC_H
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <memory>
 
@@ -14,7 +15,7 @@ namespace TgBot {
  */
 class ForumTopic {
 public:
-    typedef std::shared_ptr<ForumTopic> Ptr;
+    using Ptr = std::shared_ptr<ForumTopic>;
 
     /**
      * @brief Unique identifier of the forum topic
@@ -34,7 +35,7 @@ public:
     /**
      * @brief Optional. Unique identifier of the custom emoji shown as the topic icon
      */
-    std::string iconCustomEmojiId;
+    std::optional<std::string> iconCustomEmojiId;
 };
 }
 

@@ -14,7 +14,7 @@ namespace TgBot {
 class VideoChatScheduled {
 
 public:
-    typedef std::shared_ptr<VideoChatScheduled> Ptr;
+    using Ptr = std::shared_ptr<VideoChatScheduled>;
 
     /**
      * @brief Point in time (Unix timestamp) when the video chat is supposed to be started by a chat administrator

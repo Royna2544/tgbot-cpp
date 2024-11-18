@@ -42,12 +42,12 @@ public:
     /**
      * @brief Optional. Contact's last name
      */
-    std::string lastName;
+    std::optional<std::string> lastName;
 
     /**
      * @brief Optional. Additional data about the contact in the form of a [vCard](https://en.wikipedia.org/wiki/VCard), 0-2048 bytes
      */
-    std::string vcard;
+    std::optional<std::string> vcard;
 
     /**
      * @brief Optional. Content of the message to be sent instead of the contact
@@ -57,17 +57,17 @@ public:
     /**
      * @brief Optional. Url of the thumbnail for the result
      */
-    std::string thumbnailUrl;
+    std::optional<std::string> thumbnailUrl;
 
     /**
      * @brief Optional. Thumbnail width
      */
-    std::int32_t thumbnailWidth{};
+    std::optional<std::int32_t> thumbnailWidth;
 
     /**
      * @brief Optional. Thumbnail height
      */
-    std::int32_t thumbnailHeight{};
+    std::optional<std::int32_t> thumbnailHeight;
 };
 }
 

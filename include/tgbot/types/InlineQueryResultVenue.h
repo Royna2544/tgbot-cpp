@@ -52,26 +52,26 @@ public:
     /**
      * @brief Optional. Foursquare identifier of the venue if known
      */
-    std::string foursquareId;
+    std::optional<std::string> foursquareId;
 
     /**
      * @brief Optional. Foursquare type of the venue, if known.
      *
      * (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
      */
-    std::string foursquareType;
+    std::optional<std::string> foursquareType;
 
     /**
      * @brief Optional. Google Places identifier of the venue
      */
-    std::string googlePlaceId;
+    std::optional<std::string> googlePlaceId;
 
     /**
      * @brief Optional. Google Places type of the venue.
      *
      * (See [supported types](https://developers.google.com/places/web-service/supported_types).)
      */
-    std::string googlePlaceType;
+    std::optional<std::string> googlePlaceType;
 
     /**
      * @brief Optional. Content of the message to be sent instead of the venue
@@ -81,17 +81,17 @@ public:
     /**
      * @brief Optional. Url of the thumbnail for the result
      */
-    std::string thumbnailUrl;
+    std::optional<std::string> thumbnailUrl;
 
     /**
      * @brief Optional. Thumbnail width
      */
-    std::int32_t thumbnailWidth{};
+    std::optional<std::int32_t> thumbnailWidth;
 
     /**
      * @brief Optional. Thumbnail height
      */
-    std::int32_t thumbnailHeight{};
+    std::optional<std::int32_t> thumbnailHeight;
 };
 }
 

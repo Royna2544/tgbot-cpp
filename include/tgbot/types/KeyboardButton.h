@@ -25,7 +25,7 @@ namespace TgBot {
 class KeyboardButton {
 
 public:
-    typedef std::shared_ptr<KeyboardButton> Ptr;
+    using Ptr = std::shared_ptr<KeyboardButton>;
 
     /**
      * @brief Text of the button.
@@ -55,14 +55,14 @@ public:
      *
      * Available in private chats only.
      */
-    bool requestContact;
+    std::optional<bool> requestContact;
 
     /**
      * @brief Optional. If True, the user's current location will be sent when the button is pressed.
      *
      * Available in private chats only.
      */
-    bool requestLocation;
+    std::optional<bool> requestLocation;
 
     /**
      * @brief Optional. If specified, the user will be asked to create a poll and send it to the bot when the button is pressed.

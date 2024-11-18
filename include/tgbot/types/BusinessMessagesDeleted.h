@@ -18,7 +18,7 @@ namespace TgBot {
 class BusinessMessagesDeleted {
 
 public:
-    typedef std::shared_ptr<BusinessMessagesDeleted> Ptr;
+    using Ptr = std::shared_ptr<BusinessMessagesDeleted>;
 
     /**
      * @brief Unique identifier of the business connection

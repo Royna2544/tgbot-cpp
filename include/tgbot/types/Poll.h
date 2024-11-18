@@ -19,7 +19,7 @@ namespace TgBot {
 class Poll {
 
 public:
-    typedef std::shared_ptr<Poll> Ptr;
+    using Ptr = std::shared_ptr<Poll>;
 
     /**
      * @brief Unique poll identifier
@@ -65,12 +65,12 @@ public:
      * @brief Optional. 0-based identifier of the correct answer option.
      * Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot.
      */
-    std::int32_t correctOptionId;
+    std::optional<std::int32_t> correctOptionId;
 
     /**
      * @brief Optional. Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters
      */
-    std::string explanation;
+    std::optional<std::string> explanation;
 
     /**
      * @brief Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the explanation
@@ -80,12 +80,12 @@ public:
     /**
      * @brief Optional. Amount of time in seconds the poll will be active after creation
      */
-    std::int32_t openPeriod;
+    std::optional<std::int32_t> openPeriod;
 
     /**
      * @brief Optional. Point in time (Unix timestamp) when the poll will be automatically closed
      */
-    std::int64_t closeDate;
+    std::optional<std::int64_t> closeDate;
 };
 }
 

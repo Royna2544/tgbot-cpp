@@ -2,6 +2,7 @@
 #define TGBOT_LOGINURL_H
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -18,7 +19,7 @@ namespace TgBot {
  */
 class LoginUrl {
 public:
-    typedef std::shared_ptr<LoginUrl> Ptr;
+    using Ptr = std::shared_ptr<LoginUrl>;
 
     /**
      * @brief An HTTP URL to be opened with user authorization data added to the query string when the button is pressed.
@@ -32,7 +33,7 @@ public:
     /**
      * @brief Optional. New text of the button in forwarded messages.
      */
-    std::string forwardText;
+    std::optional<std::string> forwardText;
 
     /**
      * @brief Optional. Username of a bot, which will be used for user authorization.
@@ -41,12 +42,12 @@ public:
      * The url's domain must be the same as the domain linked with the bot.
      * See https://core.telegram.org/widgets/login#linking-your-domain-to-the-bot for more details.
      */
-    std::string botUsername;
+    std::optional<std::string> botUsername;
 
     /**
      * @brief Optional. Pass True to request the permission for your bot to send messages to the user.
      */
-    bool requestWriteAccess;
+    std::optional<bool> requestWriteAccess;
 };
 }
 

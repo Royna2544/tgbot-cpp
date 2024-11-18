@@ -17,7 +17,7 @@ namespace TgBot {
 class ChatBoost {
 
 public:
-    typedef std::shared_ptr<ChatBoost> Ptr;
+    using Ptr = std::shared_ptr<ChatBoost>;
 
     /**
      * @brief Unique identifier of the boost

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,7 @@ namespace TgBot {
  */
 class WebhookInfo {
 public:
-    typedef std::shared_ptr<WebhookInfo> Ptr;
+    using Ptr = std::shared_ptr<WebhookInfo>;
 
     /**
      * @brief Webhook URL, may be empty if webhook is not set up
@@ -35,27 +36,27 @@ public:
     /**
      * @brief Optional. Currently used webhook IP address
      */
-    std::string ipAddress;
+    std::optional<std::string> ipAddress;
 
     /**
      * @brief Optional. Unix time for the most recent error that happened when trying to deliver an update via webhook
      */
-    std::int32_t lastErrorDate;
+    std::optional<std::int32_t> lastErrorDate;
 
     /**
      * @brief Optional. Error message in human-readable format for the most recent error that happened when trying to deliver an update via webhook
      */
-    std::string lastErrorMessage;
+    std::optional<std::string> lastErrorMessage;
 
     /**
      * @brief Optional. Unix time of the most recent error that happened when trying to synchronize available updates with Telegram datacenters
      */
-    std::int32_t lastSynchronizationErrorDate;
+    std::optional<std::int32_t> lastSynchronizationErrorDate;
 
     /**
      * @brief Optional. Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery
      */
-    std::int32_t maxConnections;
+    std::optional<std::int32_t> maxConnections;
 
     /**
      * @brief Optional. A list of update types the bot is subscribed to. Defaults to all update types except chatMember

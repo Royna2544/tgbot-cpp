@@ -21,11 +21,10 @@ namespace TgBot {
 class ChatBoostSource {
 
 public:
-    typedef std::shared_ptr<ChatBoostSource> Ptr;
+    using Ptr = std::shared_ptr<ChatBoostSource>;
 
-    ChatBoostSource() {}
-
-    virtual ~ChatBoostSource() {}
+    ChatBoostSource() = default;
+    virtual ~ChatBoostSource() = default;
 
     /**
      * @brief Source of the boost

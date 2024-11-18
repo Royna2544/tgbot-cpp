@@ -15,7 +15,7 @@ namespace TgBot {
 class BusinessOpeningHours {
 
 public:
-    typedef std::shared_ptr<BusinessOpeningHours> Ptr;
+    using Ptr = std::shared_ptr<BusinessOpeningHours>;
 
     /**
      * @brief Unique name of the time zone for which the opening hours are defined

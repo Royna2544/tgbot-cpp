@@ -38,17 +38,17 @@ public:
     /**
      * @brief Optional. Width of the GIF
      */
-    std::int32_t gifWidth{};
+    std::optional<std::int32_t> gifWidth;
 
     /**
      * @brief Optional. Height of the GIF
      */
-    std::int32_t gifHeight{};
+    std::optional<std::int32_t> gifHeight;
 
     /**
      * @brief Optional. Duration of the GIF
      */
-    std::int32_t gifDuration{};
+    std::optional<std::int32_t> gifDuration;
 
     /**
      * @brief URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
@@ -59,23 +59,23 @@ public:
      * @brief Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”.
      * Defaults to “image/jpeg”
      */
-    std::string thumbnailMimeType;
+    std::optional<std::string> thumbnailMimeType;
 
     /**
      * @brief Optional. Title for the result
      */
-    std::string title;
+    std::optional<std::string> title;
 
     /**
      * @brief Optional. Caption of the GIF file to be sent, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the caption.
      * See https://core.telegram.org/bots/api#formatting-options for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode

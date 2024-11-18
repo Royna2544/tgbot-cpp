@@ -18,7 +18,7 @@ namespace TgBot {
 class StickerSet {
 
 public:
-    typedef std::shared_ptr<StickerSet> Ptr;
+    using Ptr = std::shared_ptr<StickerSet>;
 
     /**
      * @brief Enum of possible types of a sticker.

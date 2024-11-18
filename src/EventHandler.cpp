@@ -50,13 +50,13 @@ void EventHandler::handleUpdate(const Update::Ptr& update) const {
 void EventHandler::handleMessage(const Message::Ptr& message) const {
     _broadcaster.broadcastAnyMessage(message);
 
-    if (StringTools::startsWith(message->text, "/")) {
+    if (message->text && StringTools::startsWith(message->text.value(), "/")) {
         std::size_t splitPosition;
-        std::size_t spacePosition = message->text.find(' ');
-        std::size_t atSymbolPosition = message->text.find('@');
+        std::size_t spacePosition = message->text->find(' ');
+        std::size_t atSymbolPosition = message->text->find('@');
         if (spacePosition == std::string::npos) {
             if (atSymbolPosition == std::string::npos) {
-                splitPosition = message->text.size();
+                splitPosition = message->text->size();
             } else {
                 splitPosition = atSymbolPosition;
             }
@@ -65,7 +65,7 @@ void EventHandler::handleMessage(const Message::Ptr& message) const {
         } else {
             splitPosition = std::min(spacePosition, atSymbolPosition);
         }
-        std::string command = message->text.substr(1, splitPosition - 1);
+        std::string command = message->text->substr(1, splitPosition - 1);
         if (!_broadcaster.broadcastCommand(command, message)) {
             _broadcaster.broadcastUnknownCommand(message);
         }

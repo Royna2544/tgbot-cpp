@@ -2,6 +2,7 @@
 #define TGBOT_WRITEACCESSALLOWED_H
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -13,22 +14,22 @@ namespace TgBot {
  */
 class WriteAccessAllowed {
 public:
-    typedef std::shared_ptr<WriteAccessAllowed> Ptr;
+    using Ptr = std::shared_ptr<WriteAccessAllowed>;
 
     /**
      * @brief Optional. True, if the access was granted after the user accepted an explicit request from a Web App sent by the method requestWriteAccess (https://core.telegram.org/bots/webapps#initializing-mini-apps)
      */
-    bool fromRequest;
+    std::optional<bool> fromRequest;
 
     /**
      * @brief Optional. Name of the Web App, if the access was granted when the Web App was launched from a link
      */
-    std::string webAppName;
+    std::optional<std::string> webAppName;
 
     /**
      * @brief Optional. True, if the access was granted when the bot was added to the attachment or side menu
      */
-    bool fromAttachmentMenu;
+    std::optional<bool> fromAttachmentMenu;
 };
 }
 

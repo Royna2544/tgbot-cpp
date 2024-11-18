@@ -36,23 +36,23 @@ public:
     /**
      * @brief Optional. Title for the result
      */
-    std::string title;
+    std::optional<std::string> title;
 
     /**
     * @brief Optional. Short description of the result
     */
-    std::string description;
+    std::optional<std::string> description;
 
     /**
      * @brief Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the photo caption.
      * See https://core.telegram.org/bots/api#formatting-options for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode

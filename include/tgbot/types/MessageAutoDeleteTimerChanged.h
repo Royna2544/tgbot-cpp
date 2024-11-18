@@ -14,7 +14,7 @@ namespace TgBot {
 class MessageAutoDeleteTimerChanged {
 
 public:
-    typedef std::shared_ptr<MessageAutoDeleteTimerChanged> Ptr;
+    using Ptr = std::shared_ptr<MessageAutoDeleteTimerChanged>;
 
     /**
      * @brief New auto-delete time for messages in the chat

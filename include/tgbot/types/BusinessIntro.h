@@ -4,6 +4,7 @@
 #include "tgbot/types/Sticker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -14,17 +15,17 @@ namespace TgBot {
 class BusinessIntro {
 
 public:
-    typedef std::shared_ptr<BusinessIntro> Ptr;
+    using Ptr = std::shared_ptr<BusinessIntro>;
 
     /**
      * @brief Optional. Title text of the business intro
      */
-    std::string title;
+    std::optional<std::string> title;
 
     /**
      * @brief Optional. Message text of the business intro
      */
-    std::string message;
+    std::optional<std::string> message;
 
     /**
      * @brief Optional. Sticker of the business intro

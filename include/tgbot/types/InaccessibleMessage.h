@@ -16,7 +16,7 @@ namespace TgBot {
 class InaccessibleMessage {
 
 public:
-    typedef std::shared_ptr<InaccessibleMessage> Ptr;
+    using Ptr = std::shared_ptr<InaccessibleMessage>;
 
     /**
      * @brief Chat the message belonged to

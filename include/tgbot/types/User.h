@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -15,7 +16,7 @@ namespace TgBot {
 class User {
 
 public:
-    typedef std::shared_ptr<User> Ptr;
+    using Ptr = std::shared_ptr<User>;
 
     /**
      * @brief Unique identifier for this user or bot.
@@ -38,55 +39,55 @@ public:
     /**
      * @brief Optional. User's or bot's last name
      */
-    std::string lastName;
+    std::optional<std::string> lastName;
 
     /**
      * @brief Optional. User's or bot's username
      */
-    std::string username;
+    std::optional<std::string> username;
 
     /**
      * @brief Optional. [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) of the user's language
      */
-    std::string languageCode;
+    std::optional<std::string> languageCode;
 
     /**
      * @brief Optional. True, if this user is a Telegram Premium user
      */
-    bool isPremium;
+    std::optional<bool> isPremium;
 
     /**
      * @brief Optional. True, if this user added the bot to the attachment menu
      */
-    bool addedToAttachmentMenu;
+    std::optional<bool> addedToAttachmentMenu;
 
     /**
      * @brief Optional. True, if the bot can be invited to groups.
      *
      * Returned only in Api::getMe.
      */
-    bool canJoinGroups;
+    std::optional<bool> canJoinGroups;
 
     /**
      * @brief Optional. True, if [privacy mode](https://core.telegram.org/bots/features#privacy-mode) is disabled for the bot.
      *
      * Returned only in Api::getMe.
      */
-    bool canReadAllGroupMessages;
+    std::optional<bool> canReadAllGroupMessages;
 
     /**
      * @brief Optional. True, if the bot supports inline queries.
      *
      * Returned only in Api::getMe.
      */
-    bool supportsInlineQueries;
+    std::optional<bool> supportsInlineQueries;
 
     /**
      * @brief Optional. True, if the bot can be connected to a Telegram Business account to receive its messages.
      *
      * Returned only in Api::getMe.
      */
-    bool canConnectToBusiness;
+    std::optional<bool> canConnectToBusiness;
 };
 }
 

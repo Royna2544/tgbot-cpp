@@ -33,7 +33,7 @@ namespace TgBot {
 class Update {
 
 public:
-    typedef std::shared_ptr<Update> Ptr;
+    using Ptr = std::shared_ptr<Update>;
 
     /**
      * @brief The update's unique identifier.

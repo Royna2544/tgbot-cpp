@@ -1,6 +1,7 @@
 #ifndef TGBOT_CPP_CONTACT_H
 #define TGBOT_CPP_CONTACT_H
 
+#include <optional>
 #include <string>
 #include <memory>
 
@@ -29,17 +30,17 @@ public:
     /**
      * @brief Optional. Contact's last name.
      */
-    std::string lastName;
+    std::optional<std::string> lastName;
 
     /**
      * @brief Optional. Contact's user identifier in Telegram.
      */
-    std::int64_t userId;
+    std::optional<std::int64_t> userId;
 
     /**
      * @brief Optional. Additional data about the contact in the form of a vCard.
      */
-    std::string vcard;
+    std::optional<std::string> vcard;
 };
 
 }

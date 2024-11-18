@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,7 @@ namespace TgBot {
 class ChatShared {
 
 public:
-    typedef std::shared_ptr<ChatShared> Ptr;
+    using Ptr = std::shared_ptr<ChatShared>;
 
     /**
      * @brief Identifier of the request
@@ -38,12 +39,12 @@ public:
     /**
      * @brief Optional. Title of the chat, if the title was requested by the bot.
      */
-    std::string title;
+    std::optional<std::string> title;
 
     /**
      * @brief Optional. Username of the chat, if the username was requested by the bot and available.
      */
-    std::string username;
+    std::optional<std::string> username;
 
     /**
      * @brief Optional. Available sizes of the chat photo, if the photo was requested by the bot

@@ -20,7 +20,7 @@ class InlineQueryResultArticle : public InlineQueryResult {
 public:
     static constexpr std::string_view TYPE = "article";
 
-    typedef std::shared_ptr<InlineQueryResultArticle> Ptr;
+    using Ptr = std::shared_ptr<InlineQueryResultArticle>;
 
     InlineQueryResultArticle() {
         this->type = TYPE;
@@ -44,27 +44,27 @@ public:
     /**
      * @brief Optional. Pass True if you don't want the URL to be shown in the message.
      */
-    bool hideUrl;
+    std::optional<bool> hideUrl;
 
     /**
      * @brief Optional. Short description of the result
      */
-    std::string description;
+    std::optional<std::string> description;
 
     /**
      * @brief Optional. Url of the thumbnail for the result
      */
-    std::string thumbnailUrl;
+    std::optional<std::string> thumbnailUrl;
 
     /**
      * @brief Optional. Thumbnail width
      */
-    std::int32_t thumbnailWidth;
+    std::optional<std::int32_t> thumbnailWidth;
 
     /**
      * @brief Optional. Thumbnail height
      */
-    std::int32_t thumbnailHeight;
+    std::optional<std::int32_t> thumbnailHeight;
 };
 }
 

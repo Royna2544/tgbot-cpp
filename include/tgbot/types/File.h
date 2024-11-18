@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -20,7 +21,7 @@ namespace TgBot {
 class File {
 
 public:
-    typedef std::shared_ptr<File> Ptr;
+    using Ptr = std::shared_ptr<File>;
 
     /**
      * @brief Identifier for this file, which can be used to download or reuse the file
@@ -39,13 +40,13 @@ public:
      * It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it.
      * But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
      */
-    std::int64_t fileSize;
+    std::optional<std::int64_t> fileSize;
 
     /**
      * @brief Optional. File path.
      * Use Api::downloadFile or https://api.telegram.org/file/bot<token>/<filePath> to get the file.
      */
-    std::string filePath;
+    std::optional<std::string> filePath;
 };
 }
 

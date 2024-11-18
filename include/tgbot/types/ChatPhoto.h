@@ -14,7 +14,7 @@ namespace TgBot {
 class ChatPhoto {
 
 public:
-    typedef std::shared_ptr<ChatPhoto> Ptr;
+    using Ptr = std::shared_ptr<ChatPhoto>;
 
     /**
      * @brief File identifier of small (160x160) chat photo.

@@ -3,6 +3,7 @@
 #include <tgbot/TgTypeParser.h>
 
 #include <cstdint>
+#include <optional>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -28,9 +29,16 @@ TgException invalidType(const std::string_view name,
 struct JsonWrapper {
     JsonWrapper() = default;
 
-    template <typename T>
+    template <typename T, std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
     void put(const std::string_view key, T value) {
         data_[key.data()] = std::move(value);
+    }
+    template <typename T, std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
+    void put(const std::string_view key, std::optional<T> value) {
+        if (!value) {
+            return; // Skip empty optional
+        }
+        data_[key.data()] = *value;
     }
     // Overload for JSON::Value to avoid null values.
     void put(const std::string_view key, Json::Value value) {

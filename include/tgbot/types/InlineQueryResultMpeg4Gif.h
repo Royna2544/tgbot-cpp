@@ -38,17 +38,17 @@ public:
     /**
      * @brief Optional. Video width
      */
-    std::int32_t mpeg4Width{};
+    std::optional<std::int32_t> mpeg4Width;
 
     /**
      * @brief Optional. Video height
      */
-    std::int32_t mpeg4Height{};
+    std::optional<std::int32_t> mpeg4Height{};
 
     /**
      * @brief Optional. Video duration
      */
-    std::int32_t mpeg4Duration{};
+    std::optional<std::int32_t> mpeg4Duration{};
 
     /**
     * @brief URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
@@ -59,23 +59,23 @@ public:
     * @brief Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”.
     * Defaults to “image/jpeg”
     */
-    std::string thumbnailMimeType;
+    std::optional<std::string> thumbnailMimeType;
 
     /**
      * @brief Optional. Title for the result
      */
-    std::string title;
+    std::optional<std::string> title;
 
     /**
      * @brief Optional. Caption of the MPEG-4 file to be sent, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the caption.
      * See https://core.telegram.org/bots/api#formatting-options for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode

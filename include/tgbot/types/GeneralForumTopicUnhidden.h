@@ -14,7 +14,7 @@ namespace TgBot {
  */
 class GeneralForumTopicUnhidden {
 public:
-    typedef std::shared_ptr<GeneralForumTopicUnhidden> Ptr;
+    using Ptr = std::shared_ptr<GeneralForumTopicUnhidden>;
 };
 }
 

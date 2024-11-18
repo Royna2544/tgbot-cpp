@@ -16,7 +16,7 @@ namespace TgBot {
 class ReactionCount {
 
 public:
-    typedef std::shared_ptr<ReactionCount> Ptr;
+    using Ptr = std::shared_ptr<ReactionCount>;
 
     /**
      * @brief Type of the reaction

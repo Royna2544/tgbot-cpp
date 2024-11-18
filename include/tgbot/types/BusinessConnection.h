@@ -17,7 +17,7 @@ namespace TgBot {
 class BusinessConnection {
 
 public:
-    typedef std::shared_ptr<BusinessConnection> Ptr;
+    using Ptr = std::shared_ptr<BusinessConnection>;
 
     /**
      * @brief Unique identifier of the business connection

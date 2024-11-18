@@ -1,6 +1,7 @@
 #ifndef TGBOT_CPP_KEYBOARDBUTTONPOLLTYPE_H
 #define TGBOT_CPP_KEYBOARDBUTTONPOLLTYPE_H
 
+#include <optional>
 #include <string>
 #include <memory>
 
@@ -14,14 +15,14 @@ namespace TgBot {
 class KeyboardButtonPollType {
 
 public:
-    typedef std::shared_ptr<KeyboardButtonPollType> Ptr;
+    using Ptr = std::shared_ptr<KeyboardButtonPollType>;
 
     /**
      * @brief Optional. If quiz is passed, the user will be allowed to create only polls in the quiz mode.
      * If regular is passed, only regular polls will be allowed.
      * Otherwise, the user will be allowed to create a poll of any type.
      */
-    std::string type;
+    std::optional<std::string> type;
 };
 }
 

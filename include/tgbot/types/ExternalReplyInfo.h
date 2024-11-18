@@ -37,7 +37,7 @@ namespace TgBot {
 class ExternalReplyInfo {
 
 public:
-    typedef std::shared_ptr<ExternalReplyInfo> Ptr;
+    using Ptr = std::shared_ptr<ExternalReplyInfo>;
 
     /**
      * @brief Origin of the message replied to by the given message
@@ -56,7 +56,7 @@ public:
      *
      * Available only if the original chat is a supergroup or a channel.
      */
-    std::int32_t messageId;
+    std::optional<std::int32_t> messageId;
 
     /**
      * @brief Optional. Options used for link preview generation for the original message, if it is a text message
@@ -111,7 +111,7 @@ public:
     /**
      * @brief Optional. True, if the message media is covered by a spoiler animation
      */
-    bool hasMediaSpoiler;
+    std::optional<bool> hasMediaSpoiler;
 
     /**
      * @brief Optional. Message is a shared contact, information about the contact

@@ -14,7 +14,7 @@ namespace TgBot {
  */
 class ForumTopicReopened {
 public:
-    typedef std::shared_ptr<ForumTopicReopened> Ptr;
+    using Ptr = std::shared_ptr<ForumTopicReopened>;
 };
 }
 

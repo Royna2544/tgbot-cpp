@@ -4,6 +4,7 @@
 #include "tgbot/types/OrderInfo.h"
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <memory>
 #include <vector>
@@ -19,7 +20,7 @@ namespace TgBot {
  */
 class SuccessfulPayment {
 public:
-    typedef std::shared_ptr<SuccessfulPayment> Ptr;
+    using Ptr = std::shared_ptr<SuccessfulPayment>;
 
     /**
      * @brief Three-letter ISO 4217 currency code
@@ -47,7 +48,7 @@ public:
     /**
      * @brief Optional. Identifier of the shipping option chosen by the user.
      */
-    std::string shippingOptionId;
+    std::optional<std::string> shippingOptionId;
 
     /**
      * @brief Optional. Order info provided by the user.

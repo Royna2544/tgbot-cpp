@@ -14,7 +14,7 @@ namespace TgBot {
 class VideoChatEnded {
 
 public:
-    typedef std::shared_ptr<VideoChatEnded> Ptr;
+    using Ptr = std::shared_ptr<VideoChatEnded>;
 
     /**
      * @brief Video chat duration in seconds

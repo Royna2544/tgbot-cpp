@@ -18,7 +18,7 @@ namespace TgBot {
 class ReplyKeyboardMarkup : public GenericReply {
 
 public:
-    typedef std::shared_ptr<ReplyKeyboardMarkup> Ptr;
+    using Ptr = std::shared_ptr<ReplyKeyboardMarkup>;
 
     /**
      * @brief Array of button rows, each represented by an Array of KeyboardButton objects
@@ -30,14 +30,14 @@ public:
      *
      * Defaults to false, in which case the custom keyboard can be hidden and opened with a keyboard icon.
      */
-    bool isPersistent;
+    std::optional<bool> isPersistent = false;
 
     /**
      * @brief Optional. Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons).
      *
      * Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard.
      */
-    bool resizeKeyboard;
+    std::optional<bool> resizeKeyboard = false;
 
     /**
      * @brief Optional. Requests clients to hide the keyboard as soon as it's been used.
@@ -45,12 +45,12 @@ public:
      * The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat - the user can press a special button in the input field to see the custom keyboard again.
      * Defaults to false.
      */
-    bool oneTimeKeyboard;
+    std::optional<bool> oneTimeKeyboard = false;
 
     /**
      * @brief Optional. The placeholder to be shown in the input field when the keyboard is active; 1-64 characters
      */
-    std::string inputFieldPlaceholder;
+    std::optional<std::string> inputFieldPlaceholder;
 
     /**
      * @brief Optional. Use this parameter if you want to show the keyboard to specific users only.
@@ -59,7 +59,7 @@ public:
      * Example: A user requests to change the bot's language, bot replies to the request with a keyboard to select the new language.
      * Other users in the group don't see the keyboard.
      */
-    bool selective;
+    std::optional<bool> selective;
 };
 }
 

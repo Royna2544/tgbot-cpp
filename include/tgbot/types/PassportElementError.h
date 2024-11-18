@@ -15,11 +15,10 @@ namespace TgBot {
  */
 class PassportElementError {
 public:
-    typedef std::shared_ptr<PassportElementError> Ptr;
+    using Ptr = std::shared_ptr<PassportElementError>;
 
-    PassportElementError() { }
-
-    virtual ~PassportElementError() { }
+    PassportElementError() = default;
+    virtual ~PassportElementError() = default;
 
     /**
      * @brief Error source

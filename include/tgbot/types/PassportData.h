@@ -15,7 +15,7 @@ namespace TgBot {
 class PassportData {
 
 public:
-    typedef std::shared_ptr<PassportData> Ptr;
+    using Ptr = std::shared_ptr<PassportData>;
 
     /**
      * @brief Array with information about documents and other Telegram Passport elements that was shared with the bot

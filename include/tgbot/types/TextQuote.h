@@ -18,7 +18,7 @@ namespace TgBot {
 class TextQuote {
 
 public:
-    typedef std::shared_ptr<TextQuote> Ptr;
+    using Ptr = std::shared_ptr<TextQuote>;
 
     /**
      * @brief Text of the quoted part of a message that is replied to by the given message
@@ -42,7 +42,7 @@ public:
      *
      * Otherwise, the quote was added automatically by the server.
      */
-    bool isManual;
+    std::optional<bool> isManual;
 };
 }
 

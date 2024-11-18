@@ -18,11 +18,10 @@ namespace TgBot {
 class ReactionType {
 
 public:
-    typedef std::shared_ptr<ReactionType> Ptr;
+    using Ptr = std::shared_ptr<ReactionType>;
 
-    ReactionType() {}
-
-    virtual ~ReactionType() {}
+    ReactionType() = default;
+    virtual ~ReactionType() = default;
 
     /**
      * @brief Type of the reaction

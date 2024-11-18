@@ -15,7 +15,7 @@ namespace TgBot {
 class EncryptedCredentials {
 
 public:
-    typedef std::shared_ptr<EncryptedCredentials> Ptr;
+    using Ptr = std::shared_ptr<EncryptedCredentials>;
 
     /**
      * @brief Base64-encoded encrypted JSON-serialized data with unique user's payload, data hashes and secrets required for @ref EncryptedPassportElement decryption and authentication

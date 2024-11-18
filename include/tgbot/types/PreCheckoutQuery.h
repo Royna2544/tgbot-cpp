@@ -20,7 +20,7 @@ namespace TgBot {
  */
 class PreCheckoutQuery {
 public:
-    typedef std::shared_ptr<PreCheckoutQuery> Ptr;
+    using Ptr = std::shared_ptr<PreCheckoutQuery>;
 
     /**
      * @brief Unique query identifier.
@@ -58,7 +58,7 @@ public:
     /**
      * @brief Optional. Identifier of the shipping option chosen by the user.
      */
-    std::string shippingOptionId;
+    std::optional<std::string> shippingOptionId;
 
     /**
      * @brief Optional. Order info provided by the user.

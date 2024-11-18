@@ -7,6 +7,7 @@
 #include "tgbot/types/CallbackGame.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -21,7 +22,7 @@ namespace TgBot {
 class InlineKeyboardButton {
 
 public:
-    typedef std::shared_ptr<InlineKeyboardButton> Ptr;
+    using Ptr = std::shared_ptr<InlineKeyboardButton>;
 
     /**
      * @brief Label text on the button
@@ -33,12 +34,12 @@ public:
      *
      * Links tg://user?id=<user_id> can be used to mention a user by their identifier without using a username, if this is allowed by their privacy settings.
      */
-    std::string url;
+    std::optional<std::string> url;
 
     /**
      * @brief Optional. Data to be sent in a [callback query](https://core.telegram.org/bots/api#callbackquery) to the bot when button is pressed, 1-64 bytes
      */
-    std::string callbackData;
+    std::optional<std::string> callbackData;
 
     /**
      * @brief Optional. Description of the [Web App](https://core.telegram.org/bots/webapps) that will be launched when the user presses the button.
@@ -60,7 +61,7 @@ public:
      *
      * May be empty, in which case just the bot's username will be inserted.
      */
-    std::string switchInlineQuery;
+    std::optional<std::string> switchInlineQuery;
 
     /**
      * @brief Optional. If set, pressing the button will insert the bot's username and the specified inline query in the current chat's input field.
@@ -68,7 +69,7 @@ public:
      * May be empty, in which case only the bot's username will be inserted.
      * This offers a quick way for the user to open your bot in inline mode in the same chat - good for selecting something from multiple options.
      */
-    std::string switchInlineQueryCurrentChat;
+    std::optional<std::string> switchInlineQueryCurrentChat;
 
     /**
      * @brief Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field
@@ -87,7 +88,7 @@ public:
      *
      * NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
      */
-    bool pay;
+    std::optional<bool> pay;
 };
 }
 

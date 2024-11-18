@@ -17,7 +17,7 @@ namespace TgBot {
 class InputSticker {
 
 public:
-    typedef std::shared_ptr<InputSticker> Ptr;
+    using Ptr = std::shared_ptr<InputSticker>;
 
     /**
      * @brief The added sticker.

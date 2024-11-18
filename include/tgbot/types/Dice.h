@@ -2,6 +2,7 @@
 #define TGBOT_CPP_DICE_H
 
 #include <memory>
+#include <string>
 
 namespace TgBot {
 
@@ -13,7 +14,7 @@ namespace TgBot {
 class Dice {
 
 public:
-    typedef std::shared_ptr<Dice> Ptr;
+    using Ptr = std::shared_ptr<Dice>;
 
     /**
      * @brief Emoji on which the dice throw animation is based

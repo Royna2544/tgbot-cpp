@@ -38,27 +38,27 @@ public:
     /**
      * @brief Optional. Video width
      */
-    std::int32_t width{};
+    std::optional<std::int32_t> width;
 
     /**
      * @brief Optional. Video height
      */
-    std::int32_t height{};
+    std::optional<std::int32_t> height;
 
     /**
      * @brief Optional. Video duration in seconds
      */
-    std::int32_t duration{};
+    std::optional<std::int32_t> duration;
 
     /**
      * @brief Optional. Pass True if the uploaded video is suitable for streaming
      */
-    bool supportsStreaming{};
+    std::optional<bool> supportsStreaming;
 
     /**
      * @brief Optional. Pass True if the video needs to be covered with a spoiler animation
      */
-    bool hasSpoiler{};
+    std::optional<bool> hasSpoiler;
 };
 }
 

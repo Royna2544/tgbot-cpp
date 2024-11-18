@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -63,7 +64,7 @@ public:
      * See the exp parameter in https://core.telegram.org/bots/payments/currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
      * Defaults to 0
      */
-    std::int32_t maxTipAmount{};
+    std::optional<std::int32_t> maxTipAmount;
 
     /**
      * @brief Optional. A JSON-serialized array of suggested amounts of tip in the smallest units of the currency (integer, not float/double).
@@ -76,64 +77,64 @@ public:
      * @brief Optional. A JSON-serialized object for data about the invoice, which will be shared with the payment provider.
      * A detailed description of the required fields should be provided by the payment provider.
      */
-    std::string providerData;
+    std::optional<std::string> providerData;
 
     /**
      * @brief Optional. URL of the product photo for the invoice.
      * Can be a photo of the goods or a marketing image for a service.
      * People like it better when they see what they are paying for.
      */
-    std::string photoUrl;
+    std::optional<std::string> photoUrl;
 
     /**
      * @brief Optional. Photo size
      */
-    std::int32_t photoSize{};
+    std::optional<std::int32_t> photoSize;
 
     /**
      * @brief Optional. Photo width
      */
-    std::int32_t photoWidth{};
+    std::optional<std::int32_t> photoWidth;
 
     /**
      * @brief Optional. Photo height
      */
-    std::int32_t photoHeight{};
+    std::optional<std::int32_t> photoHeight;
 
     /**
      * @brief Optional. Pass True, if you require the user's full name to complete the order
      */
-    bool needName{};
+    std::optional<bool> needName;
 
     /**
      * @brief Optional. Pass True, if you require the user's phone number to complete the order
      */
-    bool needPhoneNumber{};
+    std::optional<bool> needPhoneNumber;
 
     /**
      * @brief Optional. Pass True, if you require the user's email address to complete the order
      */
-    bool needEmail{};
+    std::optional<bool> needEmail;
 
     /**
      * @brief Optional. Pass True, if you require the user's shipping address to complete the order
      */
-    bool needShippingAddress{};
+    std::optional<bool> needShippingAddress;
 
     /**
      * @brief Optional. Pass True, if user's phone number should be sent to provider
      */
-    bool sendPhoneNumberToProvider{};
+    std::optional<bool> sendPhoneNumberToProvider;
 
     /**
      * @brief Optional. Pass True, if user's email address should be sent to provider
      */
-    bool sendEmailToProvider{};
+    std::optional<bool> sendEmailToProvider;
 
     /**
      * @brief Optional. Pass True, if the final price depends on the shipping method
      */
-    bool isFlexible{};
+    std::optional<bool> isFlexible;
 };
 }
 

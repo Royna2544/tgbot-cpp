@@ -19,7 +19,7 @@ namespace TgBot {
 class PollAnswer {
 
 public:
-    typedef std::shared_ptr<PollAnswer> Ptr;
+    using Ptr = std::shared_ptr<PollAnswer>;
 
     /**
      * @brief Unique poll identifier

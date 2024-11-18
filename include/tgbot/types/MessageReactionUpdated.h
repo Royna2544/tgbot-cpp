@@ -19,7 +19,7 @@ namespace TgBot {
 class MessageReactionUpdated {
 
 public:
-    typedef std::shared_ptr<MessageReactionUpdated> Ptr;
+    using Ptr = std::shared_ptr<MessageReactionUpdated>;
 
     /**
      * @brief The chat containing the message the user reacted to

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -14,32 +15,32 @@ namespace TgBot {
 class SwitchInlineQueryChosenChat {
 
 public:
-    typedef std::shared_ptr<SwitchInlineQueryChosenChat> Ptr;
+    using Ptr = std::shared_ptr<SwitchInlineQueryChosenChat>;
 
     /**
      * @brief Optional. The default inline query to be inserted in the input field. If left empty, only the bot's username will be inserted
      */
-    std::string query;
+    std::optional<std::string> query;
 
     /**
      * @brief Optional. True, if private chats with users can be chosen
      */
-    bool allowUserChats;
+    std::optional<bool> allowUserChats;
 
     /**
      * @brief Optional. True, if private chats with bots can be chosen
      */
-    bool allowBotChats;
+    std::optional<bool> allowBotChats;
 
     /**
      * @brief Optional. True, if group and supergroup chats can be chosen
      */
-    bool allowGroupChats;
+    std::optional<bool> allowGroupChats;
 
     /**
      * @brief Optional. True, if channel chats can be chosen
      */
-    bool allowChannelChats;
+    std::optional<bool> allowChannelChats;
 };
 }
 

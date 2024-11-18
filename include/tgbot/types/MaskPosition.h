@@ -13,7 +13,7 @@ namespace TgBot {
  */
 class MaskPosition {
 public:
-    typedef std::shared_ptr<MaskPosition> Ptr;
+    using Ptr = std::shared_ptr<MaskPosition>;
 
     /**
      * @brief The part of the face relative to which the mask should be placed. One of “forehead”, “eyes”, “mouth”, or “chin”.

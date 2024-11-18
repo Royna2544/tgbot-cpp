@@ -4,6 +4,7 @@
 #include "tgbot/types/InputMessageContent.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -46,24 +47,24 @@ public:
     /**
      * @brief Optional. Foursquare identifier of the venue, if known
      */
-    std::string foursquareId;
+    std::optional<std::string> foursquareId;
 
     /**
      * @brief Optional. Foursquare type of the venue, if known.
      * (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
      */
-    std::string foursquareType;
+    std::optional<std::string> foursquareType;
 
     /**
      * @brief Optional. Google Places identifier of the venue
      */
-    std::string googlePlaceId;
+    std::optional<std::string> googlePlaceId;
 
     /**
      * @brief Optional. Google Places type of the venue.
      * (See https://developers.google.com/places/web-service/supported_types)
      */
-    std::string googlePlaceType;
+    std::optional<std::string> googlePlaceType;
 };
 }
 

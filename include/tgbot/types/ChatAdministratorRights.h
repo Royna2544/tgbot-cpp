@@ -2,6 +2,7 @@
 #define TGBOT_CHATADMINISTRATORRIGHTS_H
 
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -13,7 +14,7 @@ namespace TgBot {
 class ChatAdministratorRights {
 
 public:
-    typedef std::shared_ptr<ChatAdministratorRights> Ptr;
+    using Ptr = std::shared_ptr<ChatAdministratorRights>;
 
     /**
      * @brief True, if the user's presence in the chat is hidden
@@ -75,22 +76,22 @@ public:
     /**
      * @brief Optional. True, if the administrator can post messages in the channel, or access channel statistics; for channels only
      */
-    bool canPostMessages;
+    std::optional<bool> canPostMessages;
 
     /**
      * @brief Optional. True, if the administrator can edit messages of other users and can pin messages; for channels only
      */
-    bool canEditMessages;
+    std::optional<bool> canEditMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to pin messages; for groups and supergroups only
      */
-    bool canPinMessages;
+    std::optional<bool> canPinMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; for supergroups only
      */
-    bool canManageTopics;
+    std::optional<bool> canManageTopics;
 };
 }
 

@@ -21,11 +21,10 @@ namespace TgBot {
 class MessageOrigin {
 
 public:
-    typedef std::shared_ptr<MessageOrigin> Ptr;
+    using Ptr = std::shared_ptr<MessageOrigin>;
 
-    MessageOrigin() {}
-
-    virtual ~MessageOrigin() {}
+    MessageOrigin() = default;
+    virtual ~MessageOrigin() = default;
 
     /**
      * @brief Type of the message origin

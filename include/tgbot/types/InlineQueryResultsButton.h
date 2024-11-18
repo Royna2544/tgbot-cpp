@@ -4,6 +4,7 @@
 #include "tgbot/types/WebAppInfo.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -17,7 +18,7 @@ namespace TgBot {
  */
 class InlineQueryResultsButton {
 public:
-    typedef std::shared_ptr<InlineQueryResultsButton> Ptr;
+    using Ptr = std::shared_ptr<InlineQueryResultsButton>;
 
     /**
      * @brief Label text on the button
@@ -39,7 +40,7 @@ public:
      * The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an OAuth link.
      * Once done, the bot can offer a switchInline button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities.
      */
-    std::string startParameter;
+    std::optional<std::string> startParameter;
 };
 }
 

@@ -17,7 +17,7 @@ namespace TgBot {
 class UserProfilePhotos {
 
 public:
-    typedef std::shared_ptr<UserProfilePhotos> Ptr;
+    using Ptr = std::shared_ptr<UserProfilePhotos>;
 
     /**
      * @brief Total number of profile pictures the target user has.

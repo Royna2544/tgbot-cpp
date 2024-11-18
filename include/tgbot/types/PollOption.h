@@ -4,14 +4,13 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace TgBot {
 
 class PollOption {
 
 public:
-    typedef std::shared_ptr<PollOption> Ptr;
+    using Ptr = std::shared_ptr<PollOption>;
 
     /**
      * @brief Option text, 1-100 characters.

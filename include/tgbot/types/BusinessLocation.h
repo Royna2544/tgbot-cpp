@@ -14,7 +14,7 @@ namespace TgBot {
 class BusinessLocation {
 
 public:
-    typedef std::shared_ptr<BusinessLocation> Ptr;
+    using Ptr = std::shared_ptr<BusinessLocation>;
 
     /**
      * @brief Address of the business

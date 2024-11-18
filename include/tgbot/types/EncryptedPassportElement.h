@@ -4,6 +4,7 @@
 #include "tgbot/types/PassportFile.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,7 @@ namespace TgBot {
 class EncryptedPassportElement {
 
 public:
-    typedef std::shared_ptr<EncryptedPassportElement> Ptr;
+    using Ptr = std::shared_ptr<EncryptedPassportElement>;
 
     /**
      * @brief Element type. One of “personal_details”, “passport”, “driver_license”, “identity_card”, “internal_passport”, “address”, “utility_bill”, “bank_statement”, “rental_agreement”, “passport_registration”, “temporary_registration”, “phone_number”, “email”.
@@ -29,17 +30,17 @@ public:
      *
      * Can be decrypted and verified using the accompanying EncryptedCredentials.
      */
-    std::string data;
+    std::optional<std::string> data;
 
     /**
      * @brief Optional. User's verified phone number; available only for “phone_number” type
      */
-    std::string phoneNumber;
+    std::optional<std::string> phoneNumber;
 
     /**
      * @brief Optional. User's verified email address; available only for “email” type
      */
-    std::string email;
+    std::optional<std::string> email;
 
     /**
      * @brief Optional. Array of encrypted files with documents provided by the user; available only for “utility_bill”, “bank_statement”, “rental_agreement”, “passport_registration” and “temporary_registration” types.

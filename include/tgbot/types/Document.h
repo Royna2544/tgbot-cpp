@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -17,7 +18,7 @@ namespace TgBot {
 class Document {
 
 public:
-    typedef std::shared_ptr<Document> Ptr;
+    using Ptr = std::shared_ptr<Document>;
 
     /**
      * @brief Identifier for this file, which can be used to download or reuse the file
@@ -38,12 +39,12 @@ public:
     /**
      * @brief Optional. Original filename as defined by sender
      */
-    std::string fileName;
+    std::optional<std::string> fileName;
 
     /**
      * @brief Optional. MIME type of the file as defined by sender
      */
-    std::string mimeType;
+    std::optional<std::string> mimeType;
 
     /**
      * @brief Optional. File size in bytes.
@@ -51,7 +52,7 @@ public:
      * It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it.
      * But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
      */
-    std::int64_t fileSize;
+    std::optional<std::int64_t> fileSize;
 };
 }
 

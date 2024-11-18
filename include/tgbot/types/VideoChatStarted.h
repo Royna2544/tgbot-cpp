@@ -14,7 +14,7 @@ namespace TgBot {
 class VideoChatStarted {
 
 public:
-    typedef std::shared_ptr<VideoChatStarted> Ptr;
+    using Ptr = std::shared_ptr<VideoChatStarted>;
 };
 }
 

@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -36,7 +37,7 @@ public:
     /**
      * @brief Optional. True, if the giveaway was completed, but there was no user to win the prize
      */
-    bool isUnclaimed{};
+    std::optional<bool> isUnclaimed;
 };
 }
 

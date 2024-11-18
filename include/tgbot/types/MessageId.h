@@ -2,6 +2,7 @@
 #define TGBOT_CPP_MESSAGEID_H
 
 #include <memory>
+#include <cstdint>
 
 namespace TgBot {
 
@@ -13,7 +14,7 @@ namespace TgBot {
 class MessageId {
 
 public:
-    typedef std::shared_ptr<MessageId> Ptr;
+    using Ptr = std::shared_ptr<MessageId>;
 
     /**
      * @brief Unique message identifier

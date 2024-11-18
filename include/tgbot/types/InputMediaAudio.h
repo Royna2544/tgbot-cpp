@@ -37,17 +37,17 @@ public:
     /**
      * @brief Optional. Duration of the audio in seconds
      */
-    std::int32_t duration{};
+    std::optional<std::int32_t> duration;
 
     /**
      * @brief Optional. Performer of the audio
      */
-    std::string performer;
+    std::optional<std::string> performer;
 
     /**
      * @brief Optional. Title of the audio
      */
-    std::string title;
+    std::optional<std::string> title;
 };
 }
 

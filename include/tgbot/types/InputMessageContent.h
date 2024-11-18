@@ -17,9 +17,9 @@ class InputMessageContent {
 public:
     typedef std::shared_ptr<InputMessageContent> Ptr;
 
-    InputMessageContent() {}
+    InputMessageContent() = default;
 
-    virtual ~InputMessageContent() {}
+    virtual ~InputMessageContent() = default;
 
     /**
      * @brief Type of the content

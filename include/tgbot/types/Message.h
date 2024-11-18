@@ -4,7 +4,6 @@
 #include "tgbot/types/User.h"
 #include "tgbot/types/Chat.h"
 #include "tgbot/types/MessageOrigin.h"
-#include "tgbot/types/Message.h"
 #include "tgbot/types/ExternalReplyInfo.h"
 #include "tgbot/types/TextQuote.h"
 #include "tgbot/types/Story.h"
@@ -65,7 +64,7 @@ namespace TgBot {
 class Message {
 
 public:
-    typedef std::shared_ptr<Message> Ptr;
+    using Ptr = std::shared_ptr<Message>;
 
     /**
      * @brief Unique message identifier inside this chat
@@ -75,7 +74,7 @@ public:
     /**
      * @brief Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
      */
-    std::int32_t messageThreadId;
+    std::optional<std::int32_t> messageThreadId;
 
     /**
      * @brief Optional. Sender of the message; empty for messages sent to channels.
@@ -95,7 +94,7 @@ public:
     /**
      * @brief Optional. If the sender of the message boosted the chat, the number of boosts added by the user
      */
-    std::int32_t senderBoostCount;
+    std::optional<std::int32_t> senderBoostCount;
 
     /**
      * @brief Optional. The bot that actually sent the message on behalf of the business account.
@@ -116,7 +115,7 @@ public:
      *
      * If non-empty, the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier.
      */
-    std::string businessConnectionId;
+    std::optional<std::string> businessConnectionId;
 
     /**
      * @brief Chat the message belongs to
@@ -131,12 +130,12 @@ public:
     /**
      * @brief Optional. True, if the message is sent to a forum topic
      */
-    bool isTopicMessage;
+    std::optional<bool> isTopicMessage;
 
     /**
      * @brief Optional. True, if the message is a channel post that was automatically forwarded to the connected discussion group
      */
-    bool isAutomaticForward;
+    std::optional<bool> isAutomaticForward;
 
     /**
      * @brief Optional. For replies in the same chat and message thread, the original message.
@@ -168,32 +167,32 @@ public:
     /**
      * @brief Optional. Date the message was last edited in Unix time
      */
-    std::uint32_t editDate;
+    std::optional<std::uint32_t> editDate;
 
     /**
      * @brief Optional. True, if the message can't be forwarded
      */
-    bool hasProtectedContent;
+    std::optional<bool> hasProtectedContent;
 
     /**
      * @brief Optional. True, if the message was sent by an implicit action, for example, as an away or a greeting business message, or as a scheduled message
      */
-    bool isFromOffline;
+    std::optional<bool> isFromOffline;
 
     /**
      * @brief Optional. The unique identifier of a media message group this message belongs to
      */
-    std::string mediaGroupId;
+    std::optional<std::string> mediaGroupId;
 
     /**
      * @brief Optional. Signature of the post author for messages in channels, or the custom title of an anonymous group administrator
      */
-    std::string authorSignature;
+    std::optional<std::string> authorSignature;
 
     /**
      * @brief Optional. For text messages, the actual UTF-8 text of the message
      */
-    std::string text;
+    std::optional<std::string> text;
 
     /**
      * @brief Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
@@ -265,7 +264,7 @@ public:
     /**
      * @brief Optional. True, if the message media is covered by a spoiler animation
      */
-    bool hasMediaSpoiler;
+    std::optional<bool> hasMediaSpoiler;
 
     /**
      * @brief Optional. Message is a shared contact, information about the contact
@@ -314,7 +313,7 @@ public:
     /**
      * @brief Optional. A chat title was changed to this value
      */
-    std::string newChatTitle;
+    std::optional<std::string> newChatTitle;
 
     /**
      * @brief Optional. A chat photo was change to this value
@@ -324,12 +323,12 @@ public:
     /**
      * @brief Optional. Service message: the chat photo was deleted
      */
-    bool deleteChatPhoto;
+    std::optional<bool> deleteChatPhoto;
 
     /**
      * @brief Optional. Service message: the group has been created
      */
-    bool groupChatCreated;
+    std::optional<bool> groupChatCreated;
 
     /**
      * @brief Optional. Service message: the supergroup has been created.
@@ -337,7 +336,7 @@ public:
      * This field can't be received in a message coming through updates, because bot can't be a member of a supergroup when it is created.
      * It can only be found in replyToMessage if someone replies to a very first message in a directly created supergroup.
      */
-    bool supergroupChatCreated;
+    std::optional<bool> supergroupChatCreated;
 
     /**
      * @brief Optional. Service message: the channel has been created.
@@ -345,7 +344,7 @@ public:
      * This field can't be received in a message coming through updates, because bot can't be a member of a channel when it is created.
      * It can only be found in replyToMessage if someone replies to a very first message in a channel.
      */
-    bool channelChatCreated;
+    std::optional<bool> channelChatCreated;
 
     /**
      * @brief Optional. Service message: auto-delete timer settings changed in the chat
@@ -358,7 +357,7 @@ public:
      * This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it.
      * But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this identifier.
      */
-    std::int64_t migrateToChatId;
+    std::optional<std::int64_t> migrateToChatId;
 
     /**
      * @brief Optional. The supergroup has been migrated from a group with the specified identifier.
@@ -366,7 +365,7 @@ public:
      * This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it.
      * But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this identifier.
      */
-    std::int64_t migrateFromChatId;
+    std::optional<std::int64_t> migrateFromChatId;
 
     /**
      * @brief Optional. Specified message was pinned.
@@ -404,7 +403,7 @@ public:
      *
      * [More about Telegram Login »](https://core.telegram.org/widgets/login)
      */
-    std::string connectedWebsite;
+    std::optional<std::string> connectedWebsite;
 
     /**
      * @brief Optional. Service message: the user allowed the bot to write messages after adding it to the attachment or side menu, launching a Web App from a link, or accepting an explicit request from a Web App sent by the method [requestWriteAccess](https://core.telegram.org/bots/webapps#initializing-mini-apps)

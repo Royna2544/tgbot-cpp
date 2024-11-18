@@ -2,6 +2,7 @@
 #define TGBOT_CHATPERMISSIONS_H
 
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -13,83 +14,83 @@ namespace TgBot {
 class ChatPermissions {
 
 public:
-    typedef std::shared_ptr<ChatPermissions> Ptr;
+    using Ptr = std::shared_ptr<ChatPermissions>;
 
     /**
      * @brief Optional. True, if the user is allowed to send text messages, contacts, giveaways, giveaway winners, invoices, locations and venues
      */
-    bool canSendMessages;
+    std::optional<bool> canSendMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to send audios
      */
-    bool canSendAudios;
+    std::optional<bool> canSendAudios;
 
     /**
      * @brief Optional. True, if the user is allowed to send documents
      */
-    bool canSendDocuments;
+    std::optional<bool> canSendDocuments;
 
     /**
      * @brief Optional. True, if the user is allowed to send photos
      */
-    bool canSendPhotos;
+    std::optional<bool> canSendPhotos;
 
     /**
      * @brief Optional. True, if the user is allowed to send videos
      */
-    bool canSendVideos;
+    std::optional<bool> canSendVideos;
 
     /**
      * @brief Optional. True, if the user is allowed to send video notes
      */
-    bool canSendVideoNotes;
+    std::optional<bool> canSendVideoNotes;
 
     /**
      * @brief Optional. True, if the user is allowed to send voice notes
      */
-    bool canSendVoiceNotes;
+    std::optional<bool> canSendVoiceNotes;
 
     /**
      * @brief Optional. True, if the user is allowed to send polls
      */
-    bool canSendPolls;
+    std::optional<bool> canSendPolls;
 
     /**
      * @brief Optional. True, if the user is allowed to send animations, games, stickers and use inline bots
      */
-    bool canSendOtherMessages;
+    std::optional<bool> canSendOtherMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to add web page previews to their messages
      */
-    bool canAddWebPagePreviews;
+    std::optional<bool> canAddWebPagePreviews;
 
     /**
      * @brief Optional. True, if the user is allowed to change the chat title, photo and other settings.
      *
      * Ignored in public supergroups
      */
-    bool canChangeInfo;
+    std::optional<bool> canChangeInfo;
 
     /**
      * @brief Optional. True, if the user is allowed to invite new users to the chat
      */
-    bool canInviteUsers;
+    std::optional<bool> canInviteUsers;
 
     /**
      * @brief Optional. True, if the user is allowed to pin messages.
      *
      * Ignored in public supergroups
      */
-    bool canPinMessages;
+    std::optional<bool> canPinMessages;
 
     /**
      * @brief Optional. True, if the user is allowed to create forum topics.
      *
      * If omitted defaults to the value of canPinMessages
      */
-    bool canManageTopics;
+    std::optional<bool> canManageTopics;
 };
 }
 

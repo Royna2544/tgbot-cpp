@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -17,50 +18,50 @@ namespace TgBot {
 class KeyboardButtonRequestUsers {
 
 public:
-    typedef std::shared_ptr<KeyboardButtonRequestUsers> Ptr;
+    using Ptr = std::shared_ptr<KeyboardButtonRequestUsers>;
 
     /**
      * @brief Signed 32-bit identifier of the request that will be received back in the UsersShared object.
      *
      * Must be unique within the message
      */
-    std::int32_t requestId;
+    std::int32_t requestId{};
 
     /**
      * @brief Optional. Pass True to request bots, pass False to request regular users.
      *
      * If not specified, no additional restrictions are applied.
      */
-    bool userIsBot;
+    std::optional<bool> userIsBot;
 
     /**
      * @brief Optional. Pass True to request premium users, pass False to request non-premium users.
      *
      * If not specified, no additional restrictions are applied.
      */
-    bool userIsPremium;
+    std::optional<bool> userIsPremium;
 
     /**
      * @brief Optional. The maximum number of users to be selected; 1-10.
      *
      * Defaults to 1.
      */
-    std::uint8_t maxQuantity;
+    std::optional<std::uint8_t> maxQuantity;
 
     /**
      * @brief Optional. Pass True to request the users' first and last name
      */
-    bool requestName;
+    std::optional<bool> requestName;
 
     /**
      * @brief Optional. Pass True to request the users' username
      */
-    bool requestUsername;
+    std::optional<bool> requestUsername;
 
     /**
      * @brief Optional. Pass True to request the users' photo
      */
-    bool requestPhoto;
+    std::optional<bool> requestPhoto;
 };
 }
 

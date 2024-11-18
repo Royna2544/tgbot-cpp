@@ -6,7 +6,6 @@
 
 #include <string>
 #include <memory>
-#include <vector>
 
 namespace TgBot {
 
@@ -19,7 +18,7 @@ namespace TgBot {
  */
 class ShippingQuery {
 public:
-    typedef std::shared_ptr<ShippingQuery> Ptr;
+    using Ptr = std::shared_ptr<ShippingQuery>;
 
     /**
      * @brief Unique query identifier.

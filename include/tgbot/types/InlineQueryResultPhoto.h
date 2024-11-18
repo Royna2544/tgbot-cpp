@@ -23,7 +23,7 @@ class InlineQueryResultPhoto : public InlineQueryResult {
 public:
     static constexpr std::string_view TYPE = "photo";
 
-    typedef std::shared_ptr<InlineQueryResultPhoto> Ptr;
+    using Ptr = std::shared_ptr<InlineQueryResultPhoto>;
 
     InlineQueryResultPhoto() {
         this->type = TYPE;
@@ -44,33 +44,33 @@ public:
     /**
      * @brief Optional. Width of the photo
      */
-    std::int32_t photoWidth;
+    std::optional<std::int32_t> photoWidth;
 
     /**
      * @brief Optional. Height of the photo
      */
-    std::int32_t photoHeight;
+    std::optional<std::int32_t> photoHeight;
 
     /**
      * @brief Optional. Title for the result
      */
-    std::string title;
+    std::optional<std::string> title;
 
     /**
      * @brief Optional. Short description of the result
      */
-    std::string description;
+    std::optional<std::string> description;
 
     /**
      * @brief Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the photo caption.
      * See https://core.telegram.org/bots/api#formatting-options for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode

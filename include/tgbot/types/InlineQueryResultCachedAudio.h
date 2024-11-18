@@ -38,14 +38,14 @@ public:
     /**
      * @brief Optional. Caption, 0-1024 characters after entities parsing
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. Mode for parsing entities in the audio caption.
      *
      * See [formatting options](https://core.telegram.org/bots/api#formatting-options) for more details.
      */
-    std::string parseMode;
+    std::optional<std::string> parseMode;
 
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode

@@ -15,7 +15,7 @@ namespace TgBot {
  */
 class LabeledPrice {
 public:
-    typedef std::shared_ptr<LabeledPrice> Ptr;
+    using Ptr = std::shared_ptr<LabeledPrice>;
 
     /**
      * @brief Portion label.

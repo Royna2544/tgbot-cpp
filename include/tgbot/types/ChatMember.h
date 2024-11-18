@@ -18,11 +18,10 @@ namespace TgBot {
 class ChatMember {
 
 public:
-    typedef std::shared_ptr<ChatMember> Ptr;
+    using Ptr = std::shared_ptr<ChatMember>;
 
-    ChatMember() {}
-
-    virtual ~ChatMember() {}
+    ChatMember() = default;
+    virtual ~ChatMember() = default;
 
     /**
      * @brief The member's status in the chat

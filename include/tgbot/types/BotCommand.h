@@ -15,10 +15,9 @@ namespace TgBot {
  */
 class BotCommand {
 public:
-    typedef std::shared_ptr<BotCommand> Ptr;
-    BotCommand() { }
-
-    virtual ~BotCommand() { }
+    using Ptr = std::shared_ptr<BotCommand>;
+    BotCommand() = default;
+    virtual ~BotCommand() = default;
 
     /**
      * @brief command label.

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -27,7 +28,7 @@ public:
     /**
      * @brief Optional. Year of the user's birth
      */
-    std::uint16_t year;
+    std::optional<std::uint16_t> year;
 };
 }
 

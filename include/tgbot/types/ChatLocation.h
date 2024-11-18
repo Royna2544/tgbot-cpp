@@ -4,6 +4,7 @@
 #include "tgbot/types/Location.h"
 
 #include <memory>
+#include <string>
 
 namespace TgBot {
 
@@ -15,7 +16,7 @@ namespace TgBot {
 class ChatLocation {
 
 public:
-    typedef std::shared_ptr<ChatLocation> Ptr;
+    using Ptr = std::shared_ptr<ChatLocation>;
 
     /**
      * @brief The location to which the supergroup is connected.

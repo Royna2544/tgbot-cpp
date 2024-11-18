@@ -16,7 +16,7 @@ namespace TgBot {
 class Story {
 
 public:
-    typedef std::shared_ptr<Story> Ptr;
+    using Ptr = std::shared_ptr<Story>;
 
     /**
      * @brief Chat that posted the story

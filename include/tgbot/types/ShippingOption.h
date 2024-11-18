@@ -18,7 +18,7 @@ namespace TgBot {
  */
 class ShippingOption {
 public:
-    typedef std::shared_ptr<ShippingOption> Ptr;
+    using Ptr = std::shared_ptr<ShippingOption>;
 
     /**
      * @brief Shipping option identifier.

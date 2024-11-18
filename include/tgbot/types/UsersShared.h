@@ -17,7 +17,7 @@ namespace TgBot {
 class UsersShared {
 
 public:
-    typedef std::shared_ptr<UsersShared> Ptr;
+    using Ptr = std::shared_ptr<UsersShared>;
 
     /**
      * @brief Identifier of the request

@@ -19,7 +19,7 @@ namespace TgBot {
 class KeyboardButtonRequestChat {
 
 public:
-    typedef std::shared_ptr<KeyboardButtonRequestChat> Ptr;
+    using Ptr = std::shared_ptr<KeyboardButtonRequestChat>;
 
     /**
      * @brief Signed 32-bit identifier of the request, which will be received back in the ChatShared object.
@@ -38,21 +38,21 @@ public:
      *
      * If not specified, no additional restrictions are applied.
      */
-    bool chatIsForum;
+    std::optional<bool> chatIsForum;
 
     /**
      * @brief Optional. Pass True to request a supergroup or a channel with a username, pass False to request a chat without a username.
      *
      * If not specified, no additional restrictions are applied.
      */
-    bool chatHasUsername;
+    std::optional<bool> chatHasUsername;
 
     /**
      * @brief Optional. Pass True to request a chat owned by the user.
      *
      * Otherwise, no additional restrictions are applied.
      */
-    bool chatIsCreated;
+    std::optional<bool> chatIsCreated;
 
     /**
      * @brief Optional. A JSON-serialized object listing the required administrator rights of the user in the chat.
@@ -75,22 +75,22 @@ public:
      *
      * Otherwise, no additional restrictions are applied.
      */
-    bool botIsMember;
+    std::optional<bool> botIsMember;
 
     /**
      * @brief Optional. Pass True to request the chat's title
      */
-    bool requestTitle;
+    std::optional<bool> requestTitle;
 
     /**
      * @brief Optional. Pass True to request the chat's username
      */
-    bool requestUsername;
+    std::optional<bool> requestUsername;
 
     /**
      * @brief Optional. Pass True to request the chat's photo
      */
-    bool requestPhoto;
+    std::optional<bool> requestPhoto;
 };
 }
 

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -14,7 +15,7 @@ namespace TgBot {
 class Location {
 
 public:
-    typedef std::shared_ptr<Location> Ptr;
+    using Ptr = std::shared_ptr<Location>;
 
     /**
      * @brief Latitude as defined by sender
@@ -29,28 +30,28 @@ public:
     /**
      * @brief Optional. The radius of uncertainty for the location, measured in meters; 0-1500
      */
-    float horizontalAccuracy;
+    std::optional<float> horizontalAccuracy;
 
     /**
      * @brief Optional. Time relative to the message sending date, during which the location can be updated; in seconds.
      *
      * For active live locations only.
      */
-    std::int32_t livePeriod;
+    std::optional<std::int32_t> livePeriod;
 
     /**
      * @brief Optional. The direction in which user is moving, in degrees; 1-360.
      *
      * For active live locations only.
      */
-    std::int32_t heading;
+    std::optional<std::int32_t> heading;
 
     /**
      * @brief Optional. The maximum distance for proximity alerts about approaching another chat member, in meters.
      *
      * For sent live locations only.
      */
-    std::int32_t proximityAlertRadius;
+    std::optional<std::int32_t> proximityAlertRadius;
 };
 }
 

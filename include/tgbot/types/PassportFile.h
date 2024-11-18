@@ -15,7 +15,7 @@ namespace TgBot {
 class PassportFile {
 
 public:
-    typedef std::shared_ptr<PassportFile> Ptr;
+    using Ptr = std::shared_ptr<PassportFile>;
 
     /**
      * @brief Identifier for this file, which can be used to download or reuse the file

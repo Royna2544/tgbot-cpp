@@ -33,7 +33,7 @@ public:
     /**
      * @brief Optional. For messages originally sent by an anonymous chat administrator, original message author signature
      */
-    std::string authorSignature;
+    std::optional<std::string> authorSignature;
 };
 }
 

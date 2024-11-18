@@ -54,7 +54,7 @@ public:
     /**
      * @brief Optional. True, if the user joined the chat via a chat folder invite link
      */
-    bool viaChatFolderInviteLink;
+    std::optional<bool> viaChatFolderInviteLink;
 };
 }
 
