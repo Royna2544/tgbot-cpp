@@ -37,7 +37,7 @@ struct JsonWrapper {
     }
     // Overload for JSON::Value to avoid null values.
     void put(const std::string_view key, Json::Value value) {
-        if (value.type() != Json::nullValue) {
+        if (!value.empty()) {
             data_[key.data()] = std::move(value);
         }
     }
