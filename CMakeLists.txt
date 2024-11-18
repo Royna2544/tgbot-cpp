@@ -23,7 +23,6 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif()
 
-include_directories(include)
 set(SRC_LIST
     src/Api.cpp
     src/Bot.cpp
@@ -36,6 +35,9 @@ set(SRC_LIST
     src/net/Url.cpp
     src/tools/StringTools.cpp)
 
+# building project
+add_library(${PROJECT_NAME} ${SRC_LIST})
+
 # libs
 ## threads
 find_package(Threads REQUIRED)
@@ -45,13 +47,11 @@ find_package(ZLIB REQUIRED)
 
 ## openssl
 find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
 
 ## curl
 find_package(CURL 7.58.0)
 if (CURL_FOUND)
-    include_directories(${CURL_INCLUDE_DIRS})
-    add_definitions(-DHAVE_CURL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC -DHAVE_CURL)
 endif()
 
 ## jsoncpp
@@ -77,31 +77,27 @@ if (ENABLE_TESTS)
 else()
     find_package(Boost 1.65.1 COMPONENTS system REQUIRED)
 endif()
-include_directories(${Boost_INCLUDE_DIR})
-link_directories(${Boost_LIBRARY_DIR_RELEASE})
 if(NOT Boost_USE_STATIC_LIBS)
-    add_definitions(-DBOOST_ALL_DYN_LINK)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC -DBOOST_ALL_DYN_LINK)
 endif()
-add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
+target_compile_definitions(${PROJECT_NAME} PUBLIC -DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 set(LIB_LIST
-    ${CMAKE_THREAD_LIBS_INIT}
-    ${ZLIB_LIBRARIES}
-    ${OPENSSL_LIBRARIES}
-    ${Boost_LIBRARIES}
+    Threads::Threads
+    ZLIB::ZLIB
+    OpenSSL::SSL
+    Boost::system
     JsonCpp::JsonCpp
 )
 
 if (CURL_FOUND)
-    set(LIB_LIST ${LIB_LIST} CURL::libcurl)
+    list(APPEND LIB_LIST CURL::libcurl)
 endif()
 
 if (WIN32)
-    set(LIB_LIST ${LIB_LIST} Ws2_32)
+    list(APPEND LIB_LIST Ws2_32)
 endif()
 
-# building project
-add_library(${PROJECT_NAME} ${SRC_LIST})
 target_include_directories(${PROJECT_NAME} PUBLIC 
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
