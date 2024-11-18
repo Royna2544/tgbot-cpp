@@ -31,7 +31,7 @@ int main() {
 
     bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
         if (test_text_state) {
-            bot.getApi().sendMessage(message->chat->id, message->text);
+            bot.getApi().sendMessage(message->chat->id, message->text.value_or(""));
             test_text_state = false;
             return;
         }
@@ -46,7 +46,7 @@ int main() {
     });
 
     try {
-        printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
+        printf("Bot username: %s\n", bot.getApi().getMe()->username->c_str());
         bot.getApi().deleteWebhook();
 
         while (true) {

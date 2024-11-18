@@ -59,12 +59,12 @@ int main() {
     bot.getEvents().onCommand("layout", [&bot, &keyboardWithLayout](Message::Ptr message) {
         bot.getApi().sendMessage(message->chat->id, "/start for one column keyboard\n/layout for a more complex keyboard", nullptr, nullptr, keyboardWithLayout);
     });
-    bot.getEvents().onAnyMessage([&bot](Message::Ptr message) {
-        printf("User wrote %s\n", message->text.c_str());
-        if (StringTools::startsWith(message->text, "/start") || StringTools::startsWith(message->text, "/layout")) {
+    bot.getEvents().onNonCommandMessage([&bot](Message::Ptr message) {
+        if (!message->text) {
             return;
         }
-        bot.getApi().sendMessage(message->chat->id, "Your message is: " + message->text);
+        printf("User wrote %s\n", message->text->c_str());
+        bot.getApi().sendMessage(message->chat->id, "Your message is: " + *message->text);
     });
 
     signal(SIGINT, [](int s) {
@@ -73,7 +73,7 @@ int main() {
     });
 
     try {
-        printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
+        printf("Bot username: %s\n", bot.getApi().getMe()->username->c_str());
         bot.getApi().deleteWebhook();
 
         TgLongPoll longPoll(bot);

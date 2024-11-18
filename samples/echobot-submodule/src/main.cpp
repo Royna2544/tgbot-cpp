@@ -18,11 +18,14 @@ int main() {
         bot.getApi().sendMessage(message->chat->id, "Hi!");
     });
     bot.getEvents().onAnyMessage([&bot](Message::Ptr message) {
-        printf("User wrote %s\n", message->text.c_str());
-        if (StringTools::startsWith(message->text, "/start")) {
+        if (!message->text) {
             return;
         }
-        bot.getApi().sendMessage(message->chat->id, "Your message is: " + message->text);
+        printf("User wrote %s\n", message->text->c_str());
+        if (StringTools::startsWith(*message->text, "/start")) {
+            return;
+        }
+        bot.getApi().sendMessage(message->chat->id, "Your message is: " + *message->text);
     });
 
     signal(SIGINT, [](int s) {
@@ -31,7 +34,7 @@ int main() {
     });
 
     try {
-        printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
+        printf("Bot username: %s\n", bot.getApi().getMe()->username->c_str());
         bot.getApi().deleteWebhook();
 
         TgLongPoll longPoll(bot);

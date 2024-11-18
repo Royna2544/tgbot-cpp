@@ -18,16 +18,23 @@ int main() {
         bot.getApi().sendMessage(message->chat->id, "Hi!");
     });
     bot.getEvents().onAnyMessage([&bot](Message::Ptr message) {
-        printf("User wrote %s\n", message->text.c_str());
-
-        if (StringTools::startsWith(message->text, "/start")) {
+        if (!message->text) {
             return;
         }
+        printf("User wrote %s\n", message->text->c_str());
+        if (StringTools::startsWith(*message->text, "/start")) {
+            return;
+        }
+        bot.getApi().sendMessage(message->chat->id, "Your message is: " + *message->text);
+        
+        if (message->document) {
+            File::Ptr file = bot.getApi().getFile(message->document->fileId);
+            if (file->filePath) {
+                string fileContent = bot.getApi().downloadFile(*file->filePath);
 
-        File::Ptr file = bot.getApi().getFile(message->document->fileId);
-        string fileContent = bot.getApi().downloadFile(file->filePath);
-
-        bot.getApi().sendMessage(message->chat->id, "Your file content: " + fileContent);
+                bot.getApi().sendMessage(message->chat->id, "Your file content: " + fileContent);
+            }
+        }
     });
 
     signal(SIGINT, [](int s) {
@@ -36,7 +43,7 @@ int main() {
     });
 
     try {
-        printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
+        printf("Bot username: %s\n", bot.getApi().getMe()->username->c_str());
         bot.getApi().deleteWebhook();
 
         TgLongPoll longPoll(bot);
