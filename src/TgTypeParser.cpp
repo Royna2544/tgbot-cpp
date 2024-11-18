@@ -30,9 +30,6 @@ struct JsonWrapper {
 
     template <typename T>
     void put(const std::string_view key, T value) {
-        if (value == std::decay_t<T>{}) {
-            return;
-        }
         data_[key.data()] = std::move(value);
     }
     // Overload for JSON::Value to avoid null values.
