@@ -1838,7 +1838,7 @@ Json::Value TgBot::ApiImpl::sendRequest(
     if constexpr (kSendRequestDebug) {
         std::cout << "tgbot-cpp: Sending request: " << method << std::endl;
         for (const auto &arg : args) {
-            std::cout << arg.name << " is " << arg.value << std::endl;
+            std::cout << arg.name << " is " << std::quoted(arg.value) << std::endl;
         }
     }
     while (true) {
