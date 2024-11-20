@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <exception>
 #include <string>
+#include "tgbot/Api.h"
 
 #include <tgbot/tgbot.h>
 
@@ -29,12 +30,12 @@ int main() {
     });
     bot.getEvents().onCommand("check", [&bot, &keyboard](Message::Ptr message) {
         string response = "ok";
-        bot.getApi().sendMessage(message->chat->id, response, nullptr, nullptr, keyboard, "Markdown");
+        bot.getApi().sendMessage(message->chat->id, response, nullptr, nullptr, keyboard, TgBot::Api::ParseMode::Markdown);
     });
     bot.getEvents().onCallbackQuery([&bot, &keyboard](CallbackQuery::Ptr query) {
         if (StringTools::startsWith(query->data, "check")) {
             string response = "ok";
-            bot.getApi().sendMessage(query->message->chat->id, response, nullptr, nullptr, keyboard, "Markdown");
+            bot.getApi().sendMessage(query->message->chat->id, response, nullptr, nullptr, keyboard, TgBot::Api::ParseMode::Markdown);
         }
     });
 
