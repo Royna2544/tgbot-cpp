@@ -1829,7 +1829,7 @@ bool ApiImpl::blockedByUser(std::int64_t chatId) const {
     return isBotBlocked;
 }
 
-constexpr bool kSendRequestDebug = true;
+constexpr bool kSendRequestDebug = false;
 
 Json::Value TgBot::ApiImpl::sendRequest(
     const std::string_view method, std::vector<TgBot::HttpReqArg> args) const {
@@ -1849,7 +1849,7 @@ Json::Value TgBot::ApiImpl::sendRequest(
                           << std::endl;
                 continue;
             }
-            std::cout << arg.name << "=\"" << arg.value << "\"" << std::endl;
+            std::cout << arg.name << "=" << arg.value << std::endl;
         }
     }
     while (true) {
