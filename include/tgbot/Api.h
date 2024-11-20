@@ -2,6 +2,7 @@
 #define TGBOT_API_H
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -70,7 +71,7 @@ struct minmax_type<float> {
 
 template <typename T>
 using minmax_type_t = typename minmax_type<T>::type;
-}  // namespace details
+}  // namespace detail
 
 class Bot;
 
@@ -245,7 +246,8 @@ class TGBOT_API Api {
      */
     virtual bool setWebhook(
         const std::string_view url, InputFile::Ptr certificate = nullptr,
-        const bounded_optional_default<std::int32_t, 1, 100, 40> maxConnections = {},
+        const bounded_optional_default<std::int32_t, 1, 100, 40>
+            maxConnections = {},
         const optional<Update::Types> allowedUpdates = {},
         const optional<std::string_view> ipAddress = {},
         const optional<bool> dropPendingUpdates = {},
@@ -512,7 +514,8 @@ class TGBOT_API Api {
         std::variant<std::int64_t, std::string> fromChatId,
         const std::vector<std::int32_t>& messageIds,
         optional<std::int32_t> messageThreadId = {},
-        optional<bool> disableNotification = {}, optional<bool> protectContent = {},
+        optional<bool> disableNotification = {},
+        optional<bool> protectContent = {},
         optional<bool> removeCaption = {}) const = 0;
 
     /**
@@ -1273,7 +1276,8 @@ class TGBOT_API Api {
         const optional<ParseMode> explanationParseMode = {},
         const std::vector<MessageEntity::Ptr>& explanationEntities = {},
         optional<std::int32_t> openPeriod = {},
-        optional<std::int32_t> closeDate = {}, optional<bool> isClosed = {},
+        optional<std::chrono::system_clock::time_point> closeDate = {},
+        optional<bool> isClosed = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
         const optional<std::string_view> businessConnectionId = {}) const = 0;
@@ -1453,10 +1457,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool banChatMember(std::variant<std::int64_t, std::string> chatId,
-                               std::int64_t userId,
-                               optional<std::int32_t> untilDate = {},
-                               optional<bool> revokeMessages = {}) const = 0;
+    virtual bool banChatMember(
+        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+        optional<std::chrono::system_clock::time_point> untilDate = {},
+        optional<bool> revokeMessages = {}) const = 0;
 
     /**
      * @brief Use this method to unban a previously banned user in a supergroup
@@ -1508,7 +1512,7 @@ class TGBOT_API Api {
     virtual bool restrictChatMember(
         std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
         ChatPermissions::Ptr permissions,
-        optional<std::uint32_t> untilDate = {},
+        optional<std::chrono::system_clock::time_point> untilDate = {},
         optional<bool> useIndependentChatPermissions = {}) const = 0;
 
     /**
@@ -1694,7 +1698,7 @@ class TGBOT_API Api {
      */
     virtual ChatInviteLink::Ptr createChatInviteLink(
         std::variant<std::int64_t, std::string> chatId,
-        optional<std::int32_t> expireDate = {},
+        optional<std::chrono::system_clock::time_point> expireDate = {},
         optional<std::int32_t> memberLimit = {},
         const optional<std::string_view> name = {},
         optional<bool> createsJoinRequest = {}) const = 0;
@@ -1724,7 +1728,7 @@ class TGBOT_API Api {
     virtual ChatInviteLink::Ptr editChatInviteLink(
         std::variant<std::int64_t, std::string> chatId,
         const std::string_view inviteLink,
-        optional<std::int32_t> expireDate = {},
+        optional<std::chrono::system_clock::time_point> expireDate = {},
         optional<std::int32_t> memberLimit = {},
         const optional<std::string_view> name = {},
         optional<bool> createsJoinRequest = {}) const = 0;

@@ -235,6 +235,8 @@ auto putArg(T arg) {
     } else if constexpr (std::is_same_v<T, TgBot::InputFile::Ptr> ||
                          detail::is_primitive_v<T>) {
         return arg;  // HttpReqArg ctor can handle
+    } else if constexpr (std::is_same_v<T, std::chrono::system_clock::time_point>){
+        return std::chrono::system_clock::to_time_t(arg);
     } else {
         return TgBot::putJSON(arg);
     }
@@ -750,7 +752,8 @@ Message::Ptr ApiImpl::sendPoll(
     const optional<std::string_view> explanation,
     const optional<ParseMode> explanationParseMode,
     const std::vector<MessageEntity::Ptr> &explanationEntities,
-    optional<std::int32_t> openPeriod, optional<std::int32_t> closeDate,
+    optional<std::int32_t> openPeriod,
+    optional<std::chrono::system_clock::time_point> closeDate,
     optional<bool> isClosed, optional<std::int32_t> messageThreadId,
     optional<bool> protectContent,
     const optional<std::string_view> businessConnectionId) const {
@@ -834,10 +837,10 @@ File::Ptr ApiImpl::getFile(const std::string_view fileId) const {
     return parse<File>(sendRequest("getFile", args));
 }
 
-bool ApiImpl::banChatMember(std::variant<std::int64_t, std::string> chatId,
-                            std::int64_t userId,
-                            optional<std::int32_t> untilDate,
-                            optional<bool> revokeMessages) const {
+bool ApiImpl::banChatMember(
+    std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+    optional<std::chrono::system_clock::time_point> untilDate,
+    optional<bool> revokeMessages) const {
     return sendRequest(
                "banChatMember",
                build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId},
@@ -858,7 +861,8 @@ bool ApiImpl::unbanChatMember(std::variant<std::int64_t, std::string> chatId,
 
 bool ApiImpl::restrictChatMember(
     std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
-    ChatPermissions::Ptr permissions, optional<std::uint32_t> untilDate,
+    ChatPermissions::Ptr permissions,
+    optional<std::chrono::system_clock::time_point> untilDate,
     optional<bool> useIndependentChatPermissions) const {
     return sendRequest(
                "restrictChatMember",
@@ -958,8 +962,8 @@ std::string ApiImpl::exportChatInviteLink(
 
 ChatInviteLink::Ptr ApiImpl::createChatInviteLink(
     std::variant<std::int64_t, std::string> chatId,
-    optional<std::int32_t> expireDate, optional<std::int32_t> memberLimit,
-    const optional<std::string_view> name,
+    optional<std::chrono::system_clock::time_point> expireDate,
+    optional<std::int32_t> memberLimit, const optional<std::string_view> name,
     optional<bool> createsJoinRequest) const {
     return parse<ChatInviteLink>(sendRequest(
         "createChatInviteLink",
@@ -971,7 +975,8 @@ ChatInviteLink::Ptr ApiImpl::createChatInviteLink(
 
 ChatInviteLink::Ptr ApiImpl::editChatInviteLink(
     std::variant<std::int64_t, std::string> chatId,
-    const std::string_view inviteLink, optional<std::int32_t> expireDate,
+    const std::string_view inviteLink,
+    optional<std::chrono::system_clock::time_point> expireDate,
     optional<std::int32_t> memberLimit, const optional<std::string_view> name,
     optional<bool> createsJoinRequest) const {
     return parse<ChatInviteLink>(sendRequest(
@@ -1838,7 +1843,8 @@ Json::Value TgBot::ApiImpl::sendRequest(
     if constexpr (kSendRequestDebug) {
         std::cout << "tgbot-cpp: Sending request: " << method << std::endl;
         for (const auto &arg : args) {
-            std::cout << arg.name << " is " << std::quoted(arg.value) << std::endl;
+            std::cout << arg.name << " is " << std::quoted(arg.value)
+                      << std::endl;
         }
     }
     while (true) {
