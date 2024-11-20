@@ -60,6 +60,7 @@ Dependencies:
 - Boost
 - OpenSSL
 - ZLib
+- JsonCpp
 - Libcurl (optional unless you want to use curl-based http client `CurlHttpClient`).
 
 
@@ -68,7 +69,7 @@ Dependencies:
 You can install dependencies on Debian-based distibutives with these commands:
 
 ```sh
-sudo apt install g++ make binutils cmake libboost-system-dev libssl-dev zlib1g-dev libcurl4-openssl-dev
+sudo apt install g++ make binutils cmake libboost-system-dev libssl-dev zlib1g-dev libcurl4-openssl-dev libjsoncpp-dev
 ```
 
 Optionally, install the dependencies for testing and documenting
@@ -79,7 +80,7 @@ sudo apt install libboost-test-dev doxygen
 You can compile and install the library with these commands:
 
 ```sh
-git clone https://github.com/reo7sp/tgbot-cpp
+git clone https://github.com/Royna2544/tgbot-cpp
 cd tgbot-cpp
 cmake .
 make -j4
@@ -94,7 +95,7 @@ Alternatively, you can use Docker to build and run your bot. Set the base image 
 You can install dependencies with these commands:
 
 ```sh
-brew install gcc cmake boost openssl zlib curl
+brew install gcc cmake boost openssl zlib curl jsoncpp
 ```
 
 You can compile and install the library like Linux instructions.
@@ -157,7 +158,7 @@ Also, you can treat this repository as a submodule of your project, for example,
 ### Without CMake
 
 ```sh
-g++ telegram_bot.cpp -o telegram_bot --std=c++14 -I/usr/local/include -lTgBot -lboost_system -lssl -lcrypto -lpthread
+g++ telegram_bot.cpp -o telegram_bot --std=c++14 -I/usr/local/include -lTgBot -lboost_system -lssl -lcrypto -lpthread -ljsoncpp
 ```
 
 ### Build options
