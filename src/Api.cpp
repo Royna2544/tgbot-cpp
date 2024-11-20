@@ -1,4 +1,6 @@
 #include <json/json.h>
+#include <json/value.h>
+#include <json/writer.h>
 #include <tgbot/ApiImpl.h>
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
@@ -6,7 +8,6 @@
 
 #include <chrono>
 #include <cstdint>
-#include <iomanip>
 #include <iostream>
 #include <string_view>
 #include <thread>
@@ -16,110 +17,301 @@
 
 #include "tgbot/net/HttpReqArg.h"
 #include "tgbot/types/InputFile.h"
+#include "tgbot/types/Update.h"
+
+namespace detail {
+
+using namespace TgBot::detail;
+
+template <typename T>
+struct is_optional : std::false_type {};
+
+template <typename T>
+struct is_optional<std::optional<T>> : std::true_type {
+    using type = T;
+};
+
+template <typename T, typename V, V min, V max, V defaults>
+struct is_optional<TgBot::Api::bounded_optional_default<T, min, max, defaults>>
+    : std::true_type {
+    using type = T;
+};
+
+template <typename T, T defaults>
+struct is_optional<TgBot::Api::optional_default<T, defaults>> : std::true_type {
+    using type = T;
+};
+
+template <typename T, typename V, V min, V max>
+struct is_optional<TgBot::Api::bounded_optional<T, min, max>> : std::true_type {
+    using type = T;
+};
+
+template <typename T>
+constexpr bool is_optional_v = is_optional<T>::value;
+
+template <typename T>
+using optional_t = typename is_optional<T>::type;
+
+template <typename... Args>
+struct is_variant : std::false_type {};
+
+template <typename... Args>
+struct is_variant<std::variant<Args...>> : std::true_type {};
+
+template <typename T>
+constexpr bool is_variant_v = is_variant<T>::value;
+
+template <typename T>
+struct is_vector : std::false_type {};
+
+template <typename T>
+struct is_vector<std::vector<T>> : std::true_type {
+    using type = T;
+};
+
+template <typename T>
+constexpr bool is_vector_v = is_vector<T>::value;
+
+}  // namespace detail
+
+namespace TgBot {
+template <>
+std::string putJSON<TgBot::Update::Types>(const TgBot::Update::Types &object) {
+    Json::Value json;
+    if (object & Update::Types::business_connection) {
+        json.append("business_connection");
+    }
+    if (object & Update::Types::edited_business_message) {
+        json.append("edited_business_message");
+    }
+    if (object & Update::Types::edited_channel_post) {
+        json.append("edited_channel_post");
+    }
+    if (object & Update::Types::edited_message) {
+        json.append("edited_message");
+    }
+    if (object & Update::Types::message) {
+        json.append("message");
+    }
+    if (object & Update::Types::channel_post) {
+        json.append("channel_post");
+    }
+    if (object & Update::Types::business_message) {
+        json.append("business_message");
+    }
+    if (object & Update::Types::deleted_business_messages) {
+        json.append("deleted_business_messages");
+    }
+    if (object & Update::Types::inline_query) {
+        json.append("inline_query");
+    }
+    if (object & Update::Types::poll) {
+        json.append("poll");
+    }
+    if (object & Update::Types::shipping_query) {
+        json.append("shipping_query");
+    }
+    if (object & Update::Types::chosen_inline_result) {
+        json.append("chosen_inline_result");
+    }
+    if (object & Update::Types::callback_query) {
+        json.append("callback_query");
+    }
+    if (object & Update::Types::poll_answer) {
+        json.append("poll_answer");
+    }
+    if (object & Update::Types::message_reaction) {
+        json.append("message_reaction");
+    }
+    if (object & Update::Types::message_reaction_count) {
+        json.append("message_reaction_count");
+    }
+    if (object & Update::Types::my_chat_member) {
+        json.append("my_chat_member");
+    }
+    if (object & Update::Types::chat_member) {
+        json.append("chat_member");
+    }
+    if (object & Update::Types::chat_join_request) {
+        json.append("chat_join_request");
+    }
+    if (object & Update::Types::chat_boost) {
+        json.append("chat_boost");
+    }
+    if (object & Update::Types::removed_chat_boost) {
+        json.append("removed_chat_boost");
+    }
+    if (object & Update::Types::pre_checkout_query) {
+        json.append("pre_checkout_query");
+    }
+    if (object & Update::Types::purchased_paid_media) {
+        json.append("purchased_paid_media");
+    }
+    Json::FastWriter writer;
+    return writer.write(json);
+}
+
+template <>
+std::string putJSON<Api::ParseMode>(const Api::ParseMode &object) {
+    switch (object) {
+        case Api::ParseMode::Markdown:
+            return "Markdown";
+        case Api::ParseMode::MarkdownV2:
+            return "MarkdownV2";
+        case Api::ParseMode::HTML:
+            return "HTML";
+        case Api::ParseMode::None:
+            return "";
+    }
+}
+
+template <>
+std::string putJSON<Api::PollType>(const Api::PollType &object) {
+    switch (object) {
+        case Api::PollType::regular:
+            return "regular";
+        case Api::PollType::quiz:
+            return "quiz";
+    }
+}
+template <>
+std::string putJSON<Api::StickerFormat>(const Api::StickerFormat &object) {
+    switch (object) {
+        case Api::StickerFormat::Static:
+            return "static";
+        case Api::StickerFormat::Animated:
+            return "animated";
+        case Api::StickerFormat::Video:
+            return "video";
+    }
+}
+
+template <>
+std::string putJSON<Api::ChatAction>(const Api::ChatAction &object) {
+    switch (object) {
+        case Api::ChatAction::typing:
+            return "typing";
+        case Api::ChatAction::upload_photo:
+            return "upload_photo";
+        case Api::ChatAction::record_video:
+            return "record_video";
+        case Api::ChatAction::upload_video:
+            return "upload_video";
+        case Api::ChatAction::record_voice:
+            return "record_voice";
+        case Api::ChatAction::upload_voice:
+            return "upload_voice";
+        case Api::ChatAction::upload_document:
+            return "upload_document";
+        case Api::ChatAction::find_location:
+            return "find_location";
+        case Api::ChatAction::record_video_note:
+            return "record_video_note";
+        case Api::ChatAction::upload_video_note:
+            return "upload_video_note";
+    }
+}
+
+template <>
+std::string putJSON<Sticker::Type>(const Sticker::Type &object) {
+    switch (object) {
+        case Sticker::Type::Regular:
+            return "regular";
+        case Sticker::Type::Mask:
+            return "mask";
+        case Sticker::Type::CustomEmoji:
+            return "custom_emoji";
+    }
+}
+}  // namespace TgBot
 
 namespace {
-std::vector<std::string> escapeJSONStringVec(
-    const std::vector<std::string> &vec) {
-    std::vector<std::string> newVec = vec;
-    for (auto &i : newVec) {
-        std::stringstream ss;
-        ss << std::quoted(StringTools::escapeJsonString(i));
-        i = ss.str();
+
+template <typename T>
+auto putArg(T arg) {
+    if constexpr (std::is_same_v<T, std::string_view>) {
+        return std::string(arg);
+    } else if constexpr (std::is_same_v<T, TgBot::InputFile::Ptr> ||
+                         detail::is_primitive_v<T>) {
+        return arg;  // HttpReqArg ctor can handle
+    } else {
+        return TgBot::putJSON(arg);
     }
-    return newVec;
 }
 
-TgBot::HttpReqArg handleInputFileOrString(
-    std::string key,
-    const std::variant<TgBot::InputFile::Ptr, std::string> &variant) {
-    return std::visit(
-        [&](const auto &x) -> TgBot::HttpReqArg {
-            if constexpr (std::is_same_v<std::decay_t<decltype(x)>,
-                                         TgBot::InputFile::Ptr>) {
-                return {std::move(key), x->data, true, x->mimeType,
-                        x->fileName};
-            } else if constexpr (std::is_same_v<std::decay_t<decltype(x)>,
-                                                std::string>) {
-                return {std::move(key), x};
+template <typename... Args>
+std::vector<TgBot::HttpReqArg> build(std::pair<const char *, Args> &&...args) {
+    std::vector<TgBot::HttpReqArg> vec;
+    vec.reserve(sizeof...(Args));
+    (
+        [&vec](const std::pair<const char *, Args> arg) {
+            using T = std::decay_t<Args>;
+            if constexpr (detail::is_optional_v<T>) {
+                if (static_cast<bool>(arg.second)) {
+                    vec.emplace_back(arg.first, putArg(*arg.second));
+                }
+            } else if constexpr (detail::is_variant_v<T>) {
+                if (arg.second.index() != std::variant_npos) {
+                    vec.emplace_back(arg.first, arg.second);
+                }
+            } else if constexpr (detail::is_shared_ptr_v<T>) {
+                if (arg.second != nullptr) {
+                    vec.emplace_back(arg.first, putArg(arg.second));
+                }
+            } else if constexpr (detail::is_vector_v<T>) {
+                if (arg.second.size() != 0) {
+                    vec.emplace_back(arg.first, putArg(arg.second));
+                }
+            } else {
+                vec.emplace_back(arg.first, putArg(arg.second));
             }
-        },
-        variant);
+        }(args),
+        ...);
+    return vec;
 }
-
 }  // namespace
+
 namespace TgBot {
 
-ApiImpl::ApiImpl(std::string token, HttpClient* httpClient,
-                 std::string url)
-    : _httpClient(httpClient),
-      _token(std::move(token)),
-      _url(std::move(url)) {}
+ApiImpl::ApiImpl(std::string token, HttpClient *httpClient, std::string url)
+    : _httpClient(httpClient), _token(std::move(token)), _url(std::move(url)) {}
 
 std::vector<Update::Ptr> ApiImpl::getUpdates(
-    std::int32_t offset, std::int32_t limit, std::int32_t timeout,
-    const std::vector<std::string> &allowedUpdates) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    if (offset != 0) {
-        args.emplace_back("offset", offset);
-    }
-    if (limit != 100) {
-        args.emplace_back("limit", std::max(1, std::min(100, limit)));
-    }
-    if (timeout != 0) {
-        args.emplace_back("timeout", timeout);
-    }
-    if (!allowedUpdates.empty()) {
-        args.emplace_back("allowed_updates", putJSON(allowedUpdates));
-    }
-
-    return parseArray<Update>(sendRequest("getUpdates", args));
+    optional<std::int32_t> offset,
+    bounded_optional_default<std::int32_t, 0, 100, 100> limit,
+    optional_default<std::int32_t, 0> timeout,
+    const optional<Update::Types> allowedUpdates) const {
+    return parseArray<Update>(sendRequest(
+        "getUpdates",
+        build(std::pair{"offset", offset}, std::pair{"limit", limit},
+              std::pair{"timeout", timeout},
+              std::pair{"allowed_updates", allowedUpdates})));
 }
 
-bool ApiImpl::setWebhook(const std::string_view url, InputFile::Ptr certificate,
-                         std::int32_t maxConnections,
-                         const std::vector<std::string_view> &allowedUpdates,
-                         const std::string_view ipAddress,
-                         bool dropPendingUpdates,
-                         const std::string_view secretToken) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(7);
-
-    args.emplace_back("url", url);
-    if (certificate != nullptr) {
-        args.emplace_back("certificate", certificate->data, true,
-                          certificate->mimeType, certificate->fileName);
-    }
-    if (!ipAddress.empty()) {
-        args.emplace_back("ip_address", ipAddress);
-    }
-    if (maxConnections != 40) {
-        args.emplace_back("max_connections",
-                          std::max(1, std::min(100, maxConnections)));
-    }
-    if (!allowedUpdates.empty()) {
-        args.emplace_back("allowed_updates", putJSON(allowedUpdates));
-    }
-    if (dropPendingUpdates) {
-        args.emplace_back("drop_pending_updates", dropPendingUpdates);
-    }
-    if (!secretToken.empty()) {
-        args.emplace_back("secret_token", secretToken);
-    }
-
-    return sendRequest("setWebhook", args).asBool();
+bool ApiImpl::setWebhook(
+    const std::string_view url, InputFile::Ptr certificate,
+    bounded_optional_default<std::int32_t, 1, 100, 40> maxConnections,
+    const optional<Update::Types> allowedUpdates,
+    const optional<std::string_view> ipAddress,
+    optional<bool> dropPendingUpdates,
+    const optional<std::string_view> secretToken) const {
+    return sendRequest(
+               "setWebhook",
+               build(std::pair{"url", url},
+                     std::pair{"certificate", certificate},
+                     std::pair{"max_connections", maxConnections},
+                     std::pair{"allowed_updates", allowedUpdates},
+                     std::pair{"ip_address", ipAddress},
+                     std::pair{"drop_pending_updates", dropPendingUpdates},
+                     std::pair{"secret_token", secretToken}))
+        .asBool();
 }
 
-bool ApiImpl::deleteWebhook(bool dropPendingUpdates) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
+bool ApiImpl::deleteWebhook(optional<bool> dropPendingUpdates) const {
+    auto args = build(std::pair{"drop_pending_updates", dropPendingUpdates});
 
-    if (dropPendingUpdates) {
-        args.emplace_back("drop_pending_updates", dropPendingUpdates);
-    }
-
-    return sendRequest("deleteWebhook", args).asBool();
+    return sendRequest("deleteWebhook", std::move(args)).asBool();
 }
 
 WebhookInfo::Ptr ApiImpl::getWebhookInfo() const {
@@ -146,919 +338,491 @@ Message::Ptr ApiImpl::sendMessage(
     std::variant<std::int64_t, std::string> chatId, const std::string_view text,
     LinkPreviewOptions::Ptr linkPreviewOptions,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    const std::string_view parseMode, bool disableNotification,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &entities,
-    std::int32_t messageThreadId, bool protectContent,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(11);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("text", text);
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!entities.empty()) {
-        args.emplace_back("entities", putJSON(entities));
-    }
-    if (linkPreviewOptions != nullptr) {
-        args.emplace_back("link_preview_options", putJSON(linkPreviewOptions));
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendMessage", args));
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendMessage",
+        build(std::pair{"chat_id", chatId}, std::pair{"text", text},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"entities", entities},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId},
+              std::pair{"link_preview_options", linkPreviewOptions})));
 }
 
 Message::Ptr ApiImpl::forwardMessage(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<std::int64_t, std::string> fromChatId, std::int32_t messageId,
-    bool disableNotification, bool protectContent,
-    std::int32_t messageThreadId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(6);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("from_chat_id", fromChatId);
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    args.emplace_back("message_id", messageId);
-
-    return parse<Message>(sendRequest("forwardMessage", args));
+    optional<bool> disableNotification, optional<bool> protectContent,
+    optional<std::int32_t> messageThreadId) const {
+    return parse<Message>(sendRequest(
+        "forwardMessage",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"from_chat_id", fromChatId},
+              std::pair{"message_id", messageId},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"protect_content", protectContent},
+              std::pair{"message_thread_id", messageThreadId})));
 }
 
 std::vector<MessageId::Ptr> ApiImpl::forwardMessages(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<std::int64_t, std::string> fromChatId,
-    const std::vector<std::int32_t> &messageIds, std::int32_t messageThreadId,
-    bool disableNotification, bool protectContent) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(6);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("from_chat_id", fromChatId);
-    if (!messageIds.empty()) {
-        args.emplace_back("message_ids", putJSON(messageIds));
-    }
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-
-    return parseArray<MessageId>(sendRequest("forwardMessages", args));
+    const std::vector<std::int32_t> &messageIds,
+    optional<std::int32_t> messageThreadId, optional<bool> disableNotification,
+    optional<bool> protectContent) const {
+    return parseArray<MessageId>(sendRequest(
+        "forwardMessages",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"from_chat_id", fromChatId},
+              std::pair{"message_ids", messageIds},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"protect_content", protectContent})));
 }
 
 MessageId::Ptr ApiImpl::copyMessage(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<std::int64_t, std::string> fromChatId, std::int32_t messageId,
-    const std::string_view caption, const std::string_view parseMode,
+    const optional<std::string_view> caption,
+    const optional<ParseMode> parseMode,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    bool disableNotification, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, bool protectContent,
-    std::int32_t messageThreadId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(11);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("from_chat_id", fromChatId);
-    args.emplace_back("message_id", messageId);
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<MessageId>(sendRequest("copyMessage", args));
+    optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
+    GenericReply::Ptr replyMarkup, optional<bool> protectContent,
+    optional<std::int32_t> messageThreadId) const {
+    return parse<MessageId>(sendRequest(
+        "copyMessage",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"from_chat_id", fromChatId},
+              std::pair{"message_id", messageId}, std::pair{"caption", caption},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"caption_entities", captionEntities},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"protect_content", protectContent},
+              std::pair{"message_thread_id", messageThreadId})));
 }
 
 std::vector<MessageId::Ptr> ApiImpl::copyMessages(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<std::int64_t, std::string> fromChatId,
-    const std::vector<std::int32_t> &messageIds, std::int32_t messageThreadId,
-    bool disableNotification, bool protectContent, bool removeCaption) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(7);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("from_chat_id", fromChatId);
-
-    if (!messageIds.empty()) {
-        args.emplace_back("message_ids", putJSON(messageIds));
-    }
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (removeCaption) {
-        args.emplace_back("remove_caption", removeCaption);
-    }
-
-    return parseArray<MessageId>(sendRequest("copyMessages", args));
+    const std::vector<std::int32_t> &messageIds,
+    optional<std::int32_t> messageThreadId, optional<bool> disableNotification,
+    optional<bool> protectContent, optional<bool> removeCaption) const {
+    return parseArray<MessageId>(sendRequest(
+        "copyMessages",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"from_chat_id", fromChatId},
+              std::pair{"message_ids", messageIds},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"protect_content", protectContent},
+              std::pair{"remove_caption", removeCaption})));
 }
 
 Message::Ptr ApiImpl::sendPhoto(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<InputFile::Ptr, std::string> photo,
-    const std::string_view caption, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, const std::string_view parseMode,
-    bool disableNotification,
+    const optional<std::string_view> caption,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    std::int32_t messageThreadId, bool protectContent, bool hasSpoiler,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(12);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("photo", photo));
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (hasSpoiler) {
-        args.emplace_back("has_spoiler", hasSpoiler);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup != nullptr) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendPhoto", args));
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    optional<bool> hasSpoiler,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendPhoto",
+        build(std::pair{"chat_id", chatId}, std::pair{"photo", photo},
+              std::pair{"caption", caption},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"caption_entities", putJSON(captionEntities)},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"has_spoiler", hasSpoiler},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendAudio(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<InputFile::Ptr, std::string> audio,
-    const std::string_view caption, std::int32_t duration,
-    const std::string_view performer, const std::string_view title,
+    const optional<std::string_view> caption, optional<std::int32_t> duration,
+    const optional<std::string_view> performer,
+    const optional<std::string_view> title,
     std::variant<InputFile::Ptr, std::string> thumbnail,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    const std::string_view parseMode, bool disableNotification,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    std::int32_t messageThreadId, bool protectContent,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(15);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("audio", audio));
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (duration) {
-        args.emplace_back("duration", duration);
-    }
-    if (!performer.empty()) {
-        args.emplace_back("performer", performer);
-    }
-    if (!title.empty()) {
-        args.emplace_back("title", title);
-    }
-    args.emplace_back(handleInputFileOrString("thumbnail", thumbnail));
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendAudio", args));
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendAudio",
+        build(std::pair{"chat_id", chatId}, std::pair{"audio", audio},
+              std::pair{"caption", caption}, std::pair{"duration", duration},
+              std::pair{"performer", performer}, std::pair{"title", title},
+              std::pair{"thumbnail", thumbnail},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"caption_entities", putJSON(captionEntities)},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendDocument(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<InputFile::Ptr, std::string> document,
     std::variant<InputFile::Ptr, std::string> thumbnail,
-    const std::string_view caption, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, const std::string_view parseMode,
-    bool disableNotification,
+    const optional<std::string_view> caption,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    bool disableContentTypeDetection, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(13);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("document", document));
-    args.emplace_back(handleInputFileOrString("thumbnail", thumbnail));
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (disableContentTypeDetection) {
-        args.emplace_back("disable_content_type_detection",
-                          disableContentTypeDetection);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendDocument", args));
+    optional<bool> disableContentTypeDetection,
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendDocument",
+        build(std::pair{"chat_id", chatId}, std::pair{"document", document},
+              std::pair{"thumbnail", thumbnail}, std::pair{"caption", caption},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"caption_entities", captionEntities},
+              std::pair{"disable_content_type_detection",
+                        disableContentTypeDetection},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendVideo(
     std::variant<std::int64_t, std::string> chatId,
-    std::variant<InputFile::Ptr, std::string> video, bool supportsStreaming,
-    std::int32_t duration, std::int32_t width, std::int32_t height,
+    std::variant<InputFile::Ptr, std::string> video,
+    optional<bool> supportsStreaming, optional<std::int32_t> duration,
+    optional<std::int32_t> width, optional<std::int32_t> height,
     std::variant<InputFile::Ptr, std::string> thumbnail,
-    const std::string_view caption, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, const std::string_view parseMode,
-    bool disableNotification,
+    const optional<std::string_view> caption,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    std::int32_t messageThreadId, bool protectContent, bool hasSpoiler,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(17);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("video", video));
-    if (duration != 0) {
-        args.emplace_back("duration", duration);
-    }
-    if (width != 0) {
-        args.emplace_back("width", width);
-    }
-    if (height != 0) {
-        args.emplace_back("height", height);
-    }
-    args.emplace_back(handleInputFileOrString("thumbnail", thumbnail));
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (hasSpoiler) {
-        args.emplace_back("has_spoiler", hasSpoiler);
-    }
-    if (supportsStreaming) {
-        args.emplace_back("supports_streaming", supportsStreaming);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup != nullptr) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendVideo", args));
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    optional<bool> hasSpoiler,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendVideo",
+        build(std::pair{"chat_id", chatId}, std::pair{"video", video},
+              std::pair{"supports_streaming", supportsStreaming},
+              std::pair{"duration", duration}, std::pair{"width", width},
+              std::pair{"height", height}, std::pair{"thumbnail", thumbnail},
+              std::pair{"caption", caption},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"caption_entities", captionEntities},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"has_spoiler", hasSpoiler},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendAnimation(
     std::variant<std::int64_t, std::string> chatId,
-    std::variant<InputFile::Ptr, std::string> animation, std::int32_t duration,
-    std::int32_t width, std::int32_t height,
+    std::variant<InputFile::Ptr, std::string> animation,
+    optional<std::int32_t> duration, optional<std::int32_t> width,
+    optional<std::int32_t> height,
     std::variant<InputFile::Ptr, std::string> thumbnail,
-    const std::string_view caption, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, const std::string_view parseMode,
-    bool disableNotification,
+    const optional<std::string_view> caption,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    std::int32_t messageThreadId, bool protectContent, bool hasSpoiler,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(16);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("animation", animation));
-    if (duration != 0) {
-        args.emplace_back("duration", duration);
-    }
-    if (width != 0) {
-        args.emplace_back("width", width);
-    }
-    if (height != 0) {
-        args.emplace_back("height", height);
-    }
-    args.emplace_back(handleInputFileOrString("thumbnail", thumbnail));
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (hasSpoiler) {
-        args.emplace_back("has_spoiler", hasSpoiler);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup != nullptr) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendAnimation", args));
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    optional<bool> hasSpoiler,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendAnimation",
+        build(std::pair{"chat_id", chatId}, std::pair{"animation", animation},
+              std::pair{"duration", duration}, std::pair{"width", width},
+              std::pair{"height", height}, std::pair{"thumbnail", thumbnail},
+              std::pair{"caption", caption},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"caption_entities", captionEntities},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"has_spoiler", hasSpoiler},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendVoice(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<InputFile::Ptr, std::string> voice,
-    const std::string_view caption, std::int32_t duration,
+    const optional<std::string_view> caption, optional<std::int32_t> duration,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    const std::string_view parseMode, bool disableNotification,
+    const optional<ParseMode> parseMode, optional<bool> disableNotification,
     const std::vector<MessageEntity::Ptr> &captionEntities,
-    std::int32_t messageThreadId, bool protectContent,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(12);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("voice", voice));
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (duration) {
-        args.emplace_back("duration", duration);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendVoice", args));
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendVoice",
+        build(std::pair{"chat_id", chatId}, std::pair{"voice", voice},
+              std::pair{"caption", caption}, std::pair{"duration", duration},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"caption_entities", captionEntities},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendVideoNote(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<InputFile::Ptr, std::string> videoNote,
-    ReplyParameters::Ptr replyParameters, bool disableNotification,
-    std::int32_t duration, std::int32_t length,
+    ReplyParameters::Ptr replyParameters, optional<bool> disableNotification,
+    optional<std::int32_t> duration, optional<std::int32_t> length,
     std::variant<InputFile::Ptr, std::string> thumbnail,
-    GenericReply::Ptr replyMarkup, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(11);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("video_note", videoNote));
-    if (duration) {
-        args.emplace_back("duration", duration);
-    }
-    if (length) {
-        args.emplace_back("length", length);
-    }
-    args.emplace_back(handleInputFileOrString("thumbnail", thumbnail));
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendVideoNote", args));
+    GenericReply::Ptr replyMarkup, optional<std::int32_t> messageThreadId,
+    optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendVideoNote",
+        build(std::pair{"chat_id", chatId}, std::pair{"video_note", videoNote},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"duration", duration}, std::pair{"length", length},
+              std::pair{"thumbnail", thumbnail},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 std::vector<Message::Ptr> ApiImpl::sendMediaGroup(
     std::variant<std::int64_t, std::string> chatId,
-    const std::vector<InputMedia::Ptr> &media, bool disableNotification,
-    ReplyParameters::Ptr replyParameters, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(7);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("media", putJSON(media));
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-
-    return parseArray<Message>(sendRequest("sendMediaGroup", args));
+    const std::vector<InputMedia::Ptr> &media,
+    optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parseArray<Message>(sendRequest(
+        "sendMediaGroup",
+        build(std::pair{"chat_id", chatId}, std::pair{"media", media},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendLocation(
     std::variant<std::int64_t, std::string> chatId, float latitude,
-    float longitude, std::int32_t livePeriod,
+    float longitude, bounded_optional<std::int32_t, 60, 86400> livePeriod,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    bool disableNotification, float horizontalAccuracy, std::int32_t heading,
-    std::int32_t proximityAlertRadius, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(13);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("latitude", latitude);
-    args.emplace_back("longitude", longitude);
-    if (horizontalAccuracy) {
-        args.emplace_back("horizontal_accuracy", horizontalAccuracy);
-    }
-    if (livePeriod) {
-        args.emplace_back("live_period",
-                          std::max(60, std::min(86400, livePeriod)));
-    }
-    if (heading) {
-        args.emplace_back("heading", std::max(1, std::min(360, heading)));
-    }
-    if (proximityAlertRadius) {
-        args.emplace_back("proximity_alert_radius",
-                          std::max(1, std::min(100000, proximityAlertRadius)));
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendLocation", args));
+    optional<bool> disableNotification,
+    bounded_optional<float, 0, 1500> horizontalAccuracy,
+    optional<std::int32_t> heading,
+    bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius,
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendLocation",
+        build(std::pair{"chat_id", chatId}, std::pair{"latitude", latitude},
+              std::pair{"longitude", longitude},
+              std::pair{"live_period", livePeriod},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"horizontal_accuracy", horizontalAccuracy},
+              std::pair{"heading", heading},
+              std::pair{"proximity_alert_radius", proximityAlertRadius},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::editMessageLiveLocation(
     float latitude, float longitude,
-    std::variant<std::int64_t, std::string> chatId, std::int32_t messageId,
-    const std::string_view inlineMessageId,
-    InlineKeyboardMarkup::Ptr replyMarkup, float horizontalAccuracy,
-    std::int32_t heading, std::int32_t proximityAlertRadius) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(9);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-    args.emplace_back("latitude", latitude);
-    args.emplace_back("longitude", longitude);
-    if (horizontalAccuracy) {
-        args.emplace_back("horizontal_accuracy", horizontalAccuracy);
-    }
-    if (heading) {
-        args.emplace_back("heading", heading);
-    }
-    if (proximityAlertRadius) {
-        args.emplace_back("proximity_alert_radius", proximityAlertRadius);
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("editMessageLiveLocation", args));
+    std::variant<std::int64_t, std::string> chatId,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId,
+    InlineKeyboardMarkup::Ptr replyMarkup,
+    bounded_optional<float, 0, 1500> horizontalAccuracy,
+    bounded_optional<std::int32_t, 1, 360> heading,
+    bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius) const {
+    return parse<Message>(sendRequest(
+        "editMessageLiveLocation",
+        build(std::pair{"latitude", latitude},
+              std::pair{"longitude", longitude}, std::pair{"chat_id", chatId},
+              std::pair{"message_id", messageId},
+              std::pair{"inline_message_id", inlineMessageId},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"horizontal_accuracy", horizontalAccuracy},
+              std::pair{"heading", heading},
+              std::pair{"proximity_alert_radius", proximityAlertRadius})));
 }
 
 Message::Ptr ApiImpl::stopMessageLiveLocation(
-    std::variant<std::int64_t, std::string> chatId, std::int32_t messageId,
-    const std::string_view inlineMessageId,
+    std::variant<std::int64_t, std::string> chatId,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId,
     InlineKeyboardMarkup::Ptr replyMarkup) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("stopMessageLiveLocation", args));
+    return parse<Message>(sendRequest(
+        "stopMessageLiveLocation",
+        build(std::pair{"chat_id", chatId}, std::pair{"message_id", messageId},
+              std::pair{"inline_message_id", inlineMessageId},
+              std::pair{"reply_markup", replyMarkup})));
 }
 
 Message::Ptr ApiImpl::sendVenue(
     std::variant<std::int64_t, std::string> chatId, float latitude,
     float longitude, const std::string_view title,
-    const std::string_view address, const std::string_view foursquareId,
-    const std::string_view foursquareType, bool disableNotification,
-    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    const std::string_view googlePlaceId,
-    const std::string_view googlePlaceType, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(15);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("latitude", latitude);
-    args.emplace_back("longitude", longitude);
-    args.emplace_back("title", title);
-    args.emplace_back("address", address);
-    if (!foursquareId.empty()) {
-        args.emplace_back("foursquare_id", foursquareId);
-    }
-    if (!foursquareType.empty()) {
-        args.emplace_back("foursquare_type", foursquareType);
-    }
-    if (!googlePlaceId.empty()) {
-        args.emplace_back("google_place_id", googlePlaceId);
-    }
-    if (!googlePlaceType.empty()) {
-        args.emplace_back("google_place_type", googlePlaceType);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendVenue", args));
+    const std::string_view address,
+    const optional<std::string_view> foursquareId,
+    const optional<std::string_view> foursquareType,
+    optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
+    GenericReply::Ptr replyMarkup,
+    const optional<std::string_view> googlePlaceId,
+    const optional<std::string_view> googlePlaceType,
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendVenue",
+        build(std::pair{"chat_id", chatId}, std::pair{"latitude", latitude},
+              std::pair{"longitude", longitude}, std::pair{"title", title},
+              std::pair{"address", address},
+              std::pair{"foursquare_id", foursquareId},
+              std::pair{"foursquare_type", foursquareType},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"google_place_id", googlePlaceId},
+              std::pair{"google_place_type", googlePlaceType},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendContact(
     std::variant<std::int64_t, std::string> chatId,
     const std::string_view phoneNumber, const std::string_view firstName,
-    const std::string_view lastName, const std::string_view vcard,
-    bool disableNotification, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(11);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("phone_number", phoneNumber);
-    args.emplace_back("first_name", firstName);
-    if (!lastName.empty()) {
-        args.emplace_back("last_name", lastName);
-    }
-    if (!vcard.empty()) {
-        args.emplace_back("vcard", vcard);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendContact", args));
+    const optional<std::string_view> lastName,
+    const optional<std::string_view> vcard, optional<bool> disableNotification,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendContact",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"phone_number", phoneNumber},
+              std::pair{"first_name", firstName},
+              std::pair{"last_name", lastName}, std::pair{"vcard", vcard},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendPoll(
     std::variant<std::int64_t, std::string> chatId,
     const std::string_view question, const std::vector<std::string> &options,
-    bool disableNotification, ReplyParameters::Ptr replyParameters,
-    GenericReply::Ptr replyMarkup, bool isAnonymous,
-    const std::string_view type, bool allowsMultipleAnswers,
-    std::int32_t correctOptionId, const std::string_view explanation,
-    const std::string_view explanationParseMode,
+    optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
+    GenericReply::Ptr replyMarkup, optional_default<bool, true> isAnonymous,
+    const optional_default<PollType, PollType::regular> type,
+    optional_default<bool, false> allowsMultipleAnswers,
+    optional<std::int32_t> correctOptionId,
+    const optional<std::string_view> explanation,
+    const optional<ParseMode> explanationParseMode,
     const std::vector<MessageEntity::Ptr> &explanationEntities,
-    std::int32_t openPeriod, std::int32_t closeDate, bool isClosed,
-    std::int32_t messageThreadId, bool protectContent,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(19);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("question", question);
-    args.emplace_back("options", putJSON(escapeJSONStringVec(options)));
-    if (!isAnonymous) {
-        args.emplace_back("is_anonymous", isAnonymous);
-    }
-    if (!type.empty()) {
-        args.emplace_back("type", type);
-    }
-    if (allowsMultipleAnswers) {
-        args.emplace_back("allows_multiple_answers", allowsMultipleAnswers);
-    }
-    if (correctOptionId != -1) {
-        args.emplace_back("correct_option_id", correctOptionId);
-    }
-    if (!explanation.empty()) {
-        args.emplace_back("explanation", explanation);
-    }
-    if (!explanationParseMode.empty()) {
-        args.emplace_back("explanation_parse_mode", explanationParseMode);
-    }
-    if (!explanationEntities.empty()) {
-        args.emplace_back("explanation_entities", putJSON(explanationEntities));
-    }
-    if (openPeriod != 0) {
-        args.emplace_back("open_period", openPeriod);
-    }
-    if (closeDate != 0) {
-        args.emplace_back("close_date", closeDate);
-    }
-    if (isClosed) {
-        args.emplace_back("is_closed", isClosed);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendPoll", args));
+    optional<std::int32_t> openPeriod, optional<std::int32_t> closeDate,
+    optional<bool> isClosed, optional<std::int32_t> messageThreadId,
+    optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendPoll",
+        build(std::pair{"chat_id", chatId}, std::pair{"question", question},
+              std::pair{"options", options},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"is_anonymous", isAnonymous}, std::pair{"type", type},
+              std::pair{"allows_multiple_answers", allowsMultipleAnswers},
+              std::pair{"correct_option_id", correctOptionId},
+              std::pair{"explanation", explanation},
+              std::pair{"explanation_parse_mode", explanationParseMode},
+              std::pair{"explanation_entities", explanationEntities},
+              std::pair{"open_period", openPeriod},
+              std::pair{"close_date", closeDate},
+              std::pair{"is_closed", isClosed},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::sendDice(
-    std::variant<std::int64_t, std::string> chatId, bool disableNotification,
-    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    const std::string_view emoji, std::int32_t messageThreadId,
-    bool protectContent, const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(8);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    if (!emoji.empty()) {
-        args.emplace_back("emoji", emoji);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendDice", args));
+    std::variant<std::int64_t, std::string> chatId,
+    optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
+    GenericReply::Ptr replyMarkup, const optional<std::string_view> emoji,
+    optional<std::int32_t> messageThreadId, optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendDice",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup}, std::pair{"emoji", emoji},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 bool ApiImpl::setMessageReaction(std::variant<std::int64_t, std::string> chatId,
-                                 std::int32_t messageId,
+                                 optional<std::int32_t> messageId,
                                  const std::vector<ReactionType::Ptr> &reaction,
-                                 bool isBig) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_id", messageId);
-    if (!reaction.empty()) {
-        args.emplace_back("reaction", putJSON(reaction));
-    }
-    if (isBig) {
-        args.emplace_back("is_big", isBig);
-    }
-
-    return sendRequest("setMessageReaction", args).asBool();
+                                 optional<bool> isBig) const {
+    return sendRequest("setMessageReaction",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_id", messageId},
+                             std::pair{"reaction", reaction},
+                             std::pair{"is_big", isBig}))
+        .asBool();
 }
 
 bool ApiImpl::sendChatAction(
-    std::int64_t chatId, const std::string_view action,
-    std::int32_t messageThreadId,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("action", action);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-
-    return sendRequest("sendChatAction", args).asBool();
+    std::int64_t chatId, const ChatAction action,
+    optional<std::int32_t> messageThreadId,
+    const optional<std::string_view> businessConnectionId) const {
+    return sendRequest(
+               "sendChatAction",
+               build(std::pair{"chat_id", chatId}, std::pair{"action", action},
+                     std::pair{"message_thread_id", messageThreadId},
+                     std::pair{"business_connection_id", businessConnectionId}))
+        .asBool();
 }
 
-UserProfilePhotos::Ptr ApiImpl::getUserProfilePhotos(std::int64_t userId,
-                                                     std::int32_t offset,
-                                                     std::int32_t limit) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("user_id", userId);
-    if (offset) {
-        args.emplace_back("offset", offset);
-    }
-    if (limit != 100) {
-        args.emplace_back("limit", std::max(1, std::min(100, limit)));
-    }
-
-    return parse<UserProfilePhotos>(sendRequest("getUserProfilePhotos", args));
+UserProfilePhotos::Ptr ApiImpl::getUserProfilePhotos(
+    std::int64_t userId, optional<std::int32_t> offset,
+    bounded_optional_default<std::int32_t, 1, 100, 100> limit) const {
+    return parse<UserProfilePhotos>(sendRequest(
+        "getUserProfilePhotos",
+        build(std::pair{"user_id", userId}, std::pair{"offset", offset},
+              std::pair{"limit", limit})));
 }
 
 File::Ptr ApiImpl::getFile(const std::string_view fileId) const {
@@ -1071,131 +835,80 @@ File::Ptr ApiImpl::getFile(const std::string_view fileId) const {
 }
 
 bool ApiImpl::banChatMember(std::variant<std::int64_t, std::string> chatId,
-                            std::int64_t userId, std::int32_t untilDate,
-                            bool revokeMessages) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-    if (untilDate != 0) {
-        args.emplace_back("until_date", untilDate);
-    }
-    if (revokeMessages) {
-        args.emplace_back("revoke_messages", revokeMessages);
-    }
-
-    return sendRequest("banChatMember", args).asBool();
+                            std::int64_t userId,
+                            optional<std::int32_t> untilDate,
+                            optional<bool> revokeMessages) const {
+    return sendRequest(
+               "banChatMember",
+               build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId},
+                     std::pair{"until_date", untilDate},
+                     std::pair{"revoke_messages", revokeMessages}))
+        .asBool();
 }
 
 bool ApiImpl::unbanChatMember(std::variant<std::int64_t, std::string> chatId,
-                              std::int64_t userId, bool onlyIfBanned) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-    if (onlyIfBanned) {
-        args.emplace_back("only_if_banned", onlyIfBanned);
-    }
-
-    return sendRequest("unbanChatMember", args).asBool();
+                              std::int64_t userId,
+                              optional<bool> onlyIfBanned) const {
+    return sendRequest(
+               "unbanChatMember",
+               build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId},
+                     std::pair{"only_if_banned", onlyIfBanned}))
+        .asBool();
 }
 
-bool ApiImpl::restrictChatMember(std::variant<std::int64_t, std::string> chatId,
-                                 std::int64_t userId,
-                                 TgBot::ChatPermissions::Ptr permissions,
-                                 std::uint32_t untilDate,
-                                 bool useIndependentChatPermissions) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(5);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-    args.emplace_back("permissions", putJSON(permissions));
-    if (useIndependentChatPermissions != false) {
-        args.emplace_back("use_independent_chat_permissions",
-                          useIndependentChatPermissions);
-    }
-    if (untilDate != 0) {
-        args.emplace_back("until_date", untilDate);
-    }
-
-    return sendRequest("restrictChatMember", args).asBool();
+bool ApiImpl::restrictChatMember(
+    std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+    ChatPermissions::Ptr permissions, optional<std::uint32_t> untilDate,
+    optional<bool> useIndependentChatPermissions) const {
+    return sendRequest(
+               "restrictChatMember",
+               build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId},
+                     std::pair{"permissions", permissions},
+                     std::pair{"until_date", untilDate},
+                     std::pair{"use_independent_chat_permissions",
+                               useIndependentChatPermissions}))
+        .asBool();
 }
 
 bool ApiImpl::promoteChatMember(
     std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
-    bool canChangeInfo, bool canPostMessages, bool canEditMessages,
-    bool canDeleteMessages, bool canInviteUsers, bool canPinMessages,
-    bool canPromoteMembers, bool isAnonymous, bool canManageChat,
-    bool canManageVideoChats, bool canRestrictMembers, bool canManageTopics,
-    bool canPostStories, bool canEditStories, bool canDeleteStories) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(17);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-    if (isAnonymous != false) {
-        args.emplace_back("is_anonymous", isAnonymous);
-    }
-    if (canManageChat != false) {
-        args.emplace_back("can_manage_chat", canManageChat);
-    }
-    if (canPostMessages != false) {
-        args.emplace_back("can_post_messages", canPostMessages);
-    }
-    if (canEditMessages != false) {
-        args.emplace_back("can_edit_messages", canEditMessages);
-    }
-    if (canDeleteMessages != false) {
-        args.emplace_back("can_delete_messages", canDeleteMessages);
-    }
-    if (canPostStories != false) {
-        args.emplace_back("can_post_stories", canPostStories);
-    }
-    if (canEditStories != false) {
-        args.emplace_back("can_edit_stories", canEditStories);
-    }
-    if (canDeleteStories != false) {
-        args.emplace_back("can_delete_stories", canDeleteStories);
-    }
-    if (canManageVideoChats != false) {
-        args.emplace_back("can_manage_video_chats", canManageVideoChats);
-    }
-    if (canRestrictMembers != false) {
-        args.emplace_back("can_restrict_members", canRestrictMembers);
-    }
-    if (canPromoteMembers != false) {
-        args.emplace_back("can_promote_members", canPromoteMembers);
-    }
-    if (canChangeInfo != false) {
-        args.emplace_back("can_change_info", canChangeInfo);
-    }
-    if (canInviteUsers != false) {
-        args.emplace_back("can_invite_users", canInviteUsers);
-    }
-    if (canPinMessages != false) {
-        args.emplace_back("can_pin_messages", canPinMessages);
-    }
-    if (canManageTopics != false) {
-        args.emplace_back("can_manage_topics", canManageTopics);
-    }
-
-    return sendRequest("promoteChatMember", args).asBool();
+    optional<bool> canChangeInfo, optional<bool> canPostMessages,
+    optional<bool> canEditMessages, optional<bool> canDeleteMessages,
+    optional<bool> canInviteUsers, optional<bool> canPinMessages,
+    optional<bool> canPromoteMembers, optional<bool> isAnonymous,
+    optional<bool> canManageChat, optional<bool> canManageVideoChats,
+    optional<bool> canRestrictMembers, optional<bool> canManageTopics,
+    optional<bool> canPostStories, optional<bool> canEditStories,
+    optional<bool> canDeleteStories) const {
+    return sendRequest(
+               "promoteChatMember",
+               build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId},
+                     std::pair{"can_change_info", canChangeInfo},
+                     std::pair{"can_post_messages", canPostMessages},
+                     std::pair{"can_edit_messages", canEditMessages},
+                     std::pair{"can_delete_messages", canDeleteMessages},
+                     std::pair{"can_invite_users", canInviteUsers},
+                     std::pair{"can_pin_messages", canPinMessages},
+                     std::pair{"can_promote_members", canPromoteMembers},
+                     std::pair{"is_anonymous", isAnonymous},
+                     std::pair{"can_manage_chat", canManageChat},
+                     std::pair{"can_manage_video_chats", canManageVideoChats},
+                     std::pair{"can_restrict_members", canRestrictMembers},
+                     std::pair{"can_manage_topics", canManageTopics},
+                     std::pair{"can_post_stories", canPostStories},
+                     std::pair{"can_edit_stories", canEditStories},
+                     std::pair{"can_delete_stories", canDeleteStories}))
+        .asBool();
 }
 
 bool ApiImpl::setChatAdministratorCustomTitle(
     std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
     const std::string_view customTitle) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-    args.emplace_back("custom_title", customTitle);
-
-    return sendRequest("setChatAdministratorCustomTitle", args).asBool();
+    return sendRequest(
+               "setChatAdministratorCustomTitle",
+               build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId},
+                     std::pair{"custom_title", customTitle}))
+        .asBool();
 }
 
 bool ApiImpl::banChatSenderChat(std::variant<std::int64_t, std::string> chatId,
@@ -1221,20 +934,16 @@ bool ApiImpl::unbanChatSenderChat(
     return sendRequest("unbanChatSenderChat", args).asBool();
 }
 
-bool ApiImpl::setChatPermissions(std::variant<std::int64_t, std::string> chatId,
-                                 ChatPermissions::Ptr permissions,
-                                 bool useIndependentChatPermissions) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("permissions", putJSON(permissions));
-    if (useIndependentChatPermissions) {
-        args.emplace_back("use_independent_chat_permissions",
-                          useIndependentChatPermissions);
-    }
-
-    return sendRequest("setChatPermissions", args).asBool();
+bool ApiImpl::setChatPermissions(
+    std::variant<std::int64_t, std::string> chatId,
+    ChatPermissions::Ptr permissions,
+    optional<bool> useIndependentChatPermissions) const {
+    return sendRequest("setChatPermissions",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"permissions", permissions},
+                             std::pair{"use_independent_chat_permissions",
+                                       useIndependentChatPermissions}))
+        .asBool();
 }
 
 std::string ApiImpl::exportChatInviteLink(
@@ -1248,200 +957,125 @@ std::string ApiImpl::exportChatInviteLink(
 }
 
 ChatInviteLink::Ptr ApiImpl::createChatInviteLink(
-    std::variant<std::int64_t, std::string> chatId, std::int32_t expireDate,
-    std::int32_t memberLimit, const std::string_view name,
-    bool createsJoinRequest) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(5);
-
-    args.emplace_back("chat_id", chatId);
-    if (!name.empty()) {
-        args.emplace_back("name", name);
-    }
-    if (expireDate != 0) {
-        args.emplace_back("expire_date", expireDate);
-    }
-    if (memberLimit != 0) {
-        args.emplace_back("member_limit", memberLimit);
-    }
-    if (createsJoinRequest) {
-        args.emplace_back("createsJoinRequest", createsJoinRequest);
-    }
-
-    return parse<ChatInviteLink>(sendRequest("createChatInviteLink", args));
+    std::variant<std::int64_t, std::string> chatId,
+    optional<std::int32_t> expireDate, optional<std::int32_t> memberLimit,
+    const optional<std::string_view> name,
+    optional<bool> createsJoinRequest) const {
+    return parse<ChatInviteLink>(sendRequest(
+        "createChatInviteLink",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"expire_date", expireDate},
+              std::pair{"member_limit", memberLimit}, std::pair{"name", name},
+              std::pair{"creates_join_request", createsJoinRequest})));
 }
 
 ChatInviteLink::Ptr ApiImpl::editChatInviteLink(
     std::variant<std::int64_t, std::string> chatId,
-    const std::string_view inviteLink, std::int32_t expireDate,
-    std::int32_t memberLimit, const std::string_view name,
-    bool createsJoinRequest) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(6);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("invite_link", inviteLink);
-    if (!name.empty()) {
-        args.emplace_back("name", name);
-    }
-    if (expireDate != 0) {
-        args.emplace_back("expire_date", expireDate);
-    }
-    if (memberLimit != 0) {
-        args.emplace_back("member_limit", memberLimit);
-    }
-    if (createsJoinRequest) {
-        args.emplace_back("createsJoinRequest", createsJoinRequest);
-    }
-
-    return parse<ChatInviteLink>(sendRequest("editChatInviteLink", args));
+    const std::string_view inviteLink, optional<std::int32_t> expireDate,
+    optional<std::int32_t> memberLimit, const optional<std::string_view> name,
+    optional<bool> createsJoinRequest) const {
+    return parse<ChatInviteLink>(sendRequest(
+        "editChatInviteLink",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"invite_link", inviteLink},
+              std::pair{"expire_date", expireDate},
+              std::pair{"member_limit", memberLimit}, std::pair{"name", name},
+              std::pair{"creates_join_request", createsJoinRequest})));
 }
 
 ChatInviteLink::Ptr ApiImpl::revokeChatInviteLink(
     std::variant<std::int64_t, std::string> chatId,
     const std::string_view inviteLink) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("invite_link", inviteLink);
-
-    return parse<ChatInviteLink>(sendRequest("revokeChatInviteLink", args));
+    return parse<ChatInviteLink>(sendRequest(
+        "revokeChatInviteLink", build(std::pair{"chat_id", chatId},
+                                      std::pair{"invite_link", inviteLink})));
 }
 
 bool ApiImpl::approveChatJoinRequest(
     std::variant<std::int64_t, std::string> chatId, std::int64_t userId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-
-    return sendRequest("approveChatJoinRequest", args).asBool();
+    return sendRequest("approveChatJoinRequest",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"user_id", userId}))
+        .asBool();
 }
 
 bool ApiImpl::declineChatJoinRequest(
     std::variant<std::int64_t, std::string> chatId, std::int64_t userId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-
-    return sendRequest("declineChatJoinRequest", args).asBool();
+    return sendRequest("declineChatJoinRequest",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"user_id", userId}))
+        .asBool();
 }
 
 bool ApiImpl::setChatPhoto(std::variant<std::int64_t, std::string> chatId,
                            const InputFile::Ptr photo) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("photo", photo->data, true, photo->mimeType,
-                      photo->fileName);
-
-    return sendRequest("setChatPhoto", args).asBool();
+    return sendRequest("setChatPhoto", build(std::pair{"chat_id", chatId},
+                                             std::pair{"photo", photo}))
+        .asBool();
 }
 
 bool ApiImpl::deleteChatPhoto(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("deleteChatPhoto", args).asBool();
+    return sendRequest("deleteChatPhoto", build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::setChatTitle(std::variant<std::int64_t, std::string> chatId,
                            const std::string_view title) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("title", title);
-
-    return sendRequest("setChatTitle", args).asBool();
+    return sendRequest("setChatTitle", build(std::pair{"chat_id", chatId},
+                                             std::pair{"title", title}))
+        .asBool();
 }
 
 bool ApiImpl::setChatDescription(std::variant<std::int64_t, std::string> chatId,
                                  const std::string_view description) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    if (!description.empty()) {
-        args.emplace_back("description", description);
-    }
-
-    return sendRequest("setChatDescription", args).asBool();
+    return sendRequest("setChatDescription",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"description", description}))
+        .asBool();
 }
 
 bool ApiImpl::pinChatMessage(std::variant<std::int64_t, std::string> chatId,
                              std::int32_t messageId,
-                             bool disableNotification) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_id", messageId);
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-
-    return sendRequest("pinChatMessage", args).asBool();
+                             optional<bool> disableNotification) const {
+    return sendRequest(
+               "pinChatMessage",
+               build(std::pair{"chat_id", chatId},
+                     std::pair{"message_id", messageId},
+                     std::pair{"disable_notification", disableNotification}))
+        .asBool();
 }
 
 bool ApiImpl::unpinChatMessage(std::variant<std::int64_t, std::string> chatId,
-                               std::int32_t messageId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageId != 0) {
-        args.emplace_back("message_id", messageId);
-    }
-
-    return sendRequest("unpinChatMessage", args).asBool();
+                               optional<std::int32_t> messageId) const {
+    return sendRequest("unpinChatMessage",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_id", messageId}))
+        .asBool();
 }
 
 bool ApiImpl::unpinAllChatMessages(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("unpinAllChatMessages", args).asBool();
+    return sendRequest("unpinAllChatMessages",
+                       build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::leaveChat(std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("leaveChat", args).asBool();
+    return sendRequest("leaveChat", build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 Chat::Ptr ApiImpl::getChat(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return parse<Chat>(sendRequest("getChat", args));
+    return parse<Chat>(
+        sendRequest("getChat", build(std::pair{"chat_id", chatId})));
 }
 
 std::vector<ChatMember::Ptr> ApiImpl::getChatAdministrators(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return parseArray<ChatMember>(sendRequest("getChatAdministrators", args));
+    return parseArray<ChatMember>(sendRequest(
+        "getChatAdministrators", build(std::pair{"chat_id", chatId})));
 }
 
 int32_t ApiImpl::getChatMemberCount(
@@ -1492,406 +1126,250 @@ std::vector<Sticker::Ptr> ApiImpl::getForumTopicIconStickers() const {
 
 ForumTopic::Ptr ApiImpl::createForumTopic(
     std::variant<std::int64_t, std::string> chatId, const std::string_view name,
-    std::int32_t iconColor, const std::string_view iconCustomEmojiId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("name", name);
-    if (iconColor != 0) {
-        args.emplace_back("icon_color", iconColor);
-    }
-    if (!iconCustomEmojiId.empty()) {
-        args.emplace_back("icon_custom_emoji_id", iconCustomEmojiId);
-    }
-
-    return parse<ForumTopic>(sendRequest("createForumTopic", args));
+    optional<std::int32_t> iconColor,
+    const optional<std::string_view> iconCustomEmojiId) const {
+    return parse<ForumTopic>(sendRequest(
+        "createForumTopic",
+        build(std::pair{"chat_id", chatId}, std::pair{"name", name},
+              std::pair{"icon_color", iconColor},
+              std::pair{"icon_custom_emoji_id", iconCustomEmojiId})));
 }
 
 bool ApiImpl::editForumTopic(
     std::variant<std::int64_t, std::string> chatId,
-    std::int32_t messageThreadId, const std::string_view name,
+    std::int32_t messageThreadId, const optional<std::string_view> name,
     std::variant<std::int32_t, std::string> iconCustomEmojiId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_thread_id", messageThreadId);
-    if (!name.empty()) {
-        args.emplace_back("name", name);
-    }
-
-    args.emplace_back("icon_custom_emoji_id", iconCustomEmojiId);
-
-    return sendRequest("editForumTopic", args).asBool();
+    return sendRequest(
+               "editForumTopic",
+               build(std::pair{"chat_id", chatId},
+                     std::pair{"message_thread_id", messageThreadId},
+                     std::pair{"name", name},
+                     std::pair{"icon_custom_emoji_id", iconCustomEmojiId}))
+        .asBool();
 }
 
 bool ApiImpl::closeForumTopic(std::variant<std::int64_t, std::string> chatId,
                               std::int32_t messageThreadId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_thread_id", messageThreadId);
-
-    return sendRequest("closeForumTopic", args).asBool();
+    return sendRequest("closeForumTopic",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_thread_id", messageThreadId}))
+        .asBool();
 }
 
 bool ApiImpl::reopenForumTopic(std::variant<std::int64_t, std::string> chatId,
                                std::int32_t messageThreadId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_thread_id", messageThreadId);
-
-    return sendRequest("reopenForumTopic", args).asBool();
+    return sendRequest("reopenForumTopic",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_thread_id", messageThreadId}))
+        .asBool();
 }
 
 bool ApiImpl::deleteForumTopic(std::variant<std::int64_t, std::string> chatId,
                                std::int32_t messageThreadId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_thread_id", messageThreadId);
-
-    return sendRequest("deleteForumTopic", args).asBool();
+    return sendRequest("deleteForumTopic",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_thread_id", messageThreadId}))
+        .asBool();
 }
 
 bool ApiImpl::unpinAllForumTopicMessages(
     std::variant<std::int64_t, std::string> chatId,
     std::int32_t messageThreadId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_thread_id", messageThreadId);
-
-    return sendRequest("unpinAllForumTopicMessages", args).asBool();
+    return sendRequest("unpinAllForumTopicMessages",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_thread_id", messageThreadId}))
+        .asBool();
 }
 
 bool ApiImpl::editGeneralForumTopic(
     std::variant<std::int64_t, std::string> chatId, std::string name) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("name", name);
-
-    return sendRequest("editGeneralForumTopic", args).asBool();
+    return sendRequest(
+               "editGeneralForumTopic",
+               build(std::pair{"chat_id", chatId}, std::pair{"name", name}))
+        .asBool();
 }
 
 bool ApiImpl::closeGeneralForumTopic(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("closeGeneralForumTopic", args).asBool();
+    return sendRequest("closeGeneralForumTopic",
+                       build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::reopenGeneralForumTopic(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("reopenGeneralForumTopic", args).asBool();
+    return sendRequest("reopenGeneralForumTopic",
+                       build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::hideGeneralForumTopic(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("hideGeneralForumTopic", args).asBool();
+    return sendRequest("hideGeneralForumTopic",
+                       build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::unhideGeneralForumTopic(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("unhideGeneralForumTopic", args).asBool();
+    return sendRequest("unhideGeneralForumTopic",
+                       build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::unpinAllGeneralForumTopicMessages(
     std::variant<std::int64_t, std::string> chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("chat_id", chatId);
-
-    return sendRequest("unpinAllGeneralForumTopicMessages", args).asBool();
+    return sendRequest("unpinAllGeneralForumTopicMessages",
+                       build(std::pair{"chat_id", chatId}))
+        .asBool();
 }
 
 bool ApiImpl::answerCallbackQuery(const std::string_view callbackQueryId,
-                                  const std::string_view text, bool showAlert,
-                                  const std::string_view url,
-                                  std::int32_t cacheTime) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(5);
-
-    args.emplace_back("callback_query_id", callbackQueryId);
-    if (!text.empty()) {
-        args.emplace_back("text", text);
-    }
-    if (showAlert) {
-        args.emplace_back("show_alert", showAlert);
-    }
-    if (!url.empty()) {
-        args.emplace_back("url", url);
-    }
-    if (cacheTime) {
-        args.emplace_back("cache_time", cacheTime);
-    }
-
-    return sendRequest("answerCallbackQuery", args).asBool();
+                                  const optional<std::string_view> text,
+                                  optional<bool> showAlert,
+                                  const optional<std::string_view> url,
+                                  optional<std::int32_t> cacheTime) const {
+    return sendRequest(
+               "answerCallbackQuery",
+               build(std::pair{"callback_query_id", callbackQueryId},
+                     std::pair{"text", text},
+                     std::pair{"show_alert", showAlert}, std::pair{"url", url},
+                     std::pair{"cache_time", cacheTime}))
+        .asBool();
 }
 
 UserChatBoosts::Ptr ApiImpl::getUserChatBoosts(
     std::variant<std::int64_t, std::string> chatId, std::int32_t userId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("user_id", userId);
-
-    return parse<UserChatBoosts>(sendRequest("getUserChatBoosts", args));
+    return parse<UserChatBoosts>(sendRequest(
+        "getUserChatBoosts",
+        build(std::pair{"chat_id", chatId}, std::pair{"user_id", userId})));
 }
 
 BusinessConnection::Ptr ApiImpl::getBusinessConnection(
     const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("business_connection_id", businessConnectionId);
-
-    return parse<BusinessConnection>(
-        sendRequest("getBusinessConnection", args));
+    return parse<BusinessConnection>(sendRequest(
+        "getBusinessConnection",
+        build(std::pair{"business_connection_id", businessConnectionId})));
 }
 
 bool ApiImpl::setMyCommands(const std::vector<BotCommand::Ptr> &commands,
                             BotCommandScope::Ptr scope,
-                            const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("commands", putJSON(commands));
-    if (scope != nullptr) {
-        args.emplace_back("scope", putJSON(scope));
-    }
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return sendRequest("setMyCommands", args).asBool();
+                            const optional<LanguageCode> languageCode) const {
+    return sendRequest(
+               "setMyCommands",
+               build(std::pair{"commands", commands}, std::pair{"scope", scope},
+                     std::pair{"language_code", languageCode}))
+        .asBool();
 }
 
-bool ApiImpl::deleteMyCommands(BotCommandScope::Ptr scope,
-                               const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (scope != nullptr) {
-        args.emplace_back("scope", putJSON(scope));
-    }
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return sendRequest("deleteMyCommands", args).asBool();
+bool ApiImpl::deleteMyCommands(
+    BotCommandScope::Ptr scope,
+    const optional<LanguageCode> languageCode) const {
+    return sendRequest("deleteMyCommands",
+                       build(std::pair{"scope", scope},
+                             std::pair{"language_code", languageCode}))
+        .asBool();
 }
 
 std::vector<BotCommand::Ptr> ApiImpl::getMyCommands(
-    BotCommandScope::Ptr scope, const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (scope != nullptr) {
-        args.emplace_back("scope", putJSON(scope));
-    }
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return parseArray<BotCommand>(sendRequest("getMyCommands", args));
+    BotCommandScope::Ptr scope,
+    const optional<LanguageCode> languageCode) const {
+    return parseArray<BotCommand>(sendRequest(
+        "getMyCommands", build(std::pair{"scope", scope},
+                               std::pair{"language_code", languageCode})));
 }
 
-bool ApiImpl::setMyName(const std::string_view name,
-                        const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (!name.empty()) {
-        args.emplace_back("name", name);
-    }
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return sendRequest("setMyName", args).asBool();
+bool ApiImpl::setMyName(const optional<std::string_view> name,
+                        const optional<LanguageCode> languageCode) const {
+    return sendRequest("setMyName",
+                       build(std::pair{"name", name},
+                             std::pair{"language_code", languageCode}))
+        .asBool();
 }
 
-BotName::Ptr ApiImpl::getMyName(const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return parse<BotName>(sendRequest("getMyName", args));
+BotName::Ptr ApiImpl::getMyName(
+    const optional<LanguageCode> languageCode) const {
+    return parse<BotName>(sendRequest(
+        "getMyName", build(std::pair{"language_code", languageCode})));
 }
 
-bool ApiImpl::setMyDescription(const std::string_view description,
-                               const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (!description.empty()) {
-        args.emplace_back("description", description);
-    }
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return sendRequest("setMyDescription", args).asBool();
+bool ApiImpl::setMyDescription(
+    const optional<std::string_view> description,
+    const optional<LanguageCode> languageCode) const {
+    return sendRequest("setMyDescription",
+                       build(std::pair{"description", description},
+                             std::pair{"language_code", languageCode}))
+        .asBool();
 }
 
 BotDescription::Ptr ApiImpl::getMyDescription(
-    const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return parse<BotDescription>(sendRequest("getMyDescription", args));
+    const optional<LanguageCode> languageCode) const {
+    return parse<BotDescription>(sendRequest(
+        "getMyDescription", build(std::pair{"language_code", languageCode})));
 }
 
-bool ApiImpl::setMyShortDescription(const std::string_view shortDescription,
-                                    const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (!shortDescription.empty()) {
-        args.emplace_back("short_description", shortDescription);
-    }
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
-    return sendRequest("setMyShortDescription", args).asBool();
+bool ApiImpl::setMyShortDescription(
+    const optional<std::string_view> shortDescription,
+    const optional<LanguageCode> languageCode) const {
+    return sendRequest("setMyShortDescription",
+                       build(std::pair{"short_description", shortDescription},
+                             std::pair{"language_code", languageCode}))
+        .asBool();
 }
 
 BotShortDescription::Ptr ApiImpl::getMyShortDescription(
-    const std::string_view languageCode) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    if (!languageCode.empty()) {
-        args.emplace_back("language_code", languageCode);
-    }
-
+    const optional<LanguageCode> languageCode) const {
     return parse<BotShortDescription>(
-        sendRequest("getMyShortDescription", args));
+        sendRequest("getMyShortDescription",
+                    build(std::pair{"language_code", languageCode})));
 }
 
-bool ApiImpl::setChatMenuButton(std::int64_t chatId,
+bool ApiImpl::setChatMenuButton(optional<std::int64_t> chatId,
                                 MenuButton::Ptr menuButton) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (chatId != 0) {
-        args.emplace_back("chat_id", chatId);
-    }
-    if (menuButton != nullptr) {
-        args.emplace_back("menu_button", putJSON(menuButton));
-    }
-
-    return sendRequest("setChatMenuButton", args).asBool();
+    return sendRequest("setChatMenuButton",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"menu_button", menuButton}))
+        .asBool();
 }
 
-MenuButton::Ptr ApiImpl::getChatMenuButton(std::int64_t chatId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    if (chatId != 0) {
-        args.emplace_back("chat_id", chatId);
-    }
-
-    return parse<MenuButton>(sendRequest("getChatMenuButton", args));
+MenuButton::Ptr ApiImpl::getChatMenuButton(
+    optional<std::int64_t> chatId) const {
+    return parse<MenuButton>(
+        sendRequest("getChatMenuButton", build(std::pair{"chat_id", chatId})));
 }
 
 bool ApiImpl::setMyDefaultAdministratorRights(
-    ChatAdministratorRights::Ptr rights, bool forChannels) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    if (rights != nullptr) {
-        args.emplace_back("rights", putJSON(rights));
-    }
-    if (forChannels) {
-        args.emplace_back("for_channels", forChannels);
-    }
-
-    return sendRequest("setMyDefaultAdministratorRights", args).asBool();
+    ChatAdministratorRights::Ptr rights, optional<bool> forChannels) const {
+    return sendRequest("setMyDefaultAdministratorRights",
+                       build(std::pair{"rights", rights},
+                             std::pair{"for_channels", forChannels}))
+        .asBool();
 }
 
 ChatAdministratorRights::Ptr ApiImpl::getMyDefaultAdministratorRights(
-    bool forChannels) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    if (forChannels) {
-        args.emplace_back("for_channels", forChannels);
-    }
-
+    optional<bool> forChannels) const {
     return parse<ChatAdministratorRights>(
-        sendRequest("getMyDefaultAdministratorRights", args));
+        sendRequest("getMyDefaultAdministratorRights",
+                    build(std::pair{"for_channels", forChannels})));
 }
 
 Message::Ptr ApiImpl::editMessageText(
     const std::string_view text, std::variant<std::int64_t, std::string> chatId,
-    std::int32_t messageId, const std::string_view inlineMessageId,
-    const std::string_view parseMode,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId,
+    const optional<ParseMode> parseMode,
     LinkPreviewOptions::Ptr linkPreviewOptions,
     InlineKeyboardMarkup::Ptr replyMarkup,
     const std::vector<MessageEntity::Ptr> &entities) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(8);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-    args.emplace_back("text", text);
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!entities.empty()) {
-        args.emplace_back("entities", putJSON(entities));
-    }
-    if (linkPreviewOptions) {
-        args.emplace_back("link_preview_options", putJSON(linkPreviewOptions));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    const auto p = sendRequest("editMessageText", args);
+    const auto p =
+        sendRequest("editMessageText",
+                    build(std::pair{"text", text}, std::pair{"chat_id", chatId},
+                          std::pair{"message_id", messageId},
+                          std::pair{"inline_message_id", inlineMessageId},
+                          std::pair{"parse_mode", parseMode},
+                          std::pair{"reply_markup", replyMarkup},
+                          std::pair{"entities", entities},
+                          std::pair{"link_preview", linkPreviewOptions}));
     if (p.isMember("message_id")) {
         return parse<Message>(p);
     } else {
@@ -1900,34 +1378,19 @@ Message::Ptr ApiImpl::editMessageText(
 }
 
 Message::Ptr ApiImpl::editMessageCaption(
-    std::variant<std::int64_t, std::string> chatId, std::int32_t messageId,
-    const std::string_view caption, const std::string_view inlineMessageId,
-    GenericReply::Ptr replyMarkup, const std::string_view parseMode,
+    std::variant<std::int64_t, std::string> chatId,
+    optional<std::int32_t> messageId, const optional<std::string_view> caption,
+    const optional<std::string_view> inlineMessageId,
+    GenericReply::Ptr replyMarkup, const optional<ParseMode> parseMode,
     const std::vector<MessageEntity::Ptr> &captionEntities) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(7);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-    if (!caption.empty()) {
-        args.emplace_back("caption", caption);
-    }
-    if (!parseMode.empty()) {
-        args.emplace_back("parse_mode", parseMode);
-    }
-    if (!captionEntities.empty()) {
-        args.emplace_back("caption_entities", putJSON(captionEntities));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    const auto p = sendRequest("editMessageCaption", args);
+    const auto p = sendRequest(
+        "editMessageCaption",
+        build(std::pair{"chat_id", chatId}, std::pair{"message_id", messageId},
+              std::pair{"caption", caption},
+              std::pair{"inline_message_id", inlineMessageId},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"parse_mode", parseMode},
+              std::pair{"caption_entities", captionEntities}));
     if (p.isMember("message_id")) {
         return parse<Message>(p);
     } else {
@@ -1937,24 +1400,15 @@ Message::Ptr ApiImpl::editMessageCaption(
 
 Message::Ptr ApiImpl::editMessageMedia(
     InputMedia::Ptr media, std::variant<std::int64_t, std::string> chatId,
-    std::int32_t messageId, const std::string_view inlineMessageId,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId,
     GenericReply::Ptr replyMarkup) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(5);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("media", putJSON(media));
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    const auto &p = sendRequest("editMessageMedia", args);
+    const auto &p = sendRequest(
+        "editMessageMedia",
+        build(std::pair{"media", media}, std::pair{"chat_id", chatId},
+              std::pair{"message_id", messageId},
+              std::pair{"inline_message_id", inlineMessageId},
+              std::pair{"reply_markup", replyMarkup}));
     if (p.isMember("message_id")) {
         return parse<Message>(p);
     } else {
@@ -1963,24 +1417,15 @@ Message::Ptr ApiImpl::editMessageMedia(
 }
 
 Message::Ptr ApiImpl::editMessageReplyMarkup(
-    std::variant<std::int64_t, std::string> chatId, std::int32_t messageId,
-    const std::string_view inlineMessageId,
-    const GenericReply::Ptr replyMarkup) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    const auto &p = sendRequest("editMessageReplyMarkup", args);
+    std::variant<std::int64_t, std::string> chatId,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId,
+    GenericReply::Ptr replyMarkup) const {
+    const auto &p = sendRequest(
+        "editMessageReplyMarkup",
+        build(std::pair{"chat_id", chatId}, std::pair{"message_id", messageId},
+              std::pair{"inline_message_id", inlineMessageId},
+              std::pair{"reply_markup", replyMarkup}));
     if (p.isMember("message_id")) {
         return parse<Message>(p);
     } else {
@@ -1991,308 +1436,198 @@ Message::Ptr ApiImpl::editMessageReplyMarkup(
 Poll::Ptr ApiImpl::stopPoll(std::variant<std::int64_t, std::string> chatId,
                             std::int64_t messageId,
                             const InlineKeyboardMarkup::Ptr replyMarkup) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_id", messageId);
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Poll>(sendRequest("stopPoll", args));
+    return parse<Poll>(sendRequest(
+        "stopPoll",
+        build(std::pair{"chat_id", chatId}, std::pair{"message_id", messageId},
+              std::pair{"reply_markup", replyMarkup})));
 }
 
 bool ApiImpl::deleteMessage(std::variant<std::int64_t, std::string> chatId,
                             std::int32_t messageId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    args.emplace_back("message_id", messageId);
-
-    return sendRequest("deleteMessage", args).asBool();
+    return sendRequest("deleteMessage",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_id", messageId}))
+        .asBool();
 }
 
 bool ApiImpl::deleteMessages(
     std::variant<std::int64_t, std::string> chatId,
     const std::vector<std::int32_t> &messageIds) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("chat_id", chatId);
-    if (!messageIds.empty()) {
-        args.emplace_back("message_ids", putJSON(messageIds));
-    }
-
-    return sendRequest("deleteMessages", args).asBool();
+    return sendRequest("deleteMessages",
+                       build(std::pair{"chat_id", chatId},
+                             std::pair{"message_ids", messageIds}))
+        .asBool();
 }
 
 Message::Ptr ApiImpl::sendSticker(
     std::variant<std::int64_t, std::string> chatId,
     std::variant<InputFile::Ptr, std::string> sticker,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    bool disableNotification, std::int32_t messageThreadId, bool protectContent,
-    const std::string_view emoji,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(9);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back(handleInputFileOrString("sticker", sticker));
-    if (!emoji.empty()) {
-        args.emplace_back("emoji", emoji);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendSticker", args));
+    optional<bool> disableNotification, optional<std::int32_t> messageThreadId,
+    optional<bool> protectContent, const optional<std::string_view> emoji,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendSticker",
+        build(std::pair{"chat_id", chatId}, std::pair{"sticker", sticker},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"reply_params", replyParameters},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"emoji", emoji},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 StickerSet::Ptr ApiImpl::getStickerSet(const std::string_view name) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("name", name);
-
-    return parse<StickerSet>(sendRequest("getStickerSet", args));
+    return parse<StickerSet>(
+        sendRequest("getStickerSet", build(std::pair{"name", name})));
 }
 
 std::vector<Sticker::Ptr> ApiImpl::getCustomEmojiStickers(
     const std::vector<std::string> &customEmojiIds) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("custom_emoji_ids",
-                      putJSON(escapeJSONStringVec(customEmojiIds)));
-
-    return parseArray<Sticker>(sendRequest("getCustomEmojiStickers", args));
+    return parseArray<Sticker>(
+        sendRequest("getCustomEmojiStickers",
+                    build(std::pair{"custom_emoji_ids", customEmojiIds})));
 }
 
-File::Ptr ApiImpl::uploadStickerFile(
-    std::int64_t userId, InputFile::Ptr sticker,
-    const std::string_view stickerFormat) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("user_id", userId);
-    args.emplace_back("sticker", sticker->data, true, sticker->mimeType,
-                      sticker->fileName);
-    args.emplace_back("sticker_format", stickerFormat);
-
-    return parse<File>(sendRequest("uploadStickerFile", args));
+File::Ptr ApiImpl::uploadStickerFile(std::int64_t userId,
+                                     InputFile::Ptr sticker,
+                                     const StickerFormat stickerFormat) const {
+    return parse<File>(sendRequest(
+        "uploadStickerFile",
+        build(std::pair{"user_id", userId}, std::pair{"sticker", sticker},
+              std::pair{"sticker_format", stickerFormat})));
 }
 
 bool ApiImpl::createNewStickerSet(
     std::int64_t userId, const std::string_view name,
     const std::string_view title,
-    const std::vector<InputSticker::Ptr> &stickers, Sticker::Type stickerType,
-    bool needsRepainting) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(6);
-
-    args.emplace_back("user_id", userId);
-    args.emplace_back("name", name);
-    args.emplace_back("title", title);
-    args.emplace_back("stickers", putJSON(stickers));
-    if (stickerType == Sticker::Type::Regular) {
-        args.emplace_back("sticker_type", "regular");
-    } else if (stickerType == Sticker::Type::Mask) {
-        args.emplace_back("sticker_type", "mask");
-    } else if (stickerType == Sticker::Type::CustomEmoji) {
-        args.emplace_back("sticker_type", "custom_emoji");
-    }
-    if (needsRepainting) {
-        args.emplace_back("needs_repainting", needsRepainting);
-    }
-
-    return sendRequest("createNewStickerSet", args).asBool();
+    const std::vector<InputSticker::Ptr> &stickers,
+    optional_default<Sticker::Type, Sticker::Type::Regular> stickerType,
+    optional<bool> needsRepainting) const {
+    return sendRequest(
+               "createNewStickerSet",
+               build(std::pair{"user_id", userId}, std::pair{"name", name},
+                     std::pair{"title", title}, std::pair{"stickers", stickers},
+                     std::pair{"sticker_type", stickerType},
+                     std::pair{"needs_repainting", needsRepainting}))
+        .asBool();
 }
 
 bool ApiImpl::addStickerToSet(std::int64_t userId, const std::string_view name,
                               InputSticker::Ptr sticker) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("user_id", userId);
-    args.emplace_back("name", name);
-    args.emplace_back("sticker", putJSON(sticker));
-
-    return sendRequest("addStickerToSet", args).asBool();
+    return sendRequest("addStickerToSet", build(std::pair{"user_id", userId},
+                                                std::pair{"name", name},
+                                                std::pair{"sticker", sticker}))
+        .asBool();
 }
 
 bool ApiImpl::setStickerPositionInSet(const std::string_view sticker,
                                       std::int32_t position) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("sticker", sticker);
-    args.emplace_back("position", position);
-
-    return sendRequest("setStickerPositionInSet", args).asBool();
+    return sendRequest("setStickerPositionInSet",
+                       build(std::pair{"sticker", sticker},
+                             std::pair{"position", position}))
+        .asBool();
 }
 
 bool ApiImpl::deleteStickerFromSet(const std::string_view sticker) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("sticker", sticker);
-
-    return sendRequest("deleteStickerFromSet", args).asBool();
+    return sendRequest("deleteStickerFromSet",
+                       build(std::pair{"sticker", sticker}))
+        .asBool();
 }
 
 bool ApiImpl::replaceStickerInSet(std::int64_t userId,
                                   const std::string_view name,
                                   const std::string_view oldSticker,
                                   InputSticker::Ptr sticker) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("user_id", userId);
-    args.emplace_back("name", name);
-    args.emplace_back("old_sticker", oldSticker);
-    args.emplace_back("sticker", putJSON(sticker));
-
-    return sendRequest("replaceStickerInSet", args).asBool();
+    return sendRequest(
+               "replaceStickerInSet",
+               build(std::pair{"user_id", userId}, std::pair{"name", name},
+                     std::pair{"old_sticker", oldSticker},
+                     std::pair{"sticker", sticker}))
+        .asBool();
 }
 
 bool ApiImpl::setStickerEmojiList(
     const std::string_view sticker,
     const std::vector<std::string> &emojiList) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("sticker", sticker);
-    args.emplace_back("emoji_list", putJSON(escapeJSONStringVec(emojiList)));
-    return sendRequest("setStickerEmojiList", args).asBool();
+    return sendRequest("setStickerEmojiList",
+                       build(std::pair{"sticker", sticker},
+                             std::pair{"emoji_list", emojiList}))
+        .asBool();
 }
 
 bool ApiImpl::setStickerKeywords(
     const std::string_view sticker,
     const std::vector<std::string> &keywords) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("sticker", sticker);
-    if (!keywords.empty()) {
-        args.emplace_back("keywords", putJSON(escapeJSONStringVec(keywords)));
-    }
-
-    return sendRequest("setStickerKeywords", args).asBool();
+    return sendRequest("setStickerKeywords",
+                       build(std::pair{"sticker", sticker},
+                             std::pair{"keywords", keywords}))
+        .asBool();
 }
 
 bool ApiImpl::setStickerMaskPosition(const std::string_view sticker,
                                      MaskPosition::Ptr maskPosition) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("sticker", sticker);
-    if (maskPosition != nullptr) {
-        args.emplace_back("mask_position", putJSON(maskPosition));
-    }
-
-    return sendRequest("setStickerMaskPosition", args).asBool();
+    return sendRequest("setStickerMaskPosition",
+                       build(std::pair{"sticker", sticker},
+                             std::pair{"mask_position", maskPosition}))
+        .asBool();
 }
 
 bool ApiImpl::setStickerSetTitle(const std::string_view name,
                                  const std::string_view title) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("name", name);
-    args.emplace_back("title", title);
-
-    return sendRequest("setStickerSetTitle", args).asBool();
+    return sendRequest("setStickerSetTitle", build(std::pair{"name", name},
+                                                   std::pair{"title", title}))
+        .asBool();
 }
 
 bool ApiImpl::setStickerSetThumbnail(
     const std::string_view name, std::int64_t userId,
-    const std::string_view format,
+    const StickerFormat format,
     std::variant<InputFile::Ptr, std::string> thumbnail) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("name", name);
-    args.emplace_back("user_id", userId);
-    args.emplace_back("format", format);
-    args.emplace_back(handleInputFileOrString("thumbnail", thumbnail));
-
-    return sendRequest("setStickerSetThumbnail", args).asBool();
+    return sendRequest(
+               "setStickerSetThumbnail",
+               build(std::pair{"name", name}, std::pair{"user_id", userId},
+                     std::pair{"sticker_format", format},
+                     std::pair{"thumbnail", thumbnail}))
+        .asBool();
 }
 
 bool ApiImpl::setCustomEmojiStickerSetThumbnail(
-    const std::string_view name, const std::string_view customEmojiId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("name", name);
-    if (!customEmojiId.empty()) {
-        args.emplace_back("custom_emoji_id", customEmojiId);
-    }
-
-    return sendRequest("setCustomEmojiStickerSetThumbnail", args).asBool();
+    const std::string_view name,
+    const optional<std::string_view> customEmojiId) const {
+    return sendRequest("setCustomEmojiStickerSetThumbnail",
+                       build(std::pair{"name", name},
+                             std::pair{"custom_emoji_id", customEmojiId}))
+        .asBool();
 }
 
 bool ApiImpl::deleteStickerSet(const std::string_view name) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(1);
-
-    args.emplace_back("name", name);
-
-    return sendRequest("deleteStickerSet", args).asBool();
+    return sendRequest("deleteStickerSet", build(std::pair{"name", name}))
+        .asBool();
 }
 
 bool ApiImpl::answerInlineQuery(
     const std::string_view inlineQueryId,
-    const std::vector<InlineQueryResult::Ptr> &results, std::int32_t cacheTime,
-    bool isPersonal, const std::string_view nextOffset,
+    const std::vector<InlineQueryResult::Ptr> &results,
+    optional_default<std::int32_t, 300> cacheTime, optional<bool> isPersonal,
+    const optional<std::string_view> nextOffset,
     InlineQueryResultsButton::Ptr button) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(6);
-
-    args.emplace_back("inline_query_id", inlineQueryId);
-    args.emplace_back("results", putJSON(results));
-    if (cacheTime != 300) {
-        args.emplace_back("cache_time", cacheTime);
-    }
-    if (isPersonal != false) {
-        args.emplace_back("is_personal", isPersonal);
-    }
-    if (!nextOffset.empty()) {
-        args.emplace_back("next_offset", nextOffset);
-    }
-    if (button != nullptr) {
-        args.emplace_back("button", putJSON(button));
-    }
-
-    return sendRequest("answerInlineQuery", args).asBool();
+    return sendRequest("answerInlineQuery",
+                       build(std::pair{"inline_query_id", inlineQueryId},
+                             std::pair{"results", results},
+                             std::pair{"cache_time", cacheTime},
+                             std::pair{"is_personal", isPersonal},
+                             std::pair{"next_offset", nextOffset},
+                             std::pair{"button", button}))
+        .asBool();
 }
 
 SentWebAppMessage::Ptr ApiImpl::answerWebAppQuery(
     const std::string_view webAppQueryId, InlineQueryResult::Ptr result) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("web_app_query_id", webAppQueryId);
-    args.emplace_back("result", putJSON(result));
-
-    return parse<SentWebAppMessage>(sendRequest("answerWebAppQuery", args));
+    return parse<SentWebAppMessage>(sendRequest(
+        "answerWebAppQuery", build(std::pair{"web_app_query_id", webAppQueryId},
+                                   std::pair{"result", result})));
 }
 
 Message::Ptr ApiImpl::sendInvoice(
@@ -2301,280 +1636,162 @@ Message::Ptr ApiImpl::sendInvoice(
     const std::string_view payload, const std::string_view providerToken,
     const std::string_view currency,
     const std::vector<LabeledPrice::Ptr> &prices,
-    const std::string_view providerData, const std::string_view photoUrl,
-    std::int32_t photoSize, std::int32_t photoWidth, std::int32_t photoHeight,
-    bool needName, bool needPhoneNumber, bool needEmail,
-    bool needShippingAddress, bool sendPhoneNumberToProvider,
-    bool sendEmailToProvider, bool isFlexible,
+    const optional<std::string_view> providerData,
+    const optional<std::string_view> photoUrl, optional<std::int32_t> photoSize,
+    optional<std::int32_t> photoWidth, optional<std::int32_t> photoHeight,
+    optional<bool> needName, optional<bool> needPhoneNumber,
+    optional<bool> needEmail, optional<bool> needShippingAddress,
+    optional<bool> sendPhoneNumberToProvider,
+    optional<bool> sendEmailToProvider, optional<bool> isFlexible,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
-    bool disableNotification, std::int32_t messageThreadId,
-    std::int32_t maxTipAmount,
+    optional<bool> disableNotification, optional<std::int32_t> messageThreadId,
+    optional<std::int32_t> maxTipAmount,
     const std::vector<std::int32_t> &suggestedTipAmounts,
-    const std::string_view startParameter, bool protectContent) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(27);
-
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("title", title);
-    args.emplace_back("description", description);
-    args.emplace_back("payload", payload);
-    args.emplace_back("provider_token", providerToken);
-    args.emplace_back("currency", currency);
-    args.emplace_back("prices", putJSON(prices));
-    args.emplace_back("max_tip_amount", maxTipAmount);
-    if (!suggestedTipAmounts.empty()) {
-        args.emplace_back("suggested_tip_amounts",
-                          putJSON(suggestedTipAmounts));
-    }
-    if (!startParameter.empty()) {
-        args.emplace_back("start_parameter", startParameter);
-    }
-    if (!providerData.empty()) {
-        args.emplace_back("provider_data", providerData);
-    }
-    if (!photoUrl.empty()) {
-        args.emplace_back("photo_url", photoUrl);
-    }
-    if (photoSize) {
-        args.emplace_back("photo_size", photoSize);
-    }
-    if (photoWidth) {
-        args.emplace_back("photo_width", photoWidth);
-    }
-    if (photoHeight) {
-        args.emplace_back("photo_height", photoHeight);
-    }
-    if (needName) {
-        args.emplace_back("need_name", needName);
-    }
-    if (needPhoneNumber) {
-        args.emplace_back("need_phone_number", needPhoneNumber);
-    }
-    if (needEmail) {
-        args.emplace_back("need_email", needEmail);
-    }
-    if (needShippingAddress) {
-        args.emplace_back("need_shipping_address", needShippingAddress);
-    }
-    if (sendPhoneNumberToProvider) {
-        args.emplace_back("send_phone_number_to_provider",
-                          sendPhoneNumberToProvider);
-    }
-    if (sendEmailToProvider) {
-        args.emplace_back("send_email_to_provider", sendEmailToProvider);
-    }
-    if (isFlexible) {
-        args.emplace_back("is_flexible", isFlexible);
-    }
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendInvoice", args));
+    const optional<std::string_view> startParameter,
+    optional<bool> protectContent) const {
+    return parse<Message>(sendRequest(
+        "sendInvoice",
+        build(std::pair{"chat_id", chatId}, std::pair{"title", title},
+              std::pair{"description", description},
+              std::pair{"payload", payload},
+              std::pair{"provider_token", providerToken},
+              std::pair{"currency", currency}, std::pair{"prices", prices},
+              std::pair{"provider_data", providerData},
+              std::pair{"photo_url", photoUrl},
+              std::pair{"photo_size", photoSize},
+              std::pair{"photo_width", photoWidth},
+              std::pair{"photo_height", photoHeight},
+              std::pair{"need_name", needName},
+              std::pair{"need_phone_number", needPhoneNumber},
+              std::pair{"need_email", needEmail},
+              std::pair{"need_shipping_address", needShippingAddress},
+              std::pair{"send_phone_number_to_provider",
+                        sendPhoneNumberToProvider},
+              std::pair{"send_email_to_provider", sendEmailToProvider},
+              std::pair{"is_flexible", isFlexible},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"max_tip_amount", maxTipAmount},
+              std::pair{"suggested_tip_amounts", suggestedTipAmounts},
+              std::pair{"start_parameter", startParameter},
+              std::pair{"protect_content", protectContent},
+              std::pair{"reply_parameters", replyParameters})));
 }
 
 std::string ApiImpl::createInvoiceLink(
     const std::string_view title, const std::string_view description,
     const std::string_view payload, const std::string_view providerToken,
     const std::string_view currency,
-    const std::vector<LabeledPrice::Ptr> &prices, std::int32_t maxTipAmount,
+    const std::vector<LabeledPrice::Ptr> &prices,
+    optional<std::int32_t> maxTipAmount,
     const std::vector<std::int32_t> &suggestedTipAmounts,
-    const std::string_view providerData, const std::string_view photoUrl,
-    std::int32_t photoSize, std::int32_t photoWidth, std::int32_t photoHeight,
-    bool needName, bool needPhoneNumber, bool needEmail,
-    bool needShippingAddress, bool sendPhoneNumberToProvider,
-    bool sendEmailToProvider, bool isFlexible) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(20);
-
-    args.emplace_back("title", title);
-    args.emplace_back("description", description);
-    args.emplace_back("payload", payload);
-    args.emplace_back("provider_token", providerToken);
-    args.emplace_back("currency", currency);
-    args.emplace_back("prices", putJSON(prices));
-    args.emplace_back("max_tip_amount", maxTipAmount);
-    if (!suggestedTipAmounts.empty()) {
-        args.emplace_back("suggested_tip_amounts",
-                          putJSON(suggestedTipAmounts));
-    }
-    if (!providerData.empty()) {
-        args.emplace_back("provider_data", providerData);
-    }
-    if (!photoUrl.empty()) {
-        args.emplace_back("photo_url", photoUrl);
-    }
-    if (photoSize) {
-        args.emplace_back("photo_size", photoSize);
-    }
-    if (photoWidth) {
-        args.emplace_back("photo_width", photoWidth);
-    }
-    if (photoHeight) {
-        args.emplace_back("photo_height", photoHeight);
-    }
-    if (needName) {
-        args.emplace_back("need_name", needName);
-    }
-    if (needPhoneNumber) {
-        args.emplace_back("need_phone_number", needPhoneNumber);
-    }
-    if (needEmail) {
-        args.emplace_back("need_email", needEmail);
-    }
-    if (needShippingAddress) {
-        args.emplace_back("need_shipping_address", needShippingAddress);
-    }
-    if (sendPhoneNumberToProvider) {
-        args.emplace_back("send_phone_number_to_provider",
-                          sendPhoneNumberToProvider);
-    }
-    if (sendEmailToProvider) {
-        args.emplace_back("send_email_to_provider", sendEmailToProvider);
-    }
-    if (isFlexible) {
-        args.emplace_back("is_flexible", isFlexible);
-    }
-
-    return sendRequest("createInvoiceLink", args).asString();
+    const optional<std::string_view> providerData,
+    const optional<std::string_view> photoUrl, optional<std::int32_t> photoSize,
+    optional<std::int32_t> photoWidth, optional<std::int32_t> photoHeight,
+    optional<bool> needName, optional<bool> needPhoneNumber,
+    optional<bool> needEmail, optional<bool> needShippingAddress,
+    optional<bool> sendPhoneNumberToProvider,
+    optional<bool> sendEmailToProvider, optional<bool> isFlexible) const {
+    return sendRequest(
+               "createInvoiceLink",
+               build(std::pair{"title", title},
+                     std::pair{"description", description},
+                     std::pair{"payload", payload},
+                     std::pair{"provider_token", providerToken},
+                     std::pair{"currency", currency},
+                     std::pair{"prices", prices},
+                     std::pair{"max_tip_amount", maxTipAmount},
+                     std::pair{"suggested_tip_amounts", suggestedTipAmounts},
+                     std::pair{"provider_data", providerData},
+                     std::pair{"photo_url", photoUrl},
+                     std::pair{"photo_size", photoSize},
+                     std::pair{"photo_width", photoWidth},
+                     std::pair{"photo_height", photoHeight},
+                     std::pair{"need_name", needName},
+                     std::pair{"need_phone_number", needPhoneNumber},
+                     std::pair{"need_email", needEmail},
+                     std::pair{"need_shipping_address", needShippingAddress},
+                     std::pair{"send_phone_number_to_provider",
+                               sendPhoneNumberToProvider},
+                     std::pair{"send_email_to_provider", sendEmailToProvider},
+                     std::pair{"is_flexible", isFlexible}))
+        .asString();
 }
 
 bool ApiImpl::answerShippingQuery(
     const std::string_view shippingQueryId, bool ok,
     const std::vector<ShippingOption::Ptr> &shippingOptions,
-    const std::string_view errorMessage) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("shipping_query_id", shippingQueryId);
-    args.emplace_back("ok", ok);
-    if (!shippingOptions.empty()) {
-        args.emplace_back("shipping_options", putJSON(shippingOptions));
-    }
-    if (!errorMessage.empty()) {
-        args.emplace_back("error_message", errorMessage);
-    }
-
-    return sendRequest("answerShippingQuery", args).asBool();
+    const optional<std::string_view> errorMessage) const {
+    return sendRequest("answerShippingQuery",
+                       build(std::pair{"shipping_query_id", shippingQueryId},
+                             std::pair{"ok", ok},
+                             std::pair{"shipping_options", shippingOptions},
+                             std::pair{"error_message", errorMessage}))
+        .asBool();
 }
 
 bool ApiImpl::answerPreCheckoutQuery(
     const std::string_view preCheckoutQueryId, bool ok,
-    const std::string_view errorMessage) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(3);
-
-    args.emplace_back("pre_checkout_query_id", preCheckoutQueryId);
-    args.emplace_back("ok", ok);
-    if (!errorMessage.empty()) {
-        args.emplace_back("error_message", errorMessage);
-    }
-
-    return sendRequest("answerPreCheckoutQuery", args).asBool();
+    const optional<std::string_view> errorMessage) const {
+    return sendRequest(
+               "answerPreCheckoutQuery",
+               build(std::pair{"pre_checkout_query_id", preCheckoutQueryId},
+                     std::pair{"ok", ok},
+                     std::pair{"error_message", errorMessage}))
+        .asBool();
 }
 
 bool ApiImpl::setPassportDataErrors(
     std::int64_t userId,
     const std::vector<PassportElementError::Ptr> &errors) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(2);
-
-    args.emplace_back("user_id", userId);
-    args.emplace_back("errors", putJSON(errors));
-
-    return sendRequest("setPassportDataErrors", args).asBool();
+    return sendRequest(
+               "setPassportDataErrors",
+               build(std::pair{"user_id", userId}, std::pair{"errors", errors}))
+        .asBool();
 }
 
 Message::Ptr ApiImpl::sendGame(
     std::int64_t chatId, const std::string_view gameShortName,
     ReplyParameters::Ptr replyParameters, InlineKeyboardMarkup::Ptr replyMarkup,
-    bool disableNotification, std::int32_t messageThreadId, bool protectContent,
-    const std::string_view businessConnectionId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(8);
-
-    if (!businessConnectionId.empty()) {
-        args.emplace_back("business_connection_id", businessConnectionId);
-    }
-    args.emplace_back("chat_id", chatId);
-    if (messageThreadId != 0) {
-        args.emplace_back("message_thread_id", messageThreadId);
-    }
-    args.emplace_back("game_short_name", gameShortName);
-    if (disableNotification) {
-        args.emplace_back("disable_notification", disableNotification);
-    }
-    if (protectContent) {
-        args.emplace_back("protect_content", protectContent);
-    }
-    if (replyParameters != nullptr) {
-        args.emplace_back("reply_parameters", putJSON(replyParameters));
-    }
-    if (replyMarkup) {
-        args.emplace_back("reply_markup", putJSON(replyMarkup));
-    }
-
-    return parse<Message>(sendRequest("sendGame", args));
+    optional<bool> disableNotification, optional<std::int32_t> messageThreadId,
+    optional<bool> protectContent,
+    const optional<std::string_view> businessConnectionId) const {
+    return parse<Message>(sendRequest(
+        "sendGame",
+        build(std::pair{"chat_id", chatId},
+              std::pair{"game_short_name", gameShortName},
+              std::pair{"reply_parameters", replyParameters},
+              std::pair{"reply_markup", replyMarkup},
+              std::pair{"disable_notification", disableNotification},
+              std::pair{"message_thread_id", messageThreadId},
+              std::pair{"protect_content", protectContent},
+              std::pair{"business_connection_id", businessConnectionId})));
 }
 
 Message::Ptr ApiImpl::setGameScore(
-    std::int64_t userId, std::int32_t score, bool force,
-    bool disableEditMessage, std::int64_t chatId, std::int32_t messageId,
-    const std::string_view inlineMessageId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(7);
-
-    args.emplace_back("user_id", userId);
-    args.emplace_back("score", score);
-    if (force) {
-        args.emplace_back("force", force);
-    }
-    if (disableEditMessage) {
-        args.emplace_back("disable_edit_message", disableEditMessage);
-    }
-    if (chatId) {
-        args.emplace_back("chat_id", chatId);
-    }
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-
-    return parse<Message>(sendRequest("setGameScore", args));
+    std::int64_t userId, std::int32_t score, optional<bool> force,
+    optional<bool> disableEditMessage, optional<std::int64_t> chatId,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId) const {
+    return parse<Message>(sendRequest(
+        "setGameScore",
+        build(std::pair{"user_id", userId}, std::pair{"score", score},
+              std::pair{"force", force},
+              std::pair{"disable_edit_message", disableEditMessage},
+              std::pair{"chat_id", chatId}, std::pair{"message_id", messageId},
+              std::pair{"inline_message_id", inlineMessageId})));
 }
 
 std::vector<GameHighScore::Ptr> ApiImpl::getGameHighScores(
-    std::int64_t userId, std::int64_t chatId, std::int32_t messageId,
-    const std::string_view inlineMessageId) const {
-    std::vector<HttpReqArg> args;
-    args.reserve(4);
-
-    args.emplace_back("user_id", userId);
-    if (chatId) {
-        args.emplace_back("chat_id", chatId);
-    }
-    if (messageId) {
-        args.emplace_back("message_id", messageId);
-    }
-    if (!inlineMessageId.empty()) {
-        args.emplace_back("inline_message_id", inlineMessageId);
-    }
-
-    return parseArray<GameHighScore>(sendRequest("getGameHighScores", args));
+    optional<std::int64_t> userId, optional<std::int64_t> chatId,
+    optional<std::int32_t> messageId,
+    const optional<std::string_view> inlineMessageId) const {
+    return parseArray<GameHighScore>(sendRequest(
+        "getGameHighScores",
+        build(std::pair{"user_id", userId}, std::pair{"chat_id", chatId},
+              std::pair{"message_id", messageId},
+              std::pair{"inline_message_id", inlineMessageId})));
 }
 
 std::string ApiImpl::downloadFile(const std::string_view filePath,
@@ -2592,12 +1809,13 @@ bool ApiImpl::blockedByUser(std::int64_t chatId) const {
     bool isBotBlocked = false;
 
     try {
-        sendChatAction(chatId, "typing");
+        sendChatAction(chatId, ChatAction::typing);
 
     } catch (std::exception &e) {
         std::string error = e.what();
 
-        if (error.compare("Forbidden: bot was blocked by the user") == 0) {
+        if (error.find("Forbidden: bot was blocked by the user") ==
+            std::string::npos) {
             isBotBlocked = true;
         }
     }
@@ -2605,11 +1823,10 @@ bool ApiImpl::blockedByUser(std::int64_t chatId) const {
     return isBotBlocked;
 }
 
-constexpr bool kSendRequestDebug = false;
+constexpr bool kSendRequestDebug = true;
 
 Json::Value TgBot::ApiImpl::sendRequest(
-    const std::string_view method,
-    const std::vector<TgBot::HttpReqArg> &args) const {
+    const std::string_view method, std::vector<TgBot::HttpReqArg> args) const {
     std::string url(_url);
     url += "/bot";
     url += _token;

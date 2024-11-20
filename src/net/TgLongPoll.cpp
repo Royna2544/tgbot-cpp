@@ -8,16 +8,17 @@
 #include "tgbot/ApiImpl.h"
 #include "tgbot/Bot.h"
 #include "tgbot/EventHandler.h"
+#include "tgbot/types/Update.h"
 
 namespace TgBot {
 
-TgLongPoll::TgLongPoll(Bot* bot, std::int32_t timeout, std::int32_t limit,
-                       std::vector<std::string> allowUpdates)
+TgLongPoll::TgLongPoll(Bot* bot, timeout_t timeout, limit_t limit,
+                       Update::Types allowedUpdates)
     : _bot(bot),
       _limit(limit),
       _timeout(timeout),
-      _allowedUpdates(std::move(allowUpdates)) {
-    _bot->_httpClient->_timeout = _timeout + 5;
+      _allowedUpdates(allowedUpdates) {
+    _bot->_httpClient->_timeout = *_timeout + 5;
 }
 
 void TgLongPoll::start() {

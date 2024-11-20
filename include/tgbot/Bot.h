@@ -48,11 +48,11 @@ class TGBOT_API Bot {
         return *_eventHandler;
     }
 
-    inline TgLongPoll* createLongPoll(
-        std::int32_t limit = 100, std::int32_t timeout = 10,
-        std::vector<std::string> allowedUpdates = {}) {
-        _longPoll = std::make_unique<TgLongPoll>(this, timeout, limit,
-                                                 std::move(allowedUpdates));
+    inline TgLongPoll* createLongPoll(TgLongPoll::limit_t limit = {},
+                                      TgLongPoll::timeout_t timeout = {},
+                                      Update::Types allowedUpdates = {}) {
+        _longPoll =
+            std::make_unique<TgLongPoll>(this, timeout, limit, allowedUpdates);
         return _longPoll.get();
     }
 

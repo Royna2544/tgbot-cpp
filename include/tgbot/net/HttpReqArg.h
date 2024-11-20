@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "tgbot/export.h"
+#include "tgbot/types/InputFile.h"
 
 namespace TgBot {
 
@@ -21,24 +22,41 @@ class TGBOT_API HttpReqArg {
               typename std::enable_if_t<std::is_integral_v<IntT> ||
                                             std::is_floating_point_v<IntT>,
                                         bool> = true>
-    HttpReqArg(std::string name,
-               const std::variant<IntT, std::string>& value,
+    HttpReqArg(std::string name, const std::variant<IntT, std::string>& value,
                bool isFile = false, std::string mimeType = "text/plain",
                std::string fileName = "")
         : name(std::move(name)),
           value(std::visit(
-            [](const auto& v) -> std::string {
-                using T = std::decay_t<decltype(v)>;
-                if constexpr (std::is_integral_v<T>) {
-                    return std::to_string(v);
-                } else if constexpr (std::is_same_v<std::string, T>) {
-                    return v;
+              [](const auto& v) -> std::string {
+                  using T = std::decay_t<decltype(v)>;
+                  if constexpr (std::is_integral_v<T>) {
+                      return std::to_string(v);
+                  } else if constexpr (std::is_same_v<std::string, T>) {
+                      return v;
+                  }
+              },
+              value)),
+          isFile(isFile),
+          mimeType(std::move(mimeType)),
+          fileName(std::move(fileName)) {}
+
+    HttpReqArg(std::string name,
+               const std::variant<InputFile::Ptr, std::string>& value)
+        : name(std::move(name)) {
+        std::visit(
+            [&](const auto& x) {
+                using V = std::decay_t<decltype(x)>;
+                if constexpr (std::is_same_v<V, TgBot::InputFile::Ptr>) {
+                    this->value = x->data;
+                    isFile = true;
+                    mimeType = x->mimeType;
+                    fileName = x->fileName;
+                } else if constexpr (std::is_same_v<V, std::string>) {
+                    this->value = x;
+                    isFile = false;
                 }
             },
-            value)), isFile(isFile),
-          mimeType(std::move(mimeType)),
-          fileName(std::move(fileName)) {
-        
+            value);
     }
 
     template <typename IntT,
