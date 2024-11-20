@@ -235,7 +235,8 @@ auto putArg(T arg) {
     } else if constexpr (std::is_same_v<T, TgBot::InputFile::Ptr> ||
                          detail::is_primitive_v<T>) {
         return arg;  // HttpReqArg ctor can handle
-    } else if constexpr (std::is_same_v<T, std::chrono::system_clock::time_point>){
+    } else if constexpr (std::is_same_v<
+                             T, std::chrono::system_clock::time_point>) {
         return std::chrono::system_clock::to_time_t(arg);
     } else {
         return TgBot::putJSON(arg);
@@ -1843,8 +1844,12 @@ Json::Value TgBot::ApiImpl::sendRequest(
     if constexpr (kSendRequestDebug) {
         std::cout << "tgbot-cpp: Sending request: " << method << std::endl;
         for (const auto &arg : args) {
-            std::cout << arg.name << " is " << std::quoted(arg.value)
-                      << std::endl;
+            if (arg.isFile) {
+                std::cout << arg.name << "=<file:" << arg.fileName << ">"
+                          << std::endl;
+                continue;
+            }
+            std::cout << arg.name << "=\"" << arg.value << "\"" << std::endl;
         }
     }
     while (true) {
