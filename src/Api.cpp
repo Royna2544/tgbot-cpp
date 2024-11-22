@@ -98,7 +98,7 @@ auto putArg(std::string name, const T &data) {
 
 using TgBot::TgException;
 
-constexpr bool kSendRequestDebug = true;
+constexpr bool kSendRequestDebug = false;
 
 template <typename... Args>
 Json::Value sendRequest(const std::string_view _bot_url,
