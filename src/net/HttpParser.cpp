@@ -1,20 +1,20 @@
 #include "tgbot/net/HttpParser.h"
 
-#include "tgbot/tools/StringTools.h"
-
 #include <boost/algorithm/string.hpp>
-
 #include <cstddef>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
+
+#include "tgbot/tools/StringTools.h"
 
 using namespace std;
 using namespace boost;
 
 namespace TgBot {
 
-string HttpParser::generateRequest(const Url& url, const vector<HttpReqArg>& args, bool isKeepAlive) const {
+string HttpParser::generateRequest(const Url& url, const HttpReqArg::Vec& args,
+                                   bool isKeepAlive) {
     string result;
     if (args.empty()) {
         result += "GET ";
@@ -57,35 +57,21 @@ string HttpParser::generateRequest(const Url& url, const vector<HttpReqArg>& arg
     return result;
 }
 
-string HttpParser::generateMultipartFormData(const vector<HttpReqArg>& args, const string& boundary) const {
+string HttpParser::generateMultipartFormData(const HttpReqArg::Vec& args,
+                                             const string& boundary) {
     string result;
-    for (const HttpReqArg& item : args) {
-        result += "--";
-        result += boundary;
-        result += "\r\nContent-Disposition: form-data; name=\"";
-        result += item.name;
-        if (item.isFile) {
-            result += "\"; filename=\"" + item.fileName;
-        }
-        result += "\"\r\n";
-        if (item.isFile) {
-            result += "Content-Type: ";
-            result += item.mimeType;
-            result += "\r\n";
-        }
-        result += "\r\n";
-        result += item.value;
-        result += "\r\n";
+    for (const auto& item : args) {
+        result += item->create_mime_part(boundary);
     }
     result += "--" + boundary + "--\r\n";
     return result;
 }
 
-string HttpParser::generateMultipartBoundary(const vector<HttpReqArg>& args) const {
+string HttpParser::generateMultipartBoundary(const HttpReqArg::Vec& args) {
     string result;
-    for (const HttpReqArg& item : args) {
-        if (item.isFile) {
-            while (result.empty() || item.value.find(result) != string::npos) {
+    for (const auto& item : args) {
+        if (item->isFile()) {
+            while (result.empty() || item->value.find(result) != string::npos) {
                 result += StringTools::generateRandomString(4);
             }
         }
@@ -93,25 +79,28 @@ string HttpParser::generateMultipartBoundary(const vector<HttpReqArg>& args) con
     return result;
 }
 
-string HttpParser::generateWwwFormUrlencoded(const vector<HttpReqArg>& args) const {
+string HttpParser::generateWwwFormUrlencoded(const HttpReqArg::Vec& args) {
     string result;
 
     bool firstRun = true;
-    for (const HttpReqArg& item : args) {
+    for (const auto& item : args) {
         if (firstRun) {
             firstRun = false;
         } else {
             result += '&';
         }
-        result += StringTools::urlEncode(item.name);
+        result += StringTools::urlEncode(item->name);
         result += '=';
-        result += StringTools::urlEncode(item.value);
+        result += StringTools::urlEncode(item->value);
     }
 
     return result;
 }
 
-string HttpParser::generateResponse(const string& data, const string& mimeType, unsigned short statusCode, const string& statusStr, bool isKeepAlive) const {
+string HttpParser::generateResponse(const string& data, const string& mimeType,
+                                    unsigned short statusCode,
+                                    const string& statusStr,
+                                    bool isKeepAlive) {
     string result;
     result += "HTTP/1.1 ";
     result += std::to_string(statusCode);
@@ -132,7 +121,8 @@ string HttpParser::generateResponse(const string& data, const string& mimeType, 
     return result;
 }
 
-unordered_map<string, string> HttpParser::parseHeader(const string& data, bool isRequest) const {
+unordered_map<string, string> HttpParser::parseHeader(const string& data,
+                                                      bool isRequest) {
     unordered_map<string, string> headers;
 
     std::size_t lineStart = 0;
@@ -147,11 +137,15 @@ unordered_map<string, string> HttpParser::parseHeader(const string& data, bool i
                 lineSepPos = data.find(' ');
                 lineEnd = data.find("\r\n");
                 headers["_method"] = data.substr(0, lineSepPos);
-                headers["_path"] = data.substr(lineSepPos + 1, data.find(' ', lineSepPos + 1) - lineSepPos - 1);
+                headers["_path"] =
+                    data.substr(lineSepPos + 1, data.find(' ', lineSepPos + 1) -
+                                                    lineSepPos - 1);
             } else {
                 lineSepPos = data.find(' ');
                 lineEnd = data.find("\r\n");
-                headers["_status"] = data.substr(lineSepPos + 1, data.find(' ', lineSepPos + 1) - lineSepPos - 1);
+                headers["_status"] =
+                    data.substr(lineSepPos + 1, data.find(' ', lineSepPos + 1) -
+                                                    lineSepPos - 1);
             }
         } else {
             lineStart = lineEnd;
@@ -161,14 +155,15 @@ unordered_map<string, string> HttpParser::parseHeader(const string& data, bool i
             if (lastLineEnd == lineEnd || lineEnd == string::npos) {
                 break;
             }
-            headers[data.substr(lineStart, lineSepPos - lineStart)] = trim_copy(data.substr(lineSepPos + 1, lineEnd - lineSepPos - 1));
+            headers[data.substr(lineStart, lineSepPos - lineStart)] = trim_copy(
+                data.substr(lineSepPos + 1, lineEnd - lineSepPos - 1));
         }
     }
 
     return headers;
 }
 
-string HttpParser::extractBody(const string& data) const {
+string HttpParser::extractBody(const string& data) {
     std::size_t headerEnd = data.find("\r\n\r\n");
     if (headerEnd == string::npos) {
         return data;
@@ -177,4 +172,4 @@ string HttpParser::extractBody(const string& data) const {
     return data.substr(headerEnd);
 }
 
-}
+}  // namespace TgBot

@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
+#include "tgbot/net/HttpReqArg.h"
 
 using namespace std;
 using namespace boost::asio;
@@ -12,13 +13,13 @@ using namespace boost::asio::ip;
 
 namespace TgBot {
 
-BoostHttpOnlySslClient::BoostHttpOnlySslClient(std::int32_t timeout) : _httpParser() {
+BoostHttpOnlySslClient::BoostHttpOnlySslClient(std::int32_t timeout){
     _timeout = timeout;
 }
 
 BoostHttpOnlySslClient::~BoostHttpOnlySslClient() = default;
 
-string BoostHttpOnlySslClient::makeRequest(const Url& url, const vector<HttpReqArg>& args) const {
+string BoostHttpOnlySslClient::makeRequest(const Url& url, const HttpReqArg::Vec& args) const {
     tcp::resolver resolver(_ioService);
     tcp::resolver::query query(url.host, "443");
 
@@ -46,7 +47,7 @@ string BoostHttpOnlySslClient::makeRequest(const Url& url, const vector<HttpReqA
 
     socket.handshake(ssl::stream<tcp::socket>::client);
 
-    string requestText = _httpParser.generateRequest(url, args, false);
+    string requestText = HttpParser::generateRequest(url, args, false);
     write(socket, buffer(requestText.c_str(), requestText.length()));
 
     fd_set fileDescriptorSet;
@@ -93,7 +94,7 @@ string BoostHttpOnlySslClient::makeRequest(const Url& url, const vector<HttpReqA
         response += string(buff, bytes);
     }
 
-    return _httpParser.extractBody(response);
+    return HttpParser::extractBody(response);
 }
 
 }

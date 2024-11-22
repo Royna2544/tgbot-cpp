@@ -28,7 +28,7 @@ public:
      * If there's no args specified, a GET request will be sent, otherwise a POST request will be sent.
      * If at least 1 arg is marked as file, the content type of a request will be multipart/form-data, otherwise it will be application/x-www-form-urlencoded.
      */
-    virtual std::string makeRequest(const Url& url, const std::vector<HttpReqArg>& args) const = 0;
+    virtual std::string makeRequest(const Url& url, const HttpReqArg::Vec& args) const = 0;
 
     std::int32_t _timeout = 25;
 

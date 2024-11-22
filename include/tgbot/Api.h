@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "tgbot/net/HttpClient.h"
 #include "tgbot/net/HttpReqArg.h"
 #include "tgbot/types/BotCommand.h"
 #include "tgbot/types/BotCommandScope.h"
@@ -73,8 +74,6 @@ template <typename T>
 using minmax_type_t = typename minmax_type<T>::type;
 }  // namespace detail
 
-class Bot;
-
 /**
  * @brief This class executes telegram api methods. Telegram docs:
  * <https://core.telegram.org/bots/api#available-methods>
@@ -83,6 +82,9 @@ class Bot;
  */
 class TGBOT_API Api {
    public:
+    Api(std::string token, HttpClient* httpClient, std::string url);
+    ~Api() = default;
+
     // Optional with default value
     template <typename T, T default_value>
     class optional_default {
@@ -183,11 +185,11 @@ class TGBOT_API Api {
      *
      * @return Returns an Array of Update objects.
      */
-    virtual std::vector<Update::Ptr> getUpdates(
+    std::vector<Update::Ptr> getUpdates(
         optional<std::int32_t> offset = {},
         bounded_optional_default<std::int32_t, 0, 100, 100> limit = {},
         optional_default<std::int32_t, 0> timeout = {},
-        const optional<Update::Types> allowedUpdates = {}) const = 0;
+        const optional<Update::Types> allowedUpdates = {}) const;
 
     /**
      * @brief Use this method to specify a URL and receive incoming updates via
@@ -244,14 +246,14 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setWebhook(
+    bool setWebhook(
         const std::string_view url, InputFile::Ptr certificate = nullptr,
         const bounded_optional_default<std::int32_t, 1, 100, 40>
             maxConnections = {},
         const optional<Update::Types> allowedUpdates = {},
         const optional<std::string_view> ipAddress = {},
         const optional<bool> dropPendingUpdates = {},
-        const optional<std::string_view> secretToken = {}) const = 0;
+        const optional<std::string_view> secretToken = {}) const;
 
     /**
      * @brief Use this method to remove webhook integration if you decide to
@@ -261,8 +263,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteWebhook(
-        const optional<bool> dropPendingUpdates = {}) const = 0;
+    bool deleteWebhook(
+        const optional<bool> dropPendingUpdates = {}) const;
 
     /**
      * @brief Use this method to get current webhook status.
@@ -274,7 +276,7 @@ class TGBOT_API Api {
      * @return On success, returns a WebhookInfo object. If the bot is using
      * getUpdates, will return a nullptr.
      */
-    virtual WebhookInfo::Ptr getWebhookInfo() const = 0;
+    WebhookInfo::Ptr getWebhookInfo() const;
 
     /**
      * @brief A simple method for testing your bot's authentication token.
@@ -283,7 +285,7 @@ class TGBOT_API Api {
      *
      * @return Returns basic information about the bot in form of a User object.
      */
-    virtual User::Ptr getMe() const = 0;
+    User::Ptr getMe() const;
 
     /**
      * @brief Use this method to log out from the cloud Bot API server before
@@ -296,7 +298,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool logOut() const = 0;
+    bool logOut() const;
 
     /**
      * @brief Use this method to close the bot instance before moving it from
@@ -309,7 +311,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool close() const = 0;
+    bool close() const;
 
     enum class ParseMode {
         None,
@@ -317,6 +319,16 @@ class TGBOT_API Api {
         HTML,
         MarkdownV2,
     };
+
+    // Unique identifier for the target chat or username of the
+    // target channel (in the format @channelusername)
+    using ChatIdType = std::variant<std::int64_t, std::string>;
+
+    // Pass a fileId as String to send a file that
+    // exists on the Telegram servers (recommended), pass an HTTP URL as a
+    // String for Telegram to get a file from the Internet, or upload a new
+    // file using multipart/form-data.
+    using FileHandleType = std::variant<InputFile::Ptr, std::string>;
 
     /**
      * @brief Use this method to send text messages.
@@ -353,9 +365,8 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendMessage(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view text,
+    Message::Ptr sendMessage(
+        ChatIdType chatId, const std::string_view text,
         LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -364,7 +375,7 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& entities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to forward messages of any kind.
@@ -386,12 +397,11 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr forwardMessage(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<std::int64_t, std::string> fromChatId,
-        std::int32_t messageId, optional<bool> disableNotification = {},
+    Message::Ptr forwardMessage(
+        ChatIdType chatId, ChatIdType fromChatId, std::int32_t messageId,
+        optional<bool> disableNotification = {},
         optional<bool> protectContent = {},
-        optional<std::int32_t> messageThreadId = {}) const = 0;
+        optional<std::int32_t> messageThreadId = {}) const;
 
     /**
      * @brief Use this method to forward multiple messages of any kind.
@@ -418,13 +428,12 @@ class TGBOT_API Api {
      * @return On success, an array of MessageId of the sent messages is
      * returned.
      */
-    virtual std::vector<MessageId::Ptr> forwardMessages(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<std::int64_t, std::string> fromChatId,
+    std::vector<MessageId::Ptr> forwardMessages(
+        ChatIdType chatId, ChatIdType fromChatId,
         const std::vector<std::int32_t>& messageIds,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> disableNotification = {},
-        optional<bool> protectContent = {}) const = 0;
+        optional<bool> protectContent = {}) const;
 
     /**
      * @brief Use this method to copy messages of any kind.
@@ -466,17 +475,16 @@ class TGBOT_API Api {
      *
      * @return Returns the MessageId of the sent message on success.
      */
-    virtual MessageId::Ptr copyMessage(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<std::int64_t, std::string> fromChatId,
-        std::int32_t messageId, const optional<std::string_view> caption = {},
+    MessageId::Ptr copyMessage(
+        ChatIdType chatId, ChatIdType fromChatId, std::int32_t messageId,
+        const optional<std::string_view> caption = {},
         const optional<ParseMode> parseMode = {},
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<bool> disableNotification = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         optional<bool> protectContent = {},
-        optional<std::int32_t> messageThreadId = {}) const = 0;
+        optional<std::int32_t> messageThreadId = {}) const;
 
     /**
      * @brief Use this method to copy messages of any kind.
@@ -509,14 +517,13 @@ class TGBOT_API Api {
      * @return On success, an array of MessageId of the sent messages is
      * returned.
      */
-    virtual std::vector<MessageId::Ptr> copyMessages(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<std::int64_t, std::string> fromChatId,
+    std::vector<MessageId::Ptr> copyMessages(
+        ChatIdType chatId, ChatIdType fromChatId,
         const std::vector<std::int32_t>& messageIds,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> disableNotification = {},
         optional<bool> protectContent = {},
-        optional<bool> removeCaption = {}) const = 0;
+        optional<bool> removeCaption = {}) const;
 
     /**
      * @brief Use this method to send photos.
@@ -559,9 +566,8 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendPhoto(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> photo,
+    Message::Ptr sendPhoto(
+        ChatIdType chatId, FileHandleType photo,
         const optional<std::string_view> caption = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -570,7 +576,7 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {}, optional<bool> hasSpoiler = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send audio files, if you want Telegram clients
@@ -628,14 +634,13 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendAudio(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> audio,
+    Message::Ptr sendAudio(
+        ChatIdType chatId, FileHandleType audio,
         const optional<std::string_view> caption = {},
         optional<std::int32_t> duration = {},
         const optional<std::string_view> performer = {},
         const optional<std::string_view> title = {},
-        std::variant<InputFile::Ptr, std::string> thumbnail = {},
+        FileHandleType thumbnail = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         const optional<ParseMode> parseMode = {},
@@ -643,7 +648,7 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send general files.
@@ -697,10 +702,9 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendDocument(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> document,
-        std::variant<InputFile::Ptr, std::string> thumbnail = {},
+    Message::Ptr sendDocument(
+        ChatIdType chatId, FileHandleType document,
+        FileHandleType thumbnail = {},
         const optional<std::string_view> caption = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -710,7 +714,7 @@ class TGBOT_API Api {
         optional<bool> disableContentTypeDetection = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send video files, Telegram clients support
@@ -769,13 +773,11 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendVideo(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> video,
+    Message::Ptr sendVideo(
+        ChatIdType chatId, FileHandleType video,
         optional<bool> supportsStreaming = {},
         optional<std::int32_t> duration = {}, optional<std::int32_t> width = {},
-        optional<std::int32_t> height = {},
-        std::variant<InputFile::Ptr, std::string> thumbnail = {},
+        optional<std::int32_t> height = {}, FileHandleType thumbnail = {},
         const optional<std::string_view> caption = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -784,7 +786,7 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {}, optional<bool> hasSpoiler = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send animation files (GIF or H.264/MPEG-4 AVC
@@ -841,12 +843,10 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendAnimation(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> animation,
+    Message::Ptr sendAnimation(
+        ChatIdType chatId, FileHandleType animation,
         optional<std::int32_t> duration = {}, optional<std::int32_t> width = {},
-        optional<std::int32_t> height = {},
-        std::variant<InputFile::Ptr, std::string> thumbnail = {},
+        optional<std::int32_t> height = {}, FileHandleType thumbnail = {},
         const optional<std::string_view> caption = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -855,7 +855,7 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {}, optional<bool> hasSpoiler = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send audio files, if you want Telegram clients
@@ -901,9 +901,8 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendVoice(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> voice,
+    Message::Ptr sendVoice(
+        ChatIdType chatId, FileHandleType voice,
         const optional<std::string_view> caption = {},
         optional<std::int32_t> duration = {},
         ReplyParameters::Ptr replyParameters = nullptr,
@@ -913,7 +912,7 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send video messages.
@@ -959,18 +958,16 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendVideoNote(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> videoNote,
+    Message::Ptr sendVideoNote(
+        ChatIdType chatId, FileHandleType videoNote,
         ReplyParameters::Ptr replyParameters = nullptr,
         optional<bool> disableNotification = {},
         optional<std::int32_t> duration = {},
-        optional<std::int32_t> length = {},
-        std::variant<InputFile::Ptr, std::string> thumbnail = {},
+        optional<std::int32_t> length = {}, FileHandleType thumbnail = {},
         GenericReply::Ptr replyMarkup = nullptr,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send a group of photos, videos, documents or
@@ -995,14 +992,13 @@ class TGBOT_API Api {
      *
      * @return On success, an array of Messages that were sent is returned.
      */
-    virtual std::vector<Message::Ptr> sendMediaGroup(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::vector<InputMedia::Ptr>& media,
+    std::vector<Message::Ptr> sendMediaGroup(
+        ChatIdType chatId, const std::vector<InputMedia::Ptr>& media,
         optional<bool> disableNotification = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send point on the map.
@@ -1040,9 +1036,8 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendLocation(
-        std::variant<std::int64_t, std::string> chatId, float latitude,
-        float longitude,
+    Message::Ptr sendLocation(
+        ChatIdType chatId, float latitude, float longitude,
         bounded_optional<std::int32_t, 60, 86400> livePeriod = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
@@ -1052,7 +1047,7 @@ class TGBOT_API Api {
         bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to edit live location messages.
@@ -1081,16 +1076,15 @@ class TGBOT_API Api {
      *
      * @return On success, the edited Message is returned.
      */
-    virtual Message::Ptr editMessageLiveLocation(
-        float latitude, float longitude,
-        std::variant<std::int64_t, std::string> chatId = {},
+    Message::Ptr editMessageLiveLocation(
+        float latitude, float longitude, ChatIdType chatId = {},
         optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
         InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
         bounded_optional<float, 0, 1500> horizontalAccuracy = {},
         bounded_optional<std::int32_t, 1, 360> heading = {},
         bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius = {})
-        const = 0;
+        const;
 
     /**
      * @brief Use this method to stop updating a live location message before
@@ -1108,11 +1102,10 @@ class TGBOT_API Api {
      *
      * @return On success, the edited Message is returned.
      */
-    virtual Message::Ptr stopMessageLiveLocation(
-        std::variant<std::int64_t, std::string> chatId = {},
-        optional<std::int32_t> messageId = {},
+    Message::Ptr stopMessageLiveLocation(
+        ChatIdType chatId = {}, optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
-        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const = 0;
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
 
     /**
      * @brief Use this method to send information about a venue.
@@ -1149,10 +1142,9 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendVenue(
-        std::variant<std::int64_t, std::string> chatId, float latitude,
-        float longitude, const std::string_view title,
-        const std::string_view address,
+    Message::Ptr sendVenue(
+        ChatIdType chatId, float latitude, float longitude,
+        const std::string_view title, const std::string_view address,
         const optional<std::string_view> foursquareId = {},
         const optional<std::string_view> foursquareType = {},
         optional<bool> disableNotification = {},
@@ -1162,7 +1154,7 @@ class TGBOT_API Api {
         const optional<std::string_view> googlePlaceType = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send phone contacts.
@@ -1193,9 +1185,9 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendContact(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view phoneNumber, const std::string_view firstName,
+    Message::Ptr sendContact(
+        ChatIdType chatId, const std::string_view phoneNumber,
+        const std::string_view firstName,
         const optional<std::string_view> lastName = {},
         const optional<std::string_view> vcard = {},
         optional<bool> disableNotification = {},
@@ -1203,7 +1195,7 @@ class TGBOT_API Api {
         GenericReply::Ptr replyMarkup = nullptr,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Desribes a poll type
@@ -1261,9 +1253,8 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendPoll(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view question,
+    Message::Ptr sendPoll(
+        ChatIdType chatId, const std::string_view question,
         const std::vector<std::string>& options,
         optional<bool> disableNotification = {},
         ReplyParameters::Ptr replyParameters = nullptr,
@@ -1280,7 +1271,7 @@ class TGBOT_API Api {
         optional<bool> isClosed = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send an animated emoji that will display a
@@ -1311,15 +1302,14 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendDice(
-        std::variant<std::int64_t, std::string> chatId,
-        optional<bool> disableNotification = {},
+    Message::Ptr sendDice(
+        ChatIdType chatId, optional<bool> disableNotification = {},
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         const optional<std::string_view> emoji = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to change the chosen reactions on a message.
@@ -1342,11 +1332,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setMessageReaction(
-        std::variant<std::int64_t, std::string> chatId,
-        optional<std::int32_t> messageId = {},
+    bool setMessageReaction(
+        ChatIdType chatId, optional<std::int32_t> messageId = {},
         const std::vector<ReactionType::Ptr>& reaction = {},
-        optional<bool> isBig = {}) const = 0;
+        optional<bool> isBig = {}) const;
 
     enum class ChatAction {
         typing,
@@ -1392,10 +1381,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool sendChatAction(
+    bool sendChatAction(
         std::int64_t chatId, const ChatAction action,
         optional<std::int32_t> messageThreadId = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to get a list of profile pictures for a user.
@@ -1408,10 +1397,10 @@ class TGBOT_API Api {
      *
      * @return Returns a UserProfilePhotos object.
      */
-    virtual UserProfilePhotos::Ptr getUserProfilePhotos(
+    UserProfilePhotos::Ptr getUserProfilePhotos(
         std::int64_t userId, optional<std::int32_t> offset = {},
         bounded_optional_default<std::int32_t, 1, 100, 100> limit = {})
-        const = 0;
+        const;
 
     /**
      * @brief Use this method to get basic information about a file and prepare
@@ -1432,7 +1421,7 @@ class TGBOT_API Api {
      *
      * @return On success, a File object is returned.
      */
-    virtual File::Ptr getFile(const std::string_view fileId) const = 0;
+    File::Ptr getFile(const std::string_view fileId) const;
 
     /**
      * @brief Use this method to ban a user in a group, a supergroup or a
@@ -1457,10 +1446,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool banChatMember(
-        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+    bool banChatMember(
+        ChatIdType chatId, std::int64_t userId,
         optional<std::chrono::system_clock::time_point> untilDate = {},
-        optional<bool> revokeMessages = {}) const = 0;
+        optional<bool> revokeMessages = {}) const;
 
     /**
      * @brief Use this method to unban a previously banned user in a supergroup
@@ -1481,9 +1470,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unbanChatMember(std::variant<std::int64_t, std::string> chatId,
-                                 std::int64_t userId,
-                                 optional<bool> onlyIfBanned = {}) const = 0;
+    bool unbanChatMember(ChatIdType chatId, std::int64_t userId,
+                                 optional<bool> onlyIfBanned = {}) const;
 
     /**
      * @brief Use this method to restrict a user in a supergroup.
@@ -1509,11 +1497,11 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool restrictChatMember(
-        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+    bool restrictChatMember(
+        ChatIdType chatId, std::int64_t userId,
         ChatPermissions::Ptr permissions,
         optional<std::chrono::system_clock::time_point> untilDate = {},
-        optional<bool> useIndependentChatPermissions = {}) const = 0;
+        optional<bool> useIndependentChatPermissions = {}) const;
 
     /**
      * @brief Use this method to promote or demote a user in a supergroup or a
@@ -1563,8 +1551,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool promoteChatMember(
-        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
+    bool promoteChatMember(
+        ChatIdType chatId, std::int64_t userId,
         optional<bool> canChangeInfo = {}, optional<bool> canPostMessages = {},
         optional<bool> canEditMessages = {},
         optional<bool> canDeleteMessages = {},
@@ -1575,7 +1563,7 @@ class TGBOT_API Api {
         optional<bool> canRestrictMembers = {},
         optional<bool> canManageTopics = {}, optional<bool> canPostStories = {},
         optional<bool> canEditStories = {},
-        optional<bool> canDeleteStories = {}) const = 0;
+        optional<bool> canDeleteStories = {}) const;
 
     /**
      * @brief Use this method to set a custom title for an administrator in a
@@ -1589,9 +1577,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatAdministratorCustomTitle(
-        std::variant<std::int64_t, std::string> chatId, std::int64_t userId,
-        const std::string_view customTitle) const = 0;
+    bool setChatAdministratorCustomTitle(
+        ChatIdType chatId, std::int64_t userId,
+        const std::string_view customTitle) const;
 
     /**
      * @brief Use this method to ban a channel chat in a supergroup or a
@@ -1608,9 +1596,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool banChatSenderChat(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t senderChatId) const = 0;
+    bool banChatSenderChat(ChatIdType chatId,
+                                   std::int64_t senderChatId) const;
 
     /**
      * @brief Use this method to unban a previously banned channel chat in a
@@ -1625,9 +1612,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unbanChatSenderChat(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t senderChatId) const = 0;
+    bool unbanChatSenderChat(ChatIdType chatId,
+                                     std::int64_t senderChatId) const;
 
     /**
      * @brief Use this method to set default chat permissions for all members.
@@ -1648,10 +1634,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatPermissions(
-        std::variant<std::int64_t, std::string> chatId,
-        ChatPermissions::Ptr permissions,
-        optional<bool> useIndependentChatPermissions = {}) const = 0;
+    bool setChatPermissions(
+        ChatIdType chatId, ChatPermissions::Ptr permissions,
+        optional<bool> useIndependentChatPermissions = {}) const;
 
     /**
      * @brief Use this method to generate a new primary invite link for a chat;
@@ -1672,8 +1657,7 @@ class TGBOT_API Api {
      *
      * @return Returns the new invite link as String on success.
      */
-    virtual std::string exportChatInviteLink(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    std::string exportChatInviteLink(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to create an additional invite link for a chat.
@@ -1696,12 +1680,12 @@ class TGBOT_API Api {
      *
      * @return Returns the new invite link as ChatInviteLink object.
      */
-    virtual ChatInviteLink::Ptr createChatInviteLink(
-        std::variant<std::int64_t, std::string> chatId,
+    ChatInviteLink::Ptr createChatInviteLink(
+        ChatIdType chatId,
         optional<std::chrono::system_clock::time_point> expireDate = {},
         optional<std::int32_t> memberLimit = {},
         const optional<std::string_view> name = {},
-        optional<bool> createsJoinRequest = {}) const = 0;
+        optional<bool> createsJoinRequest = {}) const;
 
     /**
      * @brief Use this method to edit a non-primary invite link created by the
@@ -1725,13 +1709,12 @@ class TGBOT_API Api {
      *
      * @return Returns the edited invite link as a ChatInviteLink object.
      */
-    virtual ChatInviteLink::Ptr editChatInviteLink(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view inviteLink,
+    ChatInviteLink::Ptr editChatInviteLink(
+        ChatIdType chatId, const std::string_view inviteLink,
         optional<std::chrono::system_clock::time_point> expireDate = {},
         optional<std::int32_t> memberLimit = {},
         const optional<std::string_view> name = {},
-        optional<bool> createsJoinRequest = {}) const = 0;
+        optional<bool> createsJoinRequest = {}) const;
 
     /**
      * @brief Use this method to revoke an invite link created by the bot.
@@ -1746,9 +1729,8 @@ class TGBOT_API Api {
      *
      * @return Returns the revoked invite link as ChatInviteLink object.
      */
-    virtual ChatInviteLink::Ptr revokeChatInviteLink(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view inviteLink) const = 0;
+    ChatInviteLink::Ptr revokeChatInviteLink(
+        ChatIdType chatId, const std::string_view inviteLink) const;
 
     /**
      * @brief Use this method to approve a chat join request.
@@ -1762,9 +1744,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool approveChatJoinRequest(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t userId) const = 0;
+    bool approveChatJoinRequest(ChatIdType chatId,
+                                        std::int64_t userId) const;
 
     /**
      * @brief Use this method to decline a chat join request.
@@ -1778,9 +1759,8 @@ class TGBOT_API Api {
      *
      * @return True on success.
      */
-    virtual bool declineChatJoinRequest(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t userId) const = 0;
+    bool declineChatJoinRequest(ChatIdType chatId,
+                                        std::int64_t userId) const;
 
     /**
      * @brief Use this method to set a new profile photo for the chat.
@@ -1795,8 +1775,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatPhoto(std::variant<std::int64_t, std::string> chatId,
-                              InputFile::Ptr photo) const = 0;
+    bool setChatPhoto(ChatIdType chatId,
+                              InputFile::Ptr photo) const;
 
     /**
      * @brief Use this method to delete a chat photo.
@@ -1810,8 +1790,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteChatPhoto(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool deleteChatPhoto(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to change the title of a chat.
@@ -1826,8 +1805,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatTitle(std::variant<std::int64_t, std::string> chatId,
-                              const std::string_view title) const = 0;
+    bool setChatTitle(ChatIdType chatId,
+                              const std::string_view title) const;
 
     /**
      * @brief Use this method to change the description of a group, a supergroup
@@ -1842,9 +1821,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatDescription(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view description) const = 0;
+    bool setChatDescription(
+        ChatIdType chatId, const std::string_view description) const;
 
     /**
      * @brief Use this method to add a message to the list of pinned messages in
@@ -1864,9 +1842,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool pinChatMessage(
-        std::variant<std::int64_t, std::string> chatId, std::int32_t messageId,
-        optional<bool> disableNotification = {}) const = 0;
+    bool pinChatMessage(
+        ChatIdType chatId, std::int32_t messageId,
+        optional<bool> disableNotification = {}) const;
 
     /**
      * @brief Use this method to remove a message from the list of pinned
@@ -1885,9 +1863,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unpinChatMessage(
-        std::variant<std::int64_t, std::string> chatId,
-        optional<std::int32_t> messageId = {}) const = 0;
+    bool unpinChatMessage(
+        ChatIdType chatId, optional<std::int32_t> messageId = {}) const;
 
     /**
      * @brief Use this method to clear the list of pinned messages in a chat.
@@ -1902,8 +1879,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unpinAllChatMessages(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool unpinAllChatMessages(ChatIdType chatId) const;
 
     /**
      * @brief Use this method for your bot to leave a group, supergroup or
@@ -1914,8 +1890,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool leaveChat(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool leaveChat(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to get up to date information about the chat.
@@ -1925,8 +1900,7 @@ class TGBOT_API Api {
      *
      * @return Returns a Chat object on success.
      */
-    virtual Chat::Ptr getChat(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    Chat::Ptr getChat(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to get a list of administrators in a chat, which
@@ -1937,8 +1911,8 @@ class TGBOT_API Api {
      *
      * @return Returns an Array of ChatMember objects.
      */
-    virtual std::vector<ChatMember::Ptr> getChatAdministrators(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    std::vector<ChatMember::Ptr> getChatAdministrators(
+        ChatIdType chatId) const;
 
     /**
      * @brief Use this method to get the number of members in a chat.
@@ -1948,8 +1922,7 @@ class TGBOT_API Api {
      *
      * @return Returns Int on success.
      */
-    virtual std::int32_t getChatMemberCount(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    std::int32_t getChatMemberCount(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to get information about a member of a chat.
@@ -1963,9 +1936,8 @@ class TGBOT_API Api {
      *
      * @return Returns a ChatMember object on success.
      */
-    virtual ChatMember::Ptr getChatMember(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int64_t userId) const = 0;
+    ChatMember::Ptr getChatMember(ChatIdType chatId,
+                                          std::int64_t userId) const;
 
     /**
      * @brief Use this method to set a new group sticker set for a supergroup.
@@ -1982,9 +1954,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatStickerSet(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view stickerSetName) const = 0;
+    bool setChatStickerSet(
+        ChatIdType chatId, const std::string_view stickerSetName) const;
 
     /**
      * @brief Use this method to delete a group sticker set from a supergroup.
@@ -1999,8 +1970,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteChatStickerSet(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool deleteChatStickerSet(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to get custom emoji stickers, which can be used as
@@ -2008,7 +1978,7 @@ class TGBOT_API Api {
      *
      * @return Returns an Array of Sticker objects.
      */
-    virtual std::vector<Sticker::Ptr> getForumTopicIconStickers() const = 0;
+    std::vector<Sticker::Ptr> getForumTopicIconStickers() const;
 
     /**
      * @brief Use this method to create a topic in a forum supergroup chat.
@@ -2030,10 +2000,10 @@ class TGBOT_API Api {
      * @return Returns information about the created topic as a ForumTopic
      * object.
      */
-    virtual ForumTopic::Ptr createForumTopic(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view name, optional<std::int32_t> iconColor = {},
-        const optional<std::string_view> iconCustomEmojiId = {}) const = 0;
+    ForumTopic::Ptr createForumTopic(
+        ChatIdType chatId, const std::string_view name,
+        optional<std::int32_t> iconColor = {},
+        const optional<std::string_view> iconCustomEmojiId = {}) const;
 
     /**
      * @brief Use this method to edit name and icon of a topic in a forum
@@ -2056,11 +2026,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool editForumTopic(std::variant<std::int64_t, std::string> chatId,
-                                std::int32_t messageThreadId,
+    bool editForumTopic(ChatIdType chatId, std::int32_t messageThreadId,
                                 const optional<std::string_view> name = {},
                                 std::variant<std::int32_t, std::string>
-                                    iconCustomEmojiId = {}) const = 0;
+                                    iconCustomEmojiId = {}) const;
 
     /**
      * @brief Use this method to close an open topic in a forum supergroup chat.
@@ -2076,8 +2045,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool closeForumTopic(std::variant<std::int64_t, std::string> chatId,
-                                 std::int32_t messageThreadId) const = 0;
+    bool closeForumTopic(ChatIdType chatId,
+                                 std::int32_t messageThreadId) const;
 
     /**
      * @brief Use this method to reopen a closed topic in a forum supergroup
@@ -2094,9 +2063,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool reopenForumTopic(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int32_t messageThreadId) const = 0;
+    bool reopenForumTopic(ChatIdType chatId,
+                                  std::int32_t messageThreadId) const;
 
     /**
      * @brief Use this method to delete a forum topic along with all its
@@ -2112,9 +2080,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteForumTopic(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int32_t messageThreadId) const = 0;
+    bool deleteForumTopic(ChatIdType chatId,
+                                  std::int32_t messageThreadId) const;
 
     /**
      * @brief Use this method to clear the list of pinned messages in a forum
@@ -2130,9 +2097,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unpinAllForumTopicMessages(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int32_t messageThreadId) const = 0;
+    bool unpinAllForumTopicMessages(
+        ChatIdType chatId, std::int32_t messageThreadId) const;
 
     /**
      * @brief Use this method to edit the name of the 'General' topic in a forum
@@ -2147,9 +2113,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool editGeneralForumTopic(
-        std::variant<std::int64_t, std::string> chatId,
-        std::string name) const = 0;
+    bool editGeneralForumTopic(ChatIdType chatId,
+                                       std::string name) const;
 
     /**
      * @brief Use this method to close an open 'General' topic in a forum
@@ -2163,8 +2128,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool closeGeneralForumTopic(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool closeGeneralForumTopic(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to reopen a closed 'General' topic in a forum
@@ -2179,8 +2143,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool reopenGeneralForumTopic(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool reopenGeneralForumTopic(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to hide the 'General' topic in a forum supergroup
@@ -2195,8 +2158,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool hideGeneralForumTopic(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool hideGeneralForumTopic(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to unhide the 'General' topic in a forum
@@ -2210,8 +2172,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unhideGeneralForumTopic(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool unhideGeneralForumTopic(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to clear the list of pinned messages in a General
@@ -2225,8 +2186,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool unpinAllGeneralForumTopicMessages(
-        std::variant<std::int64_t, std::string> chatId) const = 0;
+    bool unpinAllGeneralForumTopicMessages(ChatIdType chatId) const;
 
     /**
      * @brief Use this method to send answers to callback queries sent from
@@ -2256,12 +2216,12 @@ class TGBOT_API Api {
      *
      * @return On success, True is returned.
      */
-    virtual bool answerCallbackQuery(
+    bool answerCallbackQuery(
         const std::string_view callbackQueryId,
         const optional<std::string_view> text = {},
         optional<bool> showAlert = {},
         const optional<std::string_view> url = {},
-        optional<std::int32_t> cacheTime = {}) const = 0;
+        optional<std::int32_t> cacheTime = {}) const;
 
     /**
      * @brief Use this method to get the list of boosts added to a chat by a
@@ -2275,9 +2235,8 @@ class TGBOT_API Api {
      *
      * @return Returns a UserChatBoosts object.
      */
-    virtual UserChatBoosts::Ptr getUserChatBoosts(
-        std::variant<std::int64_t, std::string> chatId,
-        std::int32_t userId) const = 0;
+    UserChatBoosts::Ptr getUserChatBoosts(
+        ChatIdType chatId, std::int32_t userId) const;
 
     /**
      * @brief Use this method to get information about the connection of the bot
@@ -2287,8 +2246,8 @@ class TGBOT_API Api {
      *
      * @return Returns a BusinessConnection object on success.
      */
-    virtual BusinessConnection::Ptr getBusinessConnection(
-        const std::string_view businessConnectionId) const = 0;
+    BusinessConnection::Ptr getBusinessConnection(
+        const std::string_view businessConnectionId) const;
 
     // Type alias for language code
     using LanguageCode = std::string_view;
@@ -2310,10 +2269,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setMyCommands(
+    bool setMyCommands(
         const std::vector<BotCommand::Ptr>& commands,
         BotCommandScope::Ptr scope = nullptr,
-        const optional<LanguageCode> languageCode = {}) const = 0;
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to delete the list of the bot's commands for the
@@ -2330,9 +2289,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteMyCommands(
+    bool deleteMyCommands(
         BotCommandScope::Ptr scope = nullptr,
-        const optional<LanguageCode> languageCode = {}) const = 0;
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to get the current list of the bot's commands for
@@ -2346,9 +2305,9 @@ class TGBOT_API Api {
      * @return Returns an Array of BotCommand objects. If commands aren't set,
      * an empty list is returned.
      */
-    virtual std::vector<BotCommand::Ptr> getMyCommands(
+    std::vector<BotCommand::Ptr> getMyCommands(
         BotCommandScope::Ptr scope = nullptr,
-        const optional<LanguageCode> languageCode = {}) const = 0;
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to change the bot's name.
@@ -2361,9 +2320,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setMyName(
+    bool setMyName(
         const optional<std::string_view> name = {},
-        const optional<LanguageCode> languageCode = {}) const = 0;
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to get the current bot name for the given user
@@ -2374,8 +2333,8 @@ class TGBOT_API Api {
      *
      * @return Returns BotName on success.
      */
-    virtual BotName::Ptr getMyName(
-        const optional<LanguageCode> languageCode = {}) const = 0;
+    BotName::Ptr getMyName(
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to change the bot's description, which is shown in
@@ -2390,9 +2349,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setMyDescription(
+    bool setMyDescription(
         const optional<std::string_view> description = {},
-        const optional<LanguageCode> languageCode = {}) const = 0;
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to get the current bot description for the given
@@ -2403,8 +2362,8 @@ class TGBOT_API Api {
      *
      * @return Returns BotDescription on success.
      */
-    virtual BotDescription::Ptr getMyDescription(
-        const optional<LanguageCode> languageCode = {}) const = 0;
+    BotDescription::Ptr getMyDescription(
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to change the bot's short description, which is
@@ -2420,9 +2379,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setMyShortDescription(
+    bool setMyShortDescription(
         const optional<std::string_view> shortDescription = {},
-        const optional<LanguageCode> languageCode = {}) const = 0;
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to get the current bot short description for the
@@ -2433,8 +2392,8 @@ class TGBOT_API Api {
      *
      * @return Returns BotShortDescription on success.
      */
-    virtual BotShortDescription::Ptr getMyShortDescription(
-        const optional<LanguageCode> languageCode = {}) const = 0;
+    BotShortDescription::Ptr getMyShortDescription(
+        const optional<LanguageCode> languageCode = {}) const;
 
     /**
      * @brief Use this method to change the bot's menu button in a private chat,
@@ -2447,9 +2406,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setChatMenuButton(
+    bool setChatMenuButton(
         optional<std::int64_t> chatId = {},
-        MenuButton::Ptr menuButton = nullptr) const = 0;
+        MenuButton::Ptr menuButton = nullptr) const;
 
     /**
      * @brief Use this method to get the current value of the bot's menu button
@@ -2460,8 +2419,8 @@ class TGBOT_API Api {
      *
      * @return Returns MenuButton on success.
      */
-    virtual MenuButton::Ptr getChatMenuButton(
-        optional<std::int64_t> chatId = 0) const = 0;
+    MenuButton::Ptr getChatMenuButton(
+        optional<std::int64_t> chatId) const;
 
     /**
      * @brief Use this method to change the default administrator rights
@@ -2481,9 +2440,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setMyDefaultAdministratorRights(
+    bool setMyDefaultAdministratorRights(
         ChatAdministratorRights::Ptr rights = nullptr,
-        optional<bool> forChannels = {}) const = 0;
+        optional<bool> forChannels = {}) const;
 
     /**
      * @brief Use this method to get the current default administrator rights of
@@ -2495,8 +2454,8 @@ class TGBOT_API Api {
      *
      * @return Returns ChatAdministratorRights on success.
      */
-    virtual ChatAdministratorRights::Ptr getMyDefaultAdministratorRights(
-        optional<bool> forChannels = {}) const = 0;
+    ChatAdministratorRights::Ptr getMyDefaultAdministratorRights(
+        optional<bool> forChannels = {}) const;
 
     /**
      * @brief Use this method to edit text and
@@ -2524,15 +2483,14 @@ class TGBOT_API Api {
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
      */
-    virtual Message::Ptr editMessageText(
-        const std::string_view text,
-        std::variant<std::int64_t, std::string> chatId = {},
+    Message::Ptr editMessageText(
+        const std::string_view text, ChatIdType chatId = {},
         optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
         const optional<ParseMode> parseMode = {},
         LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
         InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
-        const std::vector<MessageEntity::Ptr>& entities = {}) const = 0;
+        const std::vector<MessageEntity::Ptr>& entities = {}) const;
 
     /**
      * @brief Use this method to edit captions of messages.
@@ -2557,14 +2515,13 @@ class TGBOT_API Api {
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
      */
-    virtual Message::Ptr editMessageCaption(
-        std::variant<std::int64_t, std::string> chatId = {},
-        optional<std::int32_t> messageId = {},
+    Message::Ptr editMessageCaption(
+        ChatIdType chatId = {}, optional<std::int32_t> messageId = {},
         const optional<std::string_view> caption = {},
         const optional<std::string_view> inlineMessageId = {},
         GenericReply::Ptr replyMarkup = nullptr,
         const optional<ParseMode> parseMode = {},
-        const std::vector<MessageEntity::Ptr>& captionEntities = {}) const = 0;
+        const std::vector<MessageEntity::Ptr>& captionEntities = {}) const;
 
     /**
      * @brief Use this method to edit animation, audio, document, photo, or
@@ -2591,12 +2548,11 @@ class TGBOT_API Api {
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
      */
-    virtual Message::Ptr editMessageMedia(
-        InputMedia::Ptr media,
-        std::variant<std::int64_t, std::string> chatId = {},
+    Message::Ptr editMessageMedia(
+        InputMedia::Ptr media, ChatIdType chatId = {},
         optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
-        GenericReply::Ptr replyMarkup = nullptr) const = 0;
+        GenericReply::Ptr replyMarkup = nullptr) const;
 
     /**
      * @brief Use this method to edit only the reply markup of messages.
@@ -2614,11 +2570,10 @@ class TGBOT_API Api {
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
      */
-    virtual Message::Ptr editMessageReplyMarkup(
-        std::variant<std::int64_t, std::string> chatId = {},
-        optional<std::int32_t> messageId = {},
+    Message::Ptr editMessageReplyMarkup(
+        ChatIdType chatId = {}, optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
-        GenericReply::Ptr replyMarkup = nullptr) const = 0;
+        GenericReply::Ptr replyMarkup = nullptr) const;
 
     /**
      * @brief Use this method to stop a poll which was sent by the bot.
@@ -2631,9 +2586,9 @@ class TGBOT_API Api {
      *
      * @return On success, the stopped Poll is returned.
      */
-    virtual Poll::Ptr stopPoll(
-        std::variant<std::int64_t, std::string> chatId, std::int64_t messageId,
-        InlineKeyboardMarkup::Ptr replyMarkup = {}) const = 0;
+    Poll::Ptr stopPoll(
+        ChatIdType chatId, std::int64_t messageId,
+        InlineKeyboardMarkup::Ptr replyMarkup = {}) const;
 
     /**
      * @brief Use this method to delete a message, including service messages,
@@ -2660,8 +2615,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteMessage(std::variant<std::int64_t, std::string> chatId,
-                               std::int32_t messageId) const = 0;
+    bool deleteMessage(ChatIdType chatId,
+                               std::int32_t messageId) const;
 
     /**
      * @brief Use this method to delete multiple messages simultaneously.
@@ -2676,9 +2631,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteMessages(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::vector<std::int32_t>& messageIds) const = 0;
+    bool deleteMessages(
+        ChatIdType chatId,
+        const std::vector<std::int32_t>& messageIds) const;
 
     /**
      * @brief Use this method to send static .WEBP,
@@ -2716,16 +2671,15 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendSticker(
-        std::variant<std::int64_t, std::string> chatId,
-        std::variant<InputFile::Ptr, std::string> sticker,
+    Message::Ptr sendSticker(
+        ChatIdType chatId, FileHandleType sticker,
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         optional<bool> disableNotification = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
         const optional<std::string_view> emoji = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to get a sticker set.
@@ -2734,8 +2688,8 @@ class TGBOT_API Api {
      *
      * @return On success, a StickerSet object is returned.
      */
-    virtual StickerSet::Ptr getStickerSet(
-        const std::string_view name) const = 0;
+    StickerSet::Ptr getStickerSet(
+        const std::string_view name) const;
 
     /**
      * @brief Use this method to get information about custom emoji stickers by
@@ -2746,8 +2700,8 @@ class TGBOT_API Api {
      *
      * @return Returns an Array of Sticker objects.
      */
-    virtual std::vector<Sticker::Ptr> getCustomEmojiStickers(
-        const std::vector<std::string>& customEmojiIds) const = 0;
+    std::vector<Sticker::Ptr> getCustomEmojiStickers(
+        const std::vector<std::string>& customEmojiIds) const;
 
     /**
      * @brief Desribes a Sticker Format type.
@@ -2769,9 +2723,9 @@ class TGBOT_API Api {
      *
      * @return Returns the uploaded File on success.
      */
-    virtual File::Ptr uploadStickerFile(
+    File::Ptr uploadStickerFile(
         std::int64_t userId, InputFile::Ptr sticker,
-        const StickerFormat stickerFormat) const = 0;
+        const StickerFormat stickerFormat) const;
 
     /**
      * @brief Use this method to create a new sticker set owned by a user.
@@ -2796,12 +2750,12 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool createNewStickerSet(
+    bool createNewStickerSet(
         std::int64_t userId, const std::string_view name,
         const std::string_view title,
         const std::vector<InputSticker::Ptr>& stickers,
         optional_default<Sticker::Type, Sticker::Type::Regular> stickerType,
-        optional<bool> needsRepainting = {}) const = 0;
+        optional<bool> needsRepainting = {}) const;
 
     /**
      * @brief Use this method to add a new sticker to a set created by the bot.
@@ -2817,9 +2771,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool addStickerToSet(std::int64_t userId,
+    bool addStickerToSet(std::int64_t userId,
                                  const std::string_view name,
-                                 InputSticker::Ptr sticker) const = 0;
+                                 InputSticker::Ptr sticker) const;
 
     /**
      * @brief Use this method to move a sticker in a set created by the bot to a
@@ -2830,8 +2784,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setStickerPositionInSet(const std::string_view sticker,
-                                         std::int32_t position) const = 0;
+    bool setStickerPositionInSet(const std::string_view sticker,
+                                         std::int32_t position) const;
 
     /**
      * @brief Use this method to delete a sticker from a set created by the bot.
@@ -2840,7 +2794,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteStickerFromSet(const std::string_view sticker) const = 0;
+    bool deleteStickerFromSet(const std::string_view sticker) const;
 
     /**
      * @brief Use this method to replace an existing sticker in a sticker set
@@ -2858,10 +2812,10 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool replaceStickerInSet(std::int64_t userId,
+    bool replaceStickerInSet(std::int64_t userId,
                                      const std::string_view name,
                                      const std::string_view oldSticker,
-                                     InputSticker::Ptr sticker) const = 0;
+                                     InputSticker::Ptr sticker) const;
 
     /**
      * @brief Use this method to change the list of emoji assigned to a regular
@@ -2875,9 +2829,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setStickerEmojiList(
+    bool setStickerEmojiList(
         const std::string_view sticker,
-        const std::vector<std::string>& emojiList) const = 0;
+        const std::vector<std::string>& emojiList) const;
 
     /**
      * @brief Use this method to change search keywords assigned to a regular or
@@ -2891,9 +2845,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setStickerKeywords(
+    bool setStickerKeywords(
         const std::string_view sticker,
-        const std::vector<std::string>& keywords = {}) const = 0;
+        const std::vector<std::string>& keywords = {}) const;
 
     /**
      * @brief Use this method to change the mask position of a mask sticker.
@@ -2907,9 +2861,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setStickerMaskPosition(
+    bool setStickerMaskPosition(
         const std::string_view sticker,
-        MaskPosition::Ptr maskPosition = nullptr) const = 0;
+        MaskPosition::Ptr maskPosition = nullptr) const;
 
     /**
      * @brief Use this method to set the title of a created sticker set.
@@ -2919,8 +2873,8 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setStickerSetTitle(const std::string_view name,
-                                    const std::string_view title) const = 0;
+    bool setStickerSetTitle(const std::string_view name,
+                                    const std::string_view title) const;
 
     /**
      * @brief Use this method to set the thumbnail of a regular or mask sticker
@@ -2951,10 +2905,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setStickerSetThumbnail(
+    bool setStickerSetThumbnail(
         const std::string_view name, std::int64_t userId,
-        const StickerFormat format,
-        std::variant<InputFile::Ptr, std::string> thumbnail = {}) const = 0;
+        const StickerFormat format, FileHandleType thumbnail = {}) const;
 
     /**
      * @brief Use this method to set the thumbnail of a custom emoji sticker
@@ -2967,9 +2920,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setCustomEmojiStickerSetThumbnail(
+    bool setCustomEmojiStickerSetThumbnail(
         const std::string_view name,
-        const optional<std::string_view> customEmojiId = {}) const = 0;
+        const optional<std::string_view> customEmojiId = {}) const;
 
     /**
      * @brief Use this method to delete a sticker set that was created by the
@@ -2979,7 +2932,7 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool deleteStickerSet(const std::string_view name) const = 0;
+    bool deleteStickerSet(const std::string_view name) const;
 
     /**
      * @brief Use this method to send answers to an inline query.
@@ -3002,13 +2955,13 @@ class TGBOT_API Api {
      *
      * @return On success, True is returned.
      */
-    virtual bool answerInlineQuery(
+    bool answerInlineQuery(
         const std::string_view inlineQueryId,
         const std::vector<InlineQueryResult::Ptr>& results,
         optional_default<std::int32_t, 300> cacheTime = {},
         optional<bool> isPersonal = {},
         const optional<std::string_view> nextOffset = {},
-        InlineQueryResultsButton::Ptr button = nullptr) const = 0;
+        InlineQueryResultsButton::Ptr button = nullptr) const;
 
     /**
      * @brief Use this method to set the result of an interaction with a Web App
@@ -3020,9 +2973,9 @@ class TGBOT_API Api {
      *
      * @return On success, a SentWebAppMessage object is returned.
      */
-    virtual SentWebAppMessage::Ptr answerWebAppQuery(
+    SentWebAppMessage::Ptr answerWebAppQuery(
         const std::string_view webAppQueryId,
-        InlineQueryResult::Ptr result) const = 0;
+        InlineQueryResult::Ptr result) const;
 
     /**
      * @brief Use this method to send invoices.
@@ -3091,11 +3044,10 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendInvoice(
-        std::variant<std::int64_t, std::string> chatId,
-        const std::string_view title, const std::string_view description,
-        const std::string_view payload, const std::string_view providerToken,
-        const std::string_view currency,
+    Message::Ptr sendInvoice(
+        ChatIdType chatId, const std::string_view title,
+        const std::string_view description, const std::string_view payload,
+        const std::string_view providerToken, const std::string_view currency,
         const std::vector<LabeledPrice::Ptr>& prices,
         const optional<std::string_view> providerData = {},
         const optional<std::string_view> photoUrl = {},
@@ -3113,7 +3065,7 @@ class TGBOT_API Api {
         optional<std::int32_t> maxTipAmount = {},
         const std::vector<std::int32_t>& suggestedTipAmounts = {},
         const optional<std::string_view> startParameter = {},
-        optional<bool> protectContent = {}) const = 0;
+        optional<bool> protectContent = {}) const;
 
     /**
      * @brief Use this method to create a link for an invoice.
@@ -3163,7 +3115,7 @@ class TGBOT_API Api {
      *
      * @return Returns the created invoice link as String on success.
      */
-    virtual std::string createInvoiceLink(
+    std::string createInvoiceLink(
         const std::string_view title, const std::string_view description,
         const std::string_view payload, const std::string_view providerToken,
         const std::string_view currency,
@@ -3179,7 +3131,7 @@ class TGBOT_API Api {
         optional<bool> needShippingAddress = {},
         optional<bool> sendPhoneNumberToProvider = {},
         optional<bool> sendEmailToProvider = {},
-        optional<bool> isFlexible = {}) const = 0;
+        optional<bool> isFlexible = {}) const;
 
     /**
      * @brief Use this method to reply to shipping queries.
@@ -3201,10 +3153,10 @@ class TGBOT_API Api {
      *
      * @return On success, True is returned.
      */
-    virtual bool answerShippingQuery(
+    bool answerShippingQuery(
         const std::string_view shippingQueryId, bool ok,
         const std::vector<ShippingOption::Ptr>& shippingOptions = {},
-        const optional<std::string_view> errorMessage = {}) const = 0;
+        const optional<std::string_view> errorMessage = {}) const;
 
     /**
      * @brief Use this method to respond to such pre-checkout queries.
@@ -3227,9 +3179,9 @@ class TGBOT_API Api {
      *
      * @return On success, True is returned.
      */
-    virtual bool answerPreCheckoutQuery(
+    bool answerPreCheckoutQuery(
         const std::string_view preCheckoutQueryId, bool ok,
-        const optional<std::string_view> errorMessage = {}) const = 0;
+        const optional<std::string_view> errorMessage = {}) const;
 
     /**
      * @brief Informs a user that some of the Telegram Passport elements they
@@ -3248,9 +3200,9 @@ class TGBOT_API Api {
      *
      * @return Returns True on success.
      */
-    virtual bool setPassportDataErrors(
+    bool setPassportDataErrors(
         std::int64_t userId,
-        const std::vector<PassportElementError::Ptr>& errors) const = 0;
+        const std::vector<PassportElementError::Ptr>& errors) const;
 
     /**
      * @brief Use this method to send a game.
@@ -3275,14 +3227,14 @@ class TGBOT_API Api {
      *
      * @return On success, the sent Message is returned.
      */
-    virtual Message::Ptr sendGame(
+    Message::Ptr sendGame(
         std::int64_t chatId, const std::string_view gameShortName,
         ReplyParameters::Ptr replyParameters = nullptr,
         InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
         optional<bool> disableNotification = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const = 0;
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to set the score of the specified user in a game
@@ -3307,12 +3259,12 @@ class TGBOT_API Api {
      * @return On success, if the message is not an inline message, the Message
      * is returned, otherwise nullptr is returned.
      */
-    virtual Message::Ptr setGameScore(
+    Message::Ptr setGameScore(
         std::int64_t userId, std::int32_t score, optional<bool> force = {},
         optional<bool> disableEditMessage = {},
         optional<std::int64_t> chatId = {},
         optional<std::int32_t> messageId = {},
-        const optional<std::string_view> inlineMessageId = {}) const = 0;
+        const optional<std::string_view> inlineMessageId = {}) const;
 
     /**
      * @brief Use this method to get data for high score tables.
@@ -3335,10 +3287,10 @@ class TGBOT_API Api {
      *
      * @return Returns an Array of GameHighScore objects.
      */
-    virtual std::vector<GameHighScore::Ptr> getGameHighScores(
+    std::vector<GameHighScore::Ptr> getGameHighScores(
         optional<std::int64_t> userId, optional<std::int64_t> chatId = {},
         optional<std::int32_t> messageId = {},
-        const optional<std::string_view> inlineMessageId = {}) const = 0;
+        const optional<std::string_view> inlineMessageId = {}) const;
 
     /**
      * @brief Download a file from Telegram and save it in memory.
@@ -3348,9 +3300,9 @@ class TGBOT_API Api {
      *
      * @return File content in a string.
      */
-    virtual std::string downloadFile(
+    std::string downloadFile(
         const std::string_view filePath,
-        const std::vector<HttpReqArg>& args = {}) const = 0;
+        const HttpReqArg::Vec& args = {}) const;
 
     /**
      * @brief Check if user has blocked the bot
@@ -3359,9 +3311,13 @@ class TGBOT_API Api {
      *
      * @return Returns True if bot is blocked by user
      */
-    virtual bool blockedByUser(std::int64_t chatId) const = 0;
+    bool blockedByUser(std::int64_t chatId) const;
 
-    virtual ~Api() = default;
+   private:
+    std::string _bot_api_baseurl;
+    std::string _token;
+    std::string _url;
+    HttpClient* _httpClient;
 };
 }  // namespace TgBot
 

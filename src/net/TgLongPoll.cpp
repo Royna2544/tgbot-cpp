@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "tgbot/ApiImpl.h"
+#include "tgbot/Api.h"
 #include "tgbot/Bot.h"
 #include "tgbot/EventHandler.h"
 #include "tgbot/types/Update.h"

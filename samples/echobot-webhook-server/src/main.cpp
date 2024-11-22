@@ -38,11 +38,11 @@ int main() {
     try {
         printf("Bot username: %s\n", bot.getApi().getMe()->username->c_str());
 
-        TgWebhookTcpServer webhookServer(8080, bot);
+        auto webhookServer = bot.createWebHookTcp(8080);
 
         printf("Server starting\n");
         bot.getApi().setWebhook(webhookUrl);
-        webhookServer.start();
+        webhookServer->start();
     } catch (exception& e) {
         printf("error: %s\n", e.what());
     }

@@ -1,13 +1,17 @@
 #ifndef TGBOT_CPP_BOT_H
 #define TGBOT_CPP_BOT_H
 
+#include <tgbot/Api.h>
+#include <tgbot/EventHandler.h>
+#include <tgbot/net/HttpClient.h>
+#include <tgbot/net/TgLongPoll.h>
+#include <tgbot/net/TgWebhookTcpServer.h>
+#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
+#include <tgbot/net/TgWebhookLocalServer.h>
+#endif
+
 #include <memory>
 #include <string>
-
-#include "tgbot/Api.h"
-#include "tgbot/EventHandler.h"
-#include "tgbot/net/HttpClient.h"
-#include "tgbot/net/TgLongPoll.h"
 
 namespace TgBot {
 
@@ -56,6 +60,35 @@ class TGBOT_API Bot {
         return _longPoll.get();
     }
 
+    inline TgWebhookTcpServer* createWebHookTcp(unsigned short port,
+                                                std::string_view _path = {}) {
+        std::string path(_path);
+        if (path.empty()) {
+            _webhookTcp = std::make_unique<TgWebhookTcpServer>(
+                port, "/" + _token, _eventHandler.get());
+        } else {
+            _webhookTcp = std::make_unique<TgWebhookTcpServer>(
+                port, std::move(path), _eventHandler.get());
+        }
+        return _webhookTcp.get();
+    }
+
+#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
+    inline TgWebhookLocalServer* createWebHookLocal(
+        std::string unixSocketPath, std::string_view _path = {}) {
+        std::string path(_path);
+        if (path.empty()) {
+            _webhookLocal = std::make_unique<TgWebhookLocalServer>(
+                std::move(unixSocketPath), "/" + _token, _eventHandler.get());
+        } else {
+            _webhookLocal = std::make_unique<TgWebhookLocalServer>(
+                std::move(unixSocketPath), std::move(path),
+                _eventHandler.get());
+        }
+        return _webhookLocal.get();
+    }
+#endif
+
     friend class TgLongPoll;
 
    private:
@@ -67,6 +100,10 @@ class TGBOT_API Bot {
     std::unique_ptr<EventBroadcaster> _eventBroadcaster;
     std::unique_ptr<EventHandler> _eventHandler;
     std::unique_ptr<TgLongPoll> _longPoll;
+#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
+    std::unique_ptr<TgWebhookLocalServer> _webhookLocal;
+#endif
+    std::unique_ptr<TgWebhookTcpServer> _webhookTcp;
 };
 
 }  // namespace TgBot

@@ -30,11 +30,10 @@ public:
      * If there's no args specified, a GET request will be sent, otherwise a POST request will be sent.
      * If at least 1 arg is marked as file, the content type of a request will be multipart/form-data, otherwise it will be application/x-www-form-urlencoded.
      */
-    std::string makeRequest(const Url& url, const std::vector<HttpReqArg>& args) const override;
+    std::string makeRequest(const Url& url, const HttpReqArg::Vec&) const override;
 
 private:
     mutable boost::asio::io_service _ioService;
-    HttpParser _httpParser;
 };
 
 }
