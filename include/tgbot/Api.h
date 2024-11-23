@@ -119,10 +119,7 @@ class TGBOT_API Api {
         explicit operator bool() const { return _value.has_value(); }
         T operator*() const { return value(); }
         [[nodiscard]] T value() const {
-            if (_value) {
-                return std::clamp(*_value, min, max);
-            }
-            return def;
+            return _value ? std::clamp(*_value, min, max) : def;
         }
     };
 
@@ -141,8 +138,7 @@ class TGBOT_API Api {
         bounded_optional() = default;
 
         [[nodiscard]] T value() const {
-            T val = *_value;
-            return std::clamp(val, min, max);
+            return std::clamp(*_value, min, max);
         }
         explicit operator bool() const { return _value.has_value(); }
         T operator*() const { return value(); }

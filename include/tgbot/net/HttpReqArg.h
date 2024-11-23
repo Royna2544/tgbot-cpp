@@ -1,16 +1,16 @@
 #ifndef TGBOT_HTTPPARAMETER_H
 #define TGBOT_HTTPPARAMETER_H
 
-#include <utility>
-#include <vector>
 #ifdef HAVE_CURL
 #include <curl/curl.h>
 #endif /* HAVE_CURL */
 
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "tgbot/export.h"
 #include "tgbot/types/InputFile.h"
@@ -111,7 +111,7 @@ class TGBOT_API HttpReqArgFile : public HttpReqArg {
         : HttpReqArg(std::move(name), std::move(data)),
           mimeType(std::move(mimeType)),
           fileName(std::move(fileName)) {}
-          
+
     ~HttpReqArgFile() override = default;
 
     /**
