@@ -88,7 +88,7 @@ class HttpServer {
 
                     auto headers(std::make_shared<
                                  std::unordered_map<std::string, std::string>>(
-                        self->_httpParser.parseHeader(dataAsString, true)));
+                        HttpParser::parseHeader(dataAsString, true)));
 
                     unsigned long long size;
                     auto contentLengthIter = headers->find("Content-Length");
@@ -99,7 +99,7 @@ class HttpServer {
                     }
 
                     if (size == 0) {
-                        std::string answer = self->_httpParser.generateResponse(
+                        std::string answer = HttpParser::generateResponse(
                             "Bad request", "text/plain", 400, "Bad request",
                             false);
                         boost::asio::async_write(
@@ -148,7 +148,7 @@ class HttpServer {
                         std::cout << "error in "
                                      "HttpServer::Connection#_readBody answer: "
                                   << e.what() << std::endl;
-                        answer = self->_httpParser.generateResponse(
+                        answer = HttpParser::generateResponse(
                             "Internal server error", "text/plain", 500,
                             "Internal server error", false);
                     }

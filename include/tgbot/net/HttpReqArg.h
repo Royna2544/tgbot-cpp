@@ -5,7 +5,7 @@
 #include <curl/curl.h>
 #endif /* HAVE_CURL */
 
-#include <iomanip>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -15,17 +15,17 @@
 #include "tgbot/export.h"
 #include "tgbot/types/InputFile.h"
 
-namespace TgBot {
-
-namespace detail {
+namespace TgBot::detail {
 struct CRLF_T {};
 constexpr CRLF_T CRLF{};
-}  // namespace detail
+}  // namespace TgBot::detail
 
 inline std::ostream& operator<<(std::ostream& stream,
-                                const detail::CRLF_T& /*unused*/) {
+                                const TgBot::detail::CRLF_T& /*unused*/) {
     return stream << "\r\n";
 }
+
+namespace TgBot {
 
 /**
  * @brief This class represents argument in POST http requests.
@@ -139,7 +139,7 @@ class TGBOT_API HttpReqArgFile : public HttpReqArg {
         stream << "--" << boundary << detail::CRLF;
         stream << "Content-Disposition: form-data; name=" << std::quoted(name)
                << "; filename=" << std::quoted(fileName) << detail::CRLF;
-        stream << "Content-Type: " << std::quoted(mimeType) << detail::CRLF
+        stream << "Content-Type: " << mimeType << detail::CRLF
                << detail::CRLF;
         stream << value << detail::CRLF;
         return stream.str();
