@@ -27,9 +27,9 @@ TgException invalidType(const std::string_view name,
 }
 
 struct JsonWrapper {
-    JsonWrapper() = default;
+    JsonWrapper() : data_(Json::objectValue) {}
 
-    template <typename T, std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
+    template <typename T>
     void put(const std::string_view key, T value) {
         data_[key.data()] = std::move(value);
     }
@@ -39,12 +39,6 @@ struct JsonWrapper {
             return; // Skip empty optional
         }
         data_[key.data()] = *value;
-    }
-    // Overload for JSON::Value to avoid null values.
-    void put(const std::string_view key, Json::Value value) {
-        if (!value.empty()) {
-            data_[key.data()] = std::move(value);
-        }
     }
 
     static void merge(Json::Value &thiz, const Json::Value &other) {
