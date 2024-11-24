@@ -39,7 +39,7 @@ public:
     /**
      * @brief Optional. URL of the result
      */
-    std::string url;
+    std::optional<std::string> url;
 
     /**
      * @brief Optional. Pass True if you don't want the URL to be shown in the message.
