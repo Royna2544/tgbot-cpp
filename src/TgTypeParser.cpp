@@ -33,6 +33,12 @@ struct JsonWrapper {
     void put(const std::string_view key, T value) {
         data_[key.data()] = std::move(value);
     }
+    void put(const std::string_view key, Json::Value value) {
+        if (value.empty()) {
+            return;
+        }
+        data_[key.data()] = std::move(value);
+    }
     template <typename T,
               std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
     void put(const std::string_view key, std::optional<T> value) {
