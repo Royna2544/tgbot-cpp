@@ -121,7 +121,14 @@ Json::Value sendRequest(const std::string_view _bot_url,
                 if (arg.second.index() != std::variant_npos) {
                     std::visit(
                         [&](const auto &v) {
-                            vec.emplace_back(putArg(arg.first, v));
+                            using T = std::decay_t<decltype(v)>;
+                            if constexpr (detail::is_shared_ptr_v<T>) {
+                                if (v != nullptr) {
+                                    vec.emplace_back(putArg(arg.first, v));
+                                }
+                            } else {
+                                vec.emplace_back(putArg(arg.first, v));
+                            }
                         },
                         arg.second);
                 }
