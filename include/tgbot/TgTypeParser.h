@@ -333,8 +333,8 @@ Json::Value put(const std::vector<T> &vector) {
         } else if constexpr (std::is_same_v<std::string_view, T>) {
             dataArray.append(std::string(item));
         } else {
-            dataArray.append(
-                put(item));  // Recursively call put for non-primitives
+            // Recursively call put for non-primitives
+            dataArray.append(put(item));
         }
     }
     return dataArray;
