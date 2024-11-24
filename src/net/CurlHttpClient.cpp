@@ -57,7 +57,7 @@ std::string CurlHttpClient::makeRequest(const Url& url,
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteString);
 
     std::array<char, CURL_ERROR_SIZE> errbuf{};
-    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf.data());
 
     auto res = curl_easy_perform(curl);
     curl_slist_free_all(headers);
