@@ -226,6 +226,16 @@ struct is_vector<std::vector<T>> : std::true_type {
 template <typename T>
 constexpr bool is_vector_v = is_vector<T>::value;
 
+// optional
+template <typename T>
+struct is_optional : std::false_type {};
+template <typename T>
+struct is_optional<std::optional<T>> : std::true_type {
+    using type = T;
+};
+template <typename T>
+constexpr bool is_optional_v = is_optional<T>::value;
+
 // primitive
 template <typename T>
 constexpr bool is_primitive_v =
