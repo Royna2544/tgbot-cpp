@@ -10,19 +10,6 @@ option(ENABLE_TESTS "Set to ON to enable building of tests" OFF)
 option(BUILD_SHARED_LIBS "Build tgbot-cpp shared/static library." OFF)
 option(BUILD_DOCUMENTATION "Build doxygen API documentation." OFF)
 
-# sources
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-if(WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    add_definitions(-D_WIN32_WINNT=0x0601)
-    add_definitions(-DWIN32_LEAN_AND_MEAN)
-    add_definitions(-DNOMINMAX)
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-endif()
-
 set(SRC_LIST
     src/Api.cpp
     src/Bot.cpp
@@ -37,6 +24,19 @@ set(SRC_LIST
 
 # building project
 add_library(${PROJECT_NAME} ${SRC_LIST})
+
+# sources
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED 17)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
+if (WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX)
+else()
+    set_target_properties(${PROJECT_NAME} PROPERTIES CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+endif()
 
 # libs
 ## threads
