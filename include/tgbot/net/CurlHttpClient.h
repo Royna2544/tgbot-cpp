@@ -1,6 +1,7 @@
 #ifndef TGBOT_CURLHTTPCLIENT_H
 #define TGBOT_CURLHTTPCLIENT_H
 
+#include <chrono>
 #ifdef HAVE_CURL
 
 #include "tgbot/net/HttpClient.h"
@@ -23,7 +24,7 @@ namespace TgBot {
 class TGBOT_API CurlHttpClient : public HttpClient {
 
 public:
-    explicit CurlHttpClient(std::int32_t timeout = kDefaultTimeout);
+    explicit CurlHttpClient(std::chrono::seconds timeout = kDefaultTimeout);
     ~CurlHttpClient() override;
 
     /**

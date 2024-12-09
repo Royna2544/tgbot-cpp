@@ -146,7 +146,6 @@ Json::Value sendRequest(const std::string_view _bot_url,
         }(args),
         ...);
 
-    int requestRetryBackoff = _httpClient->getRequestBackoff();
     int retries = 0;
     if constexpr (kSendRequestDebug) {
         std::cout << "tgbot-cpp: Sending request: " << method << std::endl;
@@ -192,12 +191,11 @@ Json::Value sendRequest(const std::string_view _bot_url,
             if constexpr (kSendRequestDebug) {
                 std::cerr << "tgbot-cpp: Error: " << ex.what() << std::endl;
             }
-            int max_retries = _httpClient->getRequestMaxRetries();
+            int max_retries = TgBot::HttpClient::kRequestMaxRetries;
             if ((max_retries >= 0) && (retries == max_retries)) {
                 throw;
             } else {
-                std::this_thread::sleep_for(
-                    std::chrono::seconds(requestRetryBackoff));
+                std::this_thread::sleep_for(TgBot::HttpClient::kRequestBackoff);
                 retries++;
                 continue;
             }
