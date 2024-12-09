@@ -295,6 +295,7 @@ std::string putJSON<Api::ParseMode>(const Api::ParseMode &object) {
         case Api::ParseMode::None:
             return "";
     }
+    return {};
 }
 
 template <>
@@ -305,7 +306,9 @@ std::string putJSON<Api::PollType>(const Api::PollType &object) {
         case Api::PollType::quiz:
             return "quiz";
     }
+    return {};
 }
+
 template <>
 std::string putJSON<Api::StickerFormat>(const Api::StickerFormat &object) {
     switch (object) {
@@ -316,6 +319,7 @@ std::string putJSON<Api::StickerFormat>(const Api::StickerFormat &object) {
         case Api::StickerFormat::Video:
             return "video";
     }
+    return {};
 }
 
 template <>
@@ -342,6 +346,7 @@ std::string putJSON<Api::ChatAction>(const Api::ChatAction &object) {
         case Api::ChatAction::upload_video_note:
             return "upload_video_note";
     }
+    return {};
 }
 
 template <>
@@ -354,6 +359,7 @@ std::string putJSON<Sticker::Type>(const Sticker::Type &object) {
         case Sticker::Type::CustomEmoji:
             return "custom_emoji";
     }
+    return {};
 }
 
 Api::Api(std::string token, HttpClient *httpClient, std::string url)
