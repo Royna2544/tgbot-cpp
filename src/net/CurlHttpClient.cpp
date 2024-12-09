@@ -1,22 +1,28 @@
 
-#include "tgbot/TgException.h"
-#ifdef HAVE_CURL
+#include <curl/curl.h>
+#include <curl/easy.h>
+#include <chrono>
 
-#include "tgbot/net/CurlHttpClient.h"
+#include "tgbot/TgException.h"
+#include "tgbot/net/HttpClient.h"
+#ifdef HAVE_CURL
 
 #include <array>
 #include <cstddef>
 #include <cstring>
-#include <stdexcept>
 #include <string>
+
+#include "tgbot/net/CurlHttpClient.h"
 
 namespace TgBot {
 
-CurlHttpClient::CurlHttpClient(std::int32_t timeout)
-    : curlSettings(curl_easy_init()) {
-    _timeout = timeout;
+CurlHttpClient::CurlHttpClient(std::chrono::seconds timeout)
+    : HttpClient(timeout), curlSettings(curl_easy_init()) {
+    if (curlSettings == nullptr) {
+        throw NetworkException("curl_easy_init failed");
+    }
     curl_easy_setopt(curlSettings, CURLOPT_CONNECTTIMEOUT, 20);
-    curl_easy_setopt(curlSettings, CURLOPT_TIMEOUT, _timeout);
+    curl_easy_setopt(curlSettings, CURLOPT_TIMEOUT, timeout.count());
 }
 
 CurlHttpClient::~CurlHttpClient() { curl_easy_cleanup(curlSettings); }
@@ -59,6 +65,10 @@ std::string CurlHttpClient::makeRequest(const Url& url,
 
     std::array<char, CURL_ERROR_SIZE> errbuf{};
     curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf.data());
+
+    if (auto cert = getServerCert(); cert) {
+        curl_easy_setopt(curl, CURLOPT_CERTINFO, cert->string().c_str());
+    }
 
     auto res = curl_easy_perform(curl);
     curl_slist_free_all(headers);

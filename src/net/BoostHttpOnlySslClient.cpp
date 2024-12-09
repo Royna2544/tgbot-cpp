@@ -1,13 +1,16 @@
 #include "tgbot/net/BoostHttpOnlySslClient.h"
 
 #include <boost/asio/ssl.hpp>
+#include <boost/asio/ssl/verify_mode.hpp>
 #include <boost/system/system_error.hpp>
 #include <boost/throw_exception.hpp>
+#include <chrono>
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
 
 #include "tgbot/TgException.h"
+#include "tgbot/net/HttpClient.h"
 #include "tgbot/net/HttpReqArg.h"
 
 using namespace boost::asio;
@@ -15,9 +18,8 @@ using namespace boost::asio::ip;
 
 namespace TgBot {
 
-BoostHttpOnlySslClient::BoostHttpOnlySslClient(std::int32_t timeout) {
-    _timeout = timeout;
-}
+BoostHttpOnlySslClient::BoostHttpOnlySslClient(std::chrono::seconds timeout)
+    : HttpClient(timeout) {}
 
 BoostHttpOnlySslClient::~BoostHttpOnlySslClient() = default;
 
@@ -34,6 +36,10 @@ std::string BoostHttpOnlySslClient::_makeRequest(
     ssl::context context(ssl::context::tlsv12_client);
     context.set_default_verify_paths();
 
+    if (auto cert = getServerCert(); cert) {
+        context.load_verify_file(cert->string());
+    }
+
     ssl::stream<tcp::socket> socket(_ioService, context);
 
     connect(socket.lowest_layer(), resolver.resolve(query));
@@ -47,7 +53,7 @@ std::string BoostHttpOnlySslClient::_makeRequest(
     socket.lowest_layer().set_option(
         socket_base::receive_buffer_size(kIncreasedBufferSize));
 #endif  // TGBOT_CHANGE_SOCKET_BUFFER_SIZE
-    socket.set_verify_mode(ssl::verify_none);
+    socket.set_verify_mode(ssl::verify_peer);
     socket.set_verify_callback(ssl::rfc2818_verification(url.host));
 
     socket.handshake(ssl::stream<tcp::socket>::client);
@@ -59,7 +65,7 @@ std::string BoostHttpOnlySslClient::_makeRequest(
     struct timeval timeStruct {};
 
     // set the timeout to 20 seconds
-    timeStruct.tv_sec = _timeout;
+    timeStruct.tv_sec = timeout().count();
     FD_ZERO(&fileDescriptorSet);
 
     // We'll need to get the underlying native socket for this select call, in

@@ -1,8 +1,7 @@
 #include "tgbot/net/TgLongPoll.h"
 
-#include <cstdint>
+#include <chrono>
 #include <memory>
-#include <utility>
 #include <vector>
 
 #include "tgbot/Api.h"
@@ -18,7 +17,12 @@ TgLongPoll::TgLongPoll(Bot* bot, timeout_t timeout, limit_t limit,
       _limit(limit),
       _timeout(timeout),
       _allowedUpdates(allowedUpdates) {
-    _bot->_httpClient->_timeout = *_timeout + 5;
+
+    // If we ask the Telegram bot server to timeout at [timeout]
+    // HTTP Clients must timeout after this time
+    // Hence define an offset, if the current value is fine, use as is
+    constexpr static std::chrono::seconds offset{5};
+    _bot->_httpClient->timeout(std::max(_bot->_httpClient->timeout(), std::chrono::seconds(*timeout) + offset));
 }
 
 void TgLongPoll::start() {
