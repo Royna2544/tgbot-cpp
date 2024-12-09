@@ -38,6 +38,10 @@ else()
     set_target_properties(${PROJECT_NAME} PROPERTIES CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif()
 
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE TGBOT_LP64)
+endif()
+
 # libs
 ## threads
 find_package(Threads REQUIRED)

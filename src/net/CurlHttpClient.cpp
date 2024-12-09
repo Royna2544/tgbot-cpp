@@ -1,4 +1,5 @@
 
+#include "tgbot/TgException.h"
 #ifdef HAVE_CURL
 
 #include "tgbot/net/CurlHttpClient.h"
@@ -75,7 +76,7 @@ std::string CurlHttpClient::makeRequest(const Url& url,
         } else {
             errmsg = curl_easy_strerror(res);
         }
-        throw std::runtime_error(std::string("cURL error: ") + errmsg);
+        throw NetworkException(std::string("cURL error: ") + errmsg);
     }
 
     return HttpParser::extractBody(response);
