@@ -33,7 +33,7 @@ std::string BoostHttpOnlySslClient::_makeRequest(
     constexpr static int kIncreasedBufferSize = 1 << 15;
 #endif
 
-    ssl::context context(ssl::context::tlsv12_client);
+    ssl::context context(ssl::context::tlsv13_client);
     context.set_default_verify_paths();
 
     if (auto cert = getServerCert(); cert) {
