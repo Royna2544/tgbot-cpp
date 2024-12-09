@@ -39,6 +39,16 @@ class TGBOT_API TgException : public std::runtime_error {
     ErrorCode errorCode;
 };
 
+/**
+ * @brief Exception type which is thrown if the underlying httpclient
+ * fails with an exception.
+ *
+ * @ingroup general
+ */
+class TGBOT_API NetworkException : public std::runtime_error {
+    using std::runtime_error::runtime_error;
+};
+
 }  // namespace TgBot
 
 #endif  // TGBOT_TGEXCEPTION_H
