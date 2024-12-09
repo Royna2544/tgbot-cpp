@@ -1,4 +1,4 @@
-#include "tgbot/net/BoostHttpOnlySslClient.h"
+#include "tgbot/net/BoostSslClient.h"
 
 #include <boost/asio/ssl.hpp>
 #include <boost/asio/ssl/verify_mode.hpp>
@@ -18,12 +18,12 @@ using namespace boost::asio::ip;
 
 namespace TgBot {
 
-BoostHttpOnlySslClient::BoostHttpOnlySslClient(std::chrono::seconds timeout)
+BoostSslClient::BoostSslClient(std::chrono::seconds timeout)
     : HttpClient(timeout) {}
 
-BoostHttpOnlySslClient::~BoostHttpOnlySslClient() = default;
+BoostSslClient::~BoostSslClient() = default;
 
-std::string BoostHttpOnlySslClient::_makeRequest(
+std::string BoostSslClient::_makeRequest(
     const Url& url, const HttpReqArg::Vec& args) const {
     tcp::resolver resolver(_ioService);
     tcp::resolver::query query(url.host, "443");
@@ -104,7 +104,7 @@ std::string BoostHttpOnlySslClient::_makeRequest(
     return HttpParser::extractBody(response.str());
 }
 
-std::string BoostHttpOnlySslClient::makeRequest(
+std::string BoostSslClient::makeRequest(
     const Url& url, const HttpReqArg::Vec& args) const {
     try {
         return _makeRequest(url, args);

@@ -15,7 +15,7 @@ set(SRC_LIST
     src/Bot.cpp
     src/EventHandler.cpp
     src/TgTypeParser.cpp
-    src/net/BoostHttpOnlySslClient.cpp
+    src/net/BoostSslClient.cpp
     src/net/CurlHttpClient.cpp
     src/net/HttpParser.cpp
     src/net/TgLongPoll.cpp

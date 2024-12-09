@@ -6,7 +6,7 @@
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/EventHandler.h"
 #include "tgbot/TgException.h"
-#include "tgbot/net/BoostHttpOnlySslClient.h"
+#include "tgbot/net/BoostSslClient.h"
 #include "tgbot/net/CurlHttpClient.h"
 #include "tgbot/net/HttpClient.h"
 #include "tgbot/net/HttpParser.h"

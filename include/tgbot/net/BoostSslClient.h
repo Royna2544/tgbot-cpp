@@ -18,11 +18,11 @@ namespace TgBot {
  *
  * @ingroup net
  */
-class TGBOT_API BoostHttpOnlySslClient : public HttpClient {
+class TGBOT_API BoostSslClient : public HttpClient {
 
 public:
-    explicit BoostHttpOnlySslClient(std::chrono::seconds timeout = kDefaultTimeout);
-    ~BoostHttpOnlySslClient() override;
+    explicit BoostSslClient(std::chrono::seconds timeout = kDefaultTimeout);
+    ~BoostSslClient() override;
 
     /**
      * @brief Sends a request to the url.
