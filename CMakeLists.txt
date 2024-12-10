@@ -82,9 +82,9 @@ else()
     find_package(Boost 1.70 CONFIG COMPONENTS system REQUIRED)
 endif()
 if(NOT Boost_USE_STATIC_LIBS)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC -DBOOST_ALL_DYN_LINK)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC BOOST_ALL_DYN_LINK)
 endif()
-target_compile_definitions(${PROJECT_NAME} PUBLIC -DBOOST_BIND_GLOBAL_PLACEHOLDERS)
+target_compile_definitions(${PROJECT_NAME} PUBLIC BOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 set(LIB_LIST
     Threads::Threads
