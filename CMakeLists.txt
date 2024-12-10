@@ -77,9 +77,9 @@ install(FILES CMake/FindJsonCppCustom.cmake
 ## boost
 set(Boost_USE_MULTITHREADED ON)
 if (ENABLE_TESTS)
-    find_package(Boost 1.65.1 COMPONENTS system unit_test_framework REQUIRED)
+    find_package(Boost 1.70 CONFIG COMPONENTS system unit_test_framework REQUIRED)
 else()
-    find_package(Boost 1.65.1 COMPONENTS system REQUIRED)
+    find_package(Boost 1.70 CONFIG COMPONENTS system REQUIRED)
 endif()
 if(NOT Boost_USE_STATIC_LIBS)
     target_compile_definitions(${PROJECT_NAME} PUBLIC -DBOOST_ALL_DYN_LINK)
