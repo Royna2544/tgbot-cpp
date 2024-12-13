@@ -42,10 +42,9 @@ public:
      */
     static inline InputFile::Ptr fromFile(const std::filesystem::path& filePath, std::string mimeType) {
         auto result(std::make_shared<InputFile>());
-        std::ifstream file(filePath, std::ios::binary);
-        if (!file) {
-            return nullptr;
-        }
+        std::ifstream file;
+        file.exceptions(std::ios::badbit | std::ios::failbit);
+        file.open(filePath, std::ios::binary);
         result->data = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
         result->mimeType = std::move(mimeType);
         result->fileName = filePath.filename().string();
