@@ -2,6 +2,7 @@
 #define TGBOT_HTTPSERVER_H
 
 #include <boost/asio.hpp>
+#include <boost/asio/io_context.hpp>
 #include <cstddef>
 #include <exception>
 #include <functional>
@@ -178,7 +179,7 @@ class HttpServer {
             });
     }
 
-    boost::asio::io_service _ioService;
+    boost::asio::io_context _ioService;
     boost::asio::basic_socket_acceptor<Protocol> _acceptor;
     boost::asio::basic_stream_socket<Protocol> _socket;
     ServerHandler _handler;

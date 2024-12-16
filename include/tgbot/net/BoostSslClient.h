@@ -33,7 +33,7 @@ public:
     std::string makeRequest(const Url& url, const HttpReqArg::Vec& args) const override;
 
 private:
-    mutable boost::asio::io_service _ioService;
+    mutable boost::asio::io_context _ioService;
     std::string _makeRequest(const Url& url, const HttpReqArg::Vec& args) const;
 };
 

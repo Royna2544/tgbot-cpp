@@ -23,15 +23,14 @@ BoostSslClient::BoostSslClient(std::chrono::seconds timeout)
 
 BoostSslClient::~BoostSslClient() = default;
 
-std::string BoostSslClient::_makeRequest(
-    const Url& url, const HttpReqArg::Vec& args) const {
-    tcp::resolver resolver(_ioService);
-    tcp::resolver::query query(url.host, "443");
+std::string BoostSslClient::_makeRequest(const Url& url,
+                                         const HttpReqArg::Vec& args) const {
 #ifdef TGBOT_LP64
     constexpr static int kIncreasedBufferSize = 1 << 16;
 #else
     constexpr static int kIncreasedBufferSize = 1 << 15;
 #endif
+    tcp::resolver resolver(_ioService);
 
     ssl::context context(ssl::context::tlsv13_client);
     context.set_default_verify_paths();
@@ -42,7 +41,7 @@ std::string BoostSslClient::_makeRequest(
 
     ssl::stream<tcp::socket> socket(_ioService, context);
 
-    connect(socket.lowest_layer(), resolver.resolve(query));
+    connect(socket.lowest_layer(), resolver.resolve(url.host, "443"));
 
 #ifdef TGBOT_DISABLE_NAGLES_ALGORITHM
     socket.lowest_layer().set_option(tcp::no_delay(true));
@@ -54,7 +53,7 @@ std::string BoostSslClient::_makeRequest(
         socket_base::receive_buffer_size(kIncreasedBufferSize));
 #endif  // TGBOT_CHANGE_SOCKET_BUFFER_SIZE
     socket.set_verify_mode(ssl::verify_peer);
-    socket.set_verify_callback(ssl::rfc2818_verification(url.host));
+    socket.set_verify_callback(ssl::host_name_verification(url.host));
 
     socket.handshake(ssl::stream<tcp::socket>::client);
 
@@ -82,7 +81,7 @@ std::string BoostSslClient::_makeRequest(
 
         sMsg.append(
             socket.next_layer().remote_endpoint().address().to_string());
-        _ioService.reset();
+        _ioService.restart();
 
         throw NetworkException(sMsg);
     }
@@ -104,8 +103,8 @@ std::string BoostSslClient::_makeRequest(
     return HttpParser::extractBody(response.str());
 }
 
-std::string BoostSslClient::makeRequest(
-    const Url& url, const HttpReqArg::Vec& args) const {
+std::string BoostSslClient::makeRequest(const Url& url,
+                                        const HttpReqArg::Vec& args) const {
     try {
         return _makeRequest(url, args);
     } catch (const boost::wrapexcept<boost::system::system_error>& ex) {
