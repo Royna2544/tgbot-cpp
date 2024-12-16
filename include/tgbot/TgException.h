@@ -46,7 +46,12 @@ class TGBOT_API TgException : public std::runtime_error {
  * @ingroup general
  */
 class TGBOT_API NetworkException : public std::runtime_error {
-    using std::runtime_error::runtime_error;
+   public:
+    enum class State { Unknown, Connect, Handshake, Write, Read } state{};
+
+    explicit inline NetworkException(State state,
+                                     const std::string& description)
+        : runtime_error(description), state(state) {}
 };
 
 }  // namespace TgBot

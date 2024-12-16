@@ -1,13 +1,14 @@
 #include "tgbot/net/BoostSslClient.h"
 
 #include <boost/asio/ssl.hpp>
+#include <boost/asio/ssl/error.hpp>
 #include <boost/asio/ssl/verify_mode.hpp>
+#include <boost/asio/use_future.hpp>
 #include <boost/system/system_error.hpp>
 #include <boost/throw_exception.hpp>
 #include <chrono>
-#include <cstddef>
-#include <stdexcept>
-#include <vector>
+#include <initializer_list>
+#include <string>
 
 #include "tgbot/TgException.h"
 #include "tgbot/net/HttpClient.h"
@@ -19,20 +20,24 @@ using namespace boost::asio::ip;
 namespace TgBot {
 
 BoostSslClient::BoostSslClient(std::chrono::seconds timeout)
-    : HttpClient(timeout) {}
+    : HttpClient(timeout) {
+    // Start the io_service
+    _ioServiceThread = std::thread([this]() {
+        auto work = boost::asio::make_work_guard(_ioService);
+        _ioService.run();
+    });
+}
 
-BoostSslClient::~BoostSslClient() = default;
+BoostSslClient::~BoostSslClient() {
+    _ioService.stop();
+    _ioServiceThread.join();
+}
 
-std::string BoostSslClient::_makeRequest(
-    const Url& url, const HttpReqArg::Vec& args) const {
+std::string BoostSslClient::makeRequest(const Url& url,
+                                        const HttpReqArg::Vec& args) const {
+    constexpr static int kBufferSize = 1 << 12;
+
     tcp::resolver resolver(_ioService);
-    tcp::resolver::query query(url.host, "443");
-#ifdef TGBOT_LP64
-    constexpr static int kIncreasedBufferSize = 1 << 16;
-#else
-    constexpr static int kIncreasedBufferSize = 1 << 15;
-#endif
-
     ssl::context context(ssl::context::tlsv13_client);
     context.set_default_verify_paths();
 
@@ -40,77 +45,121 @@ std::string BoostSslClient::_makeRequest(
         context.load_verify_file(cert->string());
     }
 
+    // Calculate the end time for the timeout
+    std::chrono::steady_clock::time_point end =
+        std::chrono::steady_clock::now() + timeout();
+
+    assert(_ioService.stopped() == false);
+
+    // Keep the io_service running
+    auto work = boost::asio::make_work_guard(_ioService);
+
+    // Create the socket
     ssl::stream<tcp::socket> socket(_ioService, context);
+#if BOOST_VERSION >= 108700
+    auto ip = resolver.async_resolve(url.host, "443", boost::asio::use_future);
+#else
+    tcp::resolver::query query(url.host, "443");
+    auto ip = resolver.async_resolve(query, boost::asio::use_future);
+#endif
+    if (ip.wait_until(end) != std::future_status::ready) {
+        throw NetworkException(NetworkException::State::Connect,
+                               "TIMEOUT on resolve " + url.host);
+    }
 
-    connect(socket.lowest_layer(), resolver.resolve(query));
+    boost::asio::ip::tcp::resolver::results_type results;
+    try {
+        results = ip.get();
+    } catch (const boost::system::system_error& e) {
+        throw NetworkException(NetworkException::State::Connect, e.what());
+    }
 
-#ifdef TGBOT_DISABLE_NAGLES_ALGORITHM
-    socket.lowest_layer().set_option(tcp::no_delay(true));
-#endif  // TGBOT_DISABLE_NAGLES_ALGORITHM
-#ifdef TGBOT_CHANGE_SOCKET_BUFFER_SIZE
-    socket.lowest_layer().set_option(
-        socket_base::send_buffer_size(kIncreasedBufferSize));
-    socket.lowest_layer().set_option(
-        socket_base::receive_buffer_size(kIncreasedBufferSize));
-#endif  // TGBOT_CHANGE_SOCKET_BUFFER_SIZE
+    std::string result;
+    auto tcp =
+        async_connect(socket.lowest_layer(), results, boost::asio::use_future);
+
+    if (tcp.wait_until(end) != std::future_status::ready) {
+        throw NetworkException(NetworkException::State::Connect,
+                               "TIMEOUT on connect to " + url.host);
+    } else {
+        try {
+            tcp.get();
+        } catch (const boost::system::system_error& e) {
+            throw NetworkException(NetworkException::State::Connect, e.what());
+        }
+    }
+
     socket.set_verify_mode(ssl::verify_peer);
+#if BOOST_VERSION >= 108700
+    socket.set_verify_callback(ssl::host_name_verification(url.host));
+#else
     socket.set_verify_callback(ssl::rfc2818_verification(url.host));
+#endif
 
-    socket.handshake(ssl::stream<tcp::socket>::client);
+    auto handshake = socket.async_handshake(ssl::stream<tcp::socket>::client,
+                                            boost::asio::use_future);
+    if (handshake.wait_until(end) != std::future_status::ready) {
+        throw NetworkException(NetworkException::State::Connect,
+                               "TIMEOUT on handshake with " + url.host);
+    } else {
+        try {
+            handshake.get();
+        } catch (const boost::system::system_error& e) {
+            throw NetworkException(NetworkException::State::Handshake,
+                                   e.what());
+        }
+    }
 
     std::string requestText = HttpParser::generateRequest(url, args, false);
-    write(socket, buffer(requestText.c_str(), requestText.length()));
-
-    fd_set fileDescriptorSet;
-    struct timeval timeStruct {};
-
-    // set the timeout to 20 seconds
-    timeStruct.tv_sec = timeout().count();
-    FD_ZERO(&fileDescriptorSet);
-
-    // We'll need to get the underlying native socket for this select call, in
-    // order to add a simple timeout on the read:
-
-    int nativeSocket = static_cast<int>(socket.lowest_layer().native_handle());
-
-    FD_SET(nativeSocket, &fileDescriptorSet);
-    select(nativeSocket + 1, &fileDescriptorSet, nullptr, nullptr, &timeStruct);
-
-    if (!FD_ISSET(nativeSocket, &fileDescriptorSet)) {  // timeout
-
-        std::string sMsg("TIMEOUT on read client data. Client IP: ");
-
-        sMsg.append(
-            socket.next_layer().remote_endpoint().address().to_string());
-        _ioService.reset();
-
-        throw NetworkException(sMsg);
+    auto write =
+        async_write(socket, buffer(requestText), boost::asio::use_future);
+    if (write.wait_until(end) != std::future_status::ready) {
+        throw NetworkException(NetworkException::State::Write,
+                               "TIMEOUT on write to " + url.host);
+    } else if (write.get() != requestText.size()) {
+        throw NetworkException(NetworkException::State::Write,
+                               "Failed to write all data to " + url.host);
     }
 
     std::stringstream response;
-
-#ifdef TGBOT_CHANGE_READ_BUFFER_SIZE
-    std::array<char, kIncreasedBufferSize> buff{};
-#else
-    std::array<char, 1 << 10> buff{};
-#endif  // TGBOT_CHANGE_READ_BUFFER_SIZE
-
+    std::array<char, kBufferSize> resultBuffer{};
     boost::system::error_code error;
+
     while (!error) {
-        std::size_t bytes = read(socket, buffer(buff), error);
-        response << std::string_view(buff.data(), bytes);
+        auto readResult = socket.async_read_some(buffer(resultBuffer),
+                                                 boost::asio::use_future);
+        if (readResult.wait_until(end) != std::future_status::ready) {
+#if BOOST_VERSION >= 108700
+            _ioService.restart();
+#else
+            _ioService.reset();
+#endif
+            throw NetworkException(NetworkException::State::Read,
+                                   "TIMEOUT on read from " + url.host);
+        }
+        try {
+            size_t readBytes = readResult.get();
+            if (readBytes == 0) {
+                break;
+            }
+            response << std::string_view(resultBuffer.data(), readBytes);
+        } catch (const boost::system::system_error& e) {
+            static const std::vector<boost::system::error_code> kIgnoredErrors =
+                {
+                    boost::asio::error::eof,
+                    boost::asio::error::connection_reset,
+                    boost::asio::ssl::error::stream_truncated,
+                };
+            if (kIgnoredErrors.end() != std::find(kIgnoredErrors.begin(),
+                                                  kIgnoredErrors.end(),
+                                                  e.code())) {
+                break;
+            }
+            throw NetworkException(NetworkException::State::Read, e.what());
+        }
     }
 
     return HttpParser::extractBody(response.str());
-}
-
-std::string BoostSslClient::makeRequest(
-    const Url& url, const HttpReqArg::Vec& args) const {
-    try {
-        return _makeRequest(url, args);
-    } catch (const boost::wrapexcept<boost::system::system_error>& ex) {
-        throw NetworkException(ex.what());
-    }
 }
 
 }  // namespace TgBot
