@@ -1,6 +1,7 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
+
 #include <chrono>
 
 #include "tgbot/TgException.h"
@@ -19,7 +20,7 @@ namespace TgBot {
 CurlHttpClient::CurlHttpClient(std::chrono::seconds timeout)
     : HttpClient(timeout), curlSettings(curl_easy_init()) {
     if (curlSettings == nullptr) {
-        throw NetworkException("curl_easy_init failed");
+        throw NetworkException(NetworkException::State::Unknown, "curl_easy_init failed");
     }
     curl_easy_setopt(curlSettings, CURLOPT_CONNECTTIMEOUT, 20);
     curl_easy_setopt(curlSettings, CURLOPT_TIMEOUT, timeout.count());
@@ -86,7 +87,8 @@ std::string CurlHttpClient::makeRequest(const Url& url,
         } else {
             errmsg = curl_easy_strerror(res);
         }
-        throw NetworkException(std::string("cURL error: ") + errmsg);
+        throw NetworkException(NetworkException::State::Unknown,
+                               std::string("cURL error: ") + errmsg);
     }
 
     return HttpParser::extractBody(response);

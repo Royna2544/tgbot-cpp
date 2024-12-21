@@ -155,20 +155,5 @@ Use the [example CMakeLists.txt](samples/echobot/CMakeLists.txt) with changes:
 
 Also, you can treat this repository as a submodule of your project, for example, see [echobot-submodule](samples/echobot-submodule/CMakeLists.txt).
 
-### Without CMake
-
-```sh
-g++ telegram_bot.cpp -o telegram_bot --std=c++14 -I/usr/local/include -lTgBot -lboost_system -lssl -lcrypto -lpthread -ljsoncpp
-```
-
-### Build options
-
-```
--DTGBOT_DISABLE_NAGLES_ALGORITHM   # Disable 'Nagle's algorithm'
--DTGBOT_CHANGE_SOCKET_BUFFER_SIZE  # Socket Buffer Size Expansion
--DTGBOT_CHANGE_READ_BUFFER_SIZE    # Read Buffer Size Expansion
-```
-
-
 ## Licence
 [The MIT License](https://github.com/reo7sp/tgbot-cpp/blob/master/LICENSE).
