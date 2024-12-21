@@ -1,5 +1,6 @@
 #include "tgbot/tools/StringTools.h"
 
+#include <algorithm>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <iomanip>
@@ -7,41 +8,35 @@
 #include <random>
 #include <string>
 
-using namespace std;
-
 namespace StringTools {
 
-bool startsWith(const string& str1, const string& str2) {
+bool startsWith(const std::string& str1, const std::string& str2) {
     return boost::starts_with(str1, str2);
 }
 
-bool endsWith(const string& str1, const string& str2) {
+bool endsWith(const std::string& str1, const std::string& str2) {
     return boost::ends_with(str1, str2);
 }
 
-void split(const string& str, char delimiter, vector<string>& dest) {
+void split(const std::string& str, char delimiter, std::vector<std::string>& dest) {
     boost::split(dest, str, [delimiter](char c) { return c == delimiter; });
 }
 
-string generateRandomString(std::size_t length) {
-    static const string chars("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890-=[]\\',./!@#$%^&*()_+{}|:\"<>?`~");
-       
-    static const std::size_t charsLen = chars.length();
-    string result;
+std::string generateRandomString(std::size_t length) {
+    static constexpr std::string_view chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890-=[]\\',./!@#$%^&*()_+{}|:\"<>?`~";
+    std::string result;
 
-    random_device randomDevice;
-    mt19937 randomSeed(randomDevice());
-    uniform_int_distribution<std::size_t> generator(0, charsLen - 1);
-
-    for (std::size_t i = 0; i < length; ++i) {
-        result += chars[generator(randomSeed)];
-    }
+    result.reserve(length);
+    std::generate_n(std::back_inserter(result), length, [&] {
+        std::mt19937 gen(std::random_device{}());
+        return chars[std::uniform_int_distribution<std::size_t>(0, chars.size() - 1)(gen)];
+    });
     return result;
 }
 
 
-string urlEncode(const string& value, const std::string& additionalLegitChars) {
-    static const string legitPunctuation = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-~:";
+std::string urlEncode(const std::string& value, const std::string& additionalLegitChars) {
+    static constexpr std::string_view legitPunctuation = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-~:";
     std::stringstream ss;
     for (auto const &c : value) {
         if ((legitPunctuation.find(c) == std::string::npos) && (additionalLegitChars.find(c) == std::string::npos)) {
@@ -54,8 +49,8 @@ string urlEncode(const string& value, const std::string& additionalLegitChars) {
     return ss.str();
 }
 
-string urlDecode(const string& value) {
-    string result;
+std::string urlDecode(const std::string& value) {
+    std::string result;
     for (std::size_t i = 0, count = value.length(); i < count; ++i) {
         const char c = value[i];
         if (c == '%') {
@@ -66,24 +61,6 @@ string urlDecode(const string& value) {
             result += c;
         }
     }
-    return result;
-}
-
-std::string escapeJsonString(const std::string& value) {
-    string result;
-
-    for (const char& c : value) {
-        switch (c) {
-        case '"':
-        case '\\':
-        case '/':
-            result += '\\';
-            break;
-        }
-
-        result += c;
-    }
-
     return result;
 }
 
