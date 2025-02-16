@@ -18,15 +18,14 @@
 namespace TgBot {
 
 CurlHttpClient::CurlHttpClient(std::chrono::seconds timeout)
-    : HttpClient(timeout), curlSettings(curl_easy_init()) {
-    if (curlSettings == nullptr) {
-        throw NetworkException(NetworkException::State::Unknown, "curl_easy_init failed");
-    }
-    curl_easy_setopt(curlSettings, CURLOPT_CONNECTTIMEOUT, 20);
-    curl_easy_setopt(curlSettings, CURLOPT_TIMEOUT, timeout.count());
-}
+    : HttpClient(timeout) {}
 
-CurlHttpClient::~CurlHttpClient() { curl_easy_cleanup(curlSettings); }
+CurlHttpClient::~CurlHttpClient() {
+    std::lock_guard<std::mutex> lock(curlHandlesMutex);
+    for (auto& c : curlHandles) {
+        curl_easy_cleanup(c.second);
+    }
+}
 
 static std::size_t curlWriteString(char* ptr, std::size_t size,
                                    std::size_t nmemb, void* userdata) {
@@ -35,21 +34,31 @@ static std::size_t curlWriteString(char* ptr, std::size_t size,
 }
 
 std::string CurlHttpClient::makeRequest(const Url& url,
+
                                         const HttpReqArg::Vec& args) const {
-    // Copy settings for each call because we change CURLOPT_URL and other
-    // stuff. This also protects multithreaded case.
-    auto* curl = curl_easy_duphandle(curlSettings);
+    CURL* curl = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(curlHandlesMutex);
+        auto id = std::this_thread::get_id();
+        auto it = curlHandles.find(id);
+        if (it == curlHandles.end()) {
+            curl = curl_easy_init();
+            if (!curl) {
+                throw NetworkException(NetworkException::State::Unknown,
+                                       "curl_easy_init() failed");
+            }
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 20);
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout().count());
+            curlHandles[id] = curl;
+        } else
+            curl = it->second;
+    }
 
     std::string u = url.protocol + "://" + url.host + url.path;
     if (args.empty()) {
         u += "?" + url.query;
     }
     curl_easy_setopt(curl, CURLOPT_URL, u.c_str());
-
-    // disable keep-alive
-    struct curl_slist* headers = nullptr;
-    headers = curl_slist_append(headers, "Connection: close");
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     curl_mime* mime = nullptr;
     mime = curl_mime_init(curl);
@@ -72,8 +81,6 @@ std::string CurlHttpClient::makeRequest(const Url& url,
     }
 
     auto res = curl_easy_perform(curl);
-    curl_slist_free_all(headers);
-    curl_easy_cleanup(curl);
     curl_mime_free(mime);
 
     // If the request did not complete correctly, show the error
