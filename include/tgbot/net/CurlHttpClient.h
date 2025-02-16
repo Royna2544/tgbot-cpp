@@ -11,6 +11,9 @@
 
 #include <curl/curl.h>
 
+#include <mutex>
+#include <thread>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -35,10 +38,16 @@ public:
      */
     std::string makeRequest(const Url& url, const HttpReqArg::Vec& args) const override;
 
+private:
     /**
-     * @brief Raw curl settings storage for fine tuning.
+     * @brief Raw curl handles, each thread has its own handle.
      */
-    CURL* curlSettings;
+    mutable std::unordered_map<std::thread::id, CURL*> curlHandles;
+
+    /**
+     * @brief Lock for curlHandles access.
+     */
+    mutable std::mutex curlHandlesMutex;
 };
 
 }
