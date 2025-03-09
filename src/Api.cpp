@@ -345,6 +345,8 @@ std::string putJSON<Api::ChatAction>(const Api::ChatAction &object) {
             return "record_video_note";
         case Api::ChatAction::upload_video_note:
             return "upload_video_note";
+        case Api::ChatAction::choose_sticker:
+            return "choose_sticker";
     }
     return {};
 }
