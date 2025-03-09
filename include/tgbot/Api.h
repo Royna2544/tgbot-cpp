@@ -1344,6 +1344,7 @@ class TGBOT_API Api {
         find_location,
         record_video_note,
         upload_video_note,
+        choose_sticker
     };
 
     /**
