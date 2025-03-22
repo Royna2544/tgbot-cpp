@@ -11,11 +11,13 @@ using namespace TgBot;
 BOOST_AUTO_TEST_SUITE(tHttpParser)
 
 BOOST_AUTO_TEST_CASE(generateRequest) {
-    HttpReqArg::Vec args = {
-        std::make_unique<HttpReqArg>("email", "test@example.com"),
-        std::make_unique<HttpReqArg>("text", "Hello, world!")};
-    string t = HttpParser::generateRequest(
-        Url("http://example.com/index.html"), args, true);
+    HttpReqArg::Vec args;
+    args.emplace_back(
+        std::make_unique<HttpReqArg>("email", "test@example.com"));
+    args.emplace_back(std::make_unique<HttpReqArg>("text", "Hello, world!"));
+
+    string t = HttpParser::generateRequest(Url("http://example.com/index.html"),
+                                           args, true);
     string e =
         ""
         "POST /index.html HTTP/1.1\r\n"
@@ -29,10 +31,11 @@ BOOST_AUTO_TEST_CASE(generateRequest) {
 }
 
 BOOST_AUTO_TEST_CASE(generateMultipartFormData) {
-    HttpReqArg::Vec args = {
-        std::make_unique<HttpReqArg>("email", "test@example.com"),
-        std::make_unique<HttpReqArgFile>("text", "Hello, world!", "text/plain",
-                                         "file.txt")};
+    HttpReqArg::Vec args;
+    args.emplace_back(
+        std::make_unique<HttpReqArg>("email", "test@example.com"));
+    args.emplace_back(std::make_unique<HttpReqArgFile>(
+        "text", "Hello, world!", "text/plain", "file.txt"));
     string boundary = HttpParser::generateMultipartBoundary(args);
     string t = HttpParser::generateMultipartFormData(args, boundary);
     string e =
@@ -57,9 +60,10 @@ BOOST_AUTO_TEST_CASE(generateMultipartFormData) {
 }
 
 BOOST_AUTO_TEST_CASE(generateWwwFormUrlencoded) {
-    HttpReqArg::Vec args = {
-        std::make_unique<HttpReqArg>("email", "test@example.com"),
-        std::make_unique<HttpReqArg>("text", "Hello, world!")};
+    HttpReqArg::Vec args;
+    args.emplace_back(
+        std::make_unique<HttpReqArg>("email", "test@example.com"));
+    args.emplace_back(std::make_unique<HttpReqArg>("text", "Hello, world!"));
     string t = HttpParser::generateWwwFormUrlencoded(args);
     string e = "email=test%40example.com&text=Hello%2C%20world%21";
     BOOST_CHECK_MESSAGE(t == e, diffS(t, e));
