@@ -10,9 +10,6 @@
 
 namespace TgBot {
 
-#define INCLUDING_CRLF
-#include "tgbot/net/CRLFHelper.h"
-
 std::string HttpParser::generateRequest(const Url& url,
                                         const HttpReqArg::Vec& args,
                                         bool isKeepAlive) {

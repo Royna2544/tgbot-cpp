@@ -5,6 +5,7 @@
 #include <curl/curl.h>
 #endif /* HAVE_CURL */
 
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -14,10 +15,17 @@
 #include "tgbot/export.h"
 #include "tgbot/types/InputFile.h"
 
-namespace TgBot {
+namespace TgBot::detail {
+struct CRLF_T {};
+constexpr CRLF_T CRLF{};
+}  // namespace TgBot::detail
 
-#define INCLUDING_CRLF
-#include "CRLFHelper.h"
+inline std::ostream& operator<<(std::ostream& stream,
+                                const TgBot::detail::CRLF_T& /*unused*/) {
+    return stream << "\r\n";
+}
+
+namespace TgBot {
 
 /**
  * @brief This class represents argument in POST http requests.
