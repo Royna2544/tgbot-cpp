@@ -2,6 +2,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <cstddef>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -121,32 +122,22 @@ std::unordered_map<std::string, std::string> HttpParser::parseHeader(
         line.pop_back();
     }
 
+    std::istringstream lineStream(line);
+    std::string arg1, arg2, arg3;
+
+    if (!(lineStream >> arg1 >> arg2 >> arg3)) {
+        // Handle error: Malformed first line
+        std::cerr << "Cannot parse line " << line << std::endl;
+        return headers;
+    }
+
     if (isRequest) {
         // Parse Request Line: METHOD SP REQUEST-URI SP HTTP-VERSION
-        std::istringstream lineStream(line);
-        std::string method, path, httpVersion;
-        if (!(lineStream >> method >> path >> httpVersion)) {
-            // Handle error: Malformed request line
-            return headers;
-        }
-        headers["_method"] = method;
-        headers["_path"] = path;
-        headers["_version"] = httpVersion;
+        headers["_method"] = arg1;
+        headers["_path"] = arg2;
     } else {
         // Parse Status Line: HTTP-VERSION SP STATUS-CODE SP REASON-PHRASE
-        std::size_t pos = line.find(' ');
-        if (pos == std::string::npos) {
-            // Handle error: Malformed status line
-            return headers;
-        }
-        headers["_version"] = line.substr(0, pos);
-        std::size_t pos2 = line.find(' ', pos + 1);
-        if (pos2 == std::string::npos) {
-            // Handle error: Malformed status line
-            return headers;
-        }
-        headers["_status"] = line.substr(pos + 1, pos2 - pos - 1);
-        headers["_reason"] = boost::trim_copy(line.substr(pos2 + 1));
+        headers["_status"] = arg2;
     }
 
     // Read header lines

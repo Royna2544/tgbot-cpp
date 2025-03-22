@@ -139,7 +139,7 @@ class TGBOT_API HttpReqArgFile : public HttpReqArg {
         stream << "--" << boundary << detail::CRLF;
         stream << "Content-Disposition: form-data; name=" << std::quoted(name)
                << "; filename=" << std::quoted(fileName) << detail::CRLF;
-        stream << "Content-Type: " << std::quoted(mimeType) << detail::CRLF
+        stream << "Content-Type: " << mimeType << detail::CRLF
                << detail::CRLF;
         stream << value << detail::CRLF;
         return stream.str();
