@@ -20,6 +20,9 @@ class ReplyKeyboardMarkup : public GenericReply {
 public:
     using Ptr = std::shared_ptr<ReplyKeyboardMarkup>;
 
+    static constexpr std::string_view TYPE = "reply_keyboard_markup";
+    ReplyKeyboardMarkup() { type = TYPE; }
+
     /**
      * @brief Array of button rows, each represented by an Array of KeyboardButton objects
      */

@@ -2,6 +2,7 @@
 #define TGBOT_CPP_GENERICREPLY_H
 
 #include <memory>
+#include <string>
 
 namespace TgBot {
 
@@ -15,6 +16,11 @@ public:
     using Ptr = std::shared_ptr<GenericReply>;
 
     virtual ~GenericReply() = default;
+
+    /**
+     * @brief type of this GenericReply. Internal
+     */
+    std::string type;
 };
 
 }

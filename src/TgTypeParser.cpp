@@ -4952,16 +4952,13 @@ DECLARE_PARSER_TO_JSON(GenericReply) {
     if (!object) {
         return JsonWrapper{};
     }
-    if (std::dynamic_pointer_cast<ForceReply>(object) != nullptr) {
+    if (ForceReply::TYPE == object->type) {
         return put<ForceReply>(object);
-    } else if (std::dynamic_pointer_cast<ReplyKeyboardRemove>(object) !=
-               nullptr) {
+    } else if (ReplyKeyboardRemove::TYPE == object->type) {
         return put<ReplyKeyboardRemove>(object);
-    } else if (std::dynamic_pointer_cast<ReplyKeyboardMarkup>(object) !=
-               nullptr) {
+    } else if (ReplyKeyboardMarkup::TYPE == object->type) {
         return put<ReplyKeyboardMarkup>(object);
-    } else if (std::dynamic_pointer_cast<InlineKeyboardMarkup>(object) !=
-               nullptr) {
+    } else if (InlineKeyboardMarkup::TYPE == object->type) {
         return put<InlineKeyboardMarkup>(object);
     }
     return JsonWrapper{};
