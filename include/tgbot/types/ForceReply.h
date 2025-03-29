@@ -28,6 +28,9 @@ class ForceReply : public GenericReply {
 public:
     using Ptr = std::shared_ptr<ForceReply>;
 
+    static constexpr std::string_view TYPE = "force_reply";
+    ForceReply() { type = TYPE; }
+
     /**
      * @brief Shows reply interface to the user, as if they manually selected the bot's message and tapped 'Reply'
      */

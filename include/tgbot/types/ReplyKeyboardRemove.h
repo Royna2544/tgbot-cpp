@@ -21,6 +21,9 @@ class ReplyKeyboardRemove : public GenericReply {
 public:
     using Ptr = std::shared_ptr<ReplyKeyboardRemove>;
 
+    static constexpr std::string_view TYPE = "reply_keyboarf_remove";
+    ReplyKeyboardRemove() { type = TYPE; }
+
     /**
      * @brief Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use oneTimeKeyboard in ReplyKeyboardMarkup)
      */
