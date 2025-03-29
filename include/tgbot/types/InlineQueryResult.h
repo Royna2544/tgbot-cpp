@@ -46,6 +46,11 @@ public:
     virtual ~InlineQueryResult() = default;
 
     /**
+     * @brief Whether this result is cached. Internal.
+     */
+    bool isCached = false;
+
+    /**
      * @brief Type of the result
      */
     std::string type;

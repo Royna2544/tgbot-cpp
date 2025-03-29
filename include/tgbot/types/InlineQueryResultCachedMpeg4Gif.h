@@ -26,6 +26,7 @@ public:
 
     InlineQueryResultCachedMpeg4Gif() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**

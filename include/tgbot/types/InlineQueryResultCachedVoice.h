@@ -28,6 +28,7 @@ public:
 
     InlineQueryResultCachedVoice() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**
