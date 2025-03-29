@@ -28,6 +28,7 @@ public:
 
     InlineQueryResultCachedDocument() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**

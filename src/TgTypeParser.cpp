@@ -3417,13 +3417,10 @@ DECLARE_PARSER_TO_JSON(InlineKeyboardButton) {
 
 template <typename T, typename CachedT>
 auto put(const InlineQueryResult::Ptr &ptr) {
-    if (const auto cached = std::dynamic_pointer_cast<CachedT>(ptr)) {
-        return put<typename CachedT::Ptr>(cached);
-    } else if (const auto result = std::dynamic_pointer_cast<T>(ptr)) {
-        return put<typename T::Ptr>(result);
+    if (ptr->isCached) {
+        return put<CachedT>(ptr);
     } else {
-        throw TgBot::TgException("Invalid inline query result type",
-                                 TgException::ErrorCode::Internal);
+        return put<T>(ptr);
     }
 }
 

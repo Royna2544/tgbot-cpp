@@ -26,6 +26,7 @@ public:
 
     InlineQueryResultCachedSticker() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**

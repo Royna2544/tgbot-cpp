@@ -26,6 +26,7 @@ public:
 
     InlineQueryResultCachedGif() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**

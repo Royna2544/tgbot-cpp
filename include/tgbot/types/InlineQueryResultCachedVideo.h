@@ -27,6 +27,7 @@ public:
 
     InlineQueryResultCachedVideo() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**

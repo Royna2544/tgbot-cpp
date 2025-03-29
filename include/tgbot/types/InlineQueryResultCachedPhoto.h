@@ -26,6 +26,7 @@ public:
 
     InlineQueryResultCachedPhoto() {
         this->type = TYPE;
+	isCached = true;
     }
 
     /**
