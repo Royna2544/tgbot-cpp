@@ -58,21 +58,8 @@ if (CURL_FOUND)
     target_compile_definitions(${PROJECT_NAME} PUBLIC -DHAVE_CURL)
 endif()
 
-## jsoncpp
-if (NOT TARGET JsonCpp::JsonCpp)
-    find_package(jsoncpp)
-    if (NOT TARGET JsonCpp::JsonCpp)
-        message(STATUS "Using alternative findjsoncpp")
-        list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
-        find_package(JsonCppCustom)
-        if (NOT TARGET JsonCpp::JsonCpp)
-            message(FATAL_ERROR "Jsoncpp is not available")
-        endif()
-    endif()
-endif()
-install(FILES CMake/FindJsonCppCustom.cmake
-    DESTINATION lib/cmake/tgbot-cpp
-)
+## nlohmann_json
+find_package(nlohmann_json 3.2.0 REQUIRED)
 
 ## boost
 set(Boost_USE_MULTITHREADED ON)
@@ -91,7 +78,7 @@ set(LIB_LIST
     ZLIB::ZLIB
     OpenSSL::SSL
     Boost::system
-    JsonCpp::JsonCpp
+    nlohmann_json::nlohmann_json
 )
 
 if (CURL_FOUND)
@@ -105,7 +92,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PUBLIC 
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
-target_include_directories(${PROJECT_NAME} PUBLIC ${jsoncpp_INCLUDE_DIRS} ${JSONCPP_PKG_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${LIB_LIST})
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}

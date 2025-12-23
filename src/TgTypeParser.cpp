@@ -1,4 +1,4 @@
-#include <json/value.h>
+#include <nlohmann/json.hpp>
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
 
@@ -12,8 +12,8 @@ namespace TgBot {
 
 // T should be instance of std::shared_ptr.
 template <typename T>
-std::shared_ptr<T> parse(const Json::Value &data, const std::string &key) {
-    if (!data.isMember(key)) {
+std::shared_ptr<T> parse(const nlohmann::json &data, const std::string &key) {
+    if (!data.contains(key)) {
         return nullptr;
     }
     return parse<T>(data[key]);
@@ -27,17 +27,17 @@ TgException invalidType(const std::string_view name,
 }
 
 struct JsonWrapper {
-    JsonWrapper() : data_(Json::objectValue) {}
+    JsonWrapper() : data_(nlohmann::json::object()) {}
 
     template <typename T>
     void put(const std::string_view key, T value) {
-        data_[key.data()] = std::move(value);
+        data_[std::string(key)] = std::move(value);
     }
-    void put(const std::string_view key, Json::Value value) {
-        if (value.empty()) {
+    void put(const std::string_view key, nlohmann::json value) {
+        if (value.is_null()) {
             return;
         }
-        data_[key.data()] = std::move(value);
+        data_[std::string(key)] = std::move(value);
     }
     template <typename T,
               std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
@@ -45,47 +45,47 @@ struct JsonWrapper {
         if (!value) {
             return;  // Skip empty optional
         }
-        data_[key.data()] = *value;
+        data_[std::string(key)] = *value;
     }
 
-    static void merge(Json::Value &thiz, const Json::Value &other) {
-        if (!thiz.isObject() || !other.isObject()) {
+    static void merge(nlohmann::json &thiz, const nlohmann::json &other) {
+        if (!thiz.is_object() || !other.is_object()) {
             return;
         }
 
-        for (const auto &key : other.getMemberNames()) {
-            if (thiz[key].isObject()) {
-                merge(thiz[key], other[key]);
+        for (auto it = other.begin(); it != other.end(); ++it) {
+            if (thiz[it.key()].is_object()) {
+                merge(thiz[it.key()], it.value());
             } else {
-                thiz[key] = other[key];
+                thiz[it.key()] = it.value();
             }
         }
     }
 
-    void operator+=(const Json::Value &other) { merge(data_, other); }
+    void operator+=(const nlohmann::json &other) { merge(data_, other); }
 
-    JsonWrapper &operator=(Json::Value &&other) {
+    JsonWrapper &operator=(nlohmann::json &&other) {
         data_ = std::forward<decltype(other)>(other);
         return *this;
     }
-    operator Json::Value() const { return data_; }
+    operator nlohmann::json() const { return data_; }
 
    private:
-    Json::Value data_;
+    nlohmann::json data_;
 };
 
 template <typename T, std::enable_if_t<detail::is_primitive_v<T> ||
                                            detail::is_optional_v<T>,
                                        bool> = true>
-void parse(const Json::Value &data, const std::string &key, T *value) {
+void parse(const nlohmann::json &data, const std::string &key, T *value) {
     using Type = std::conditional_t<detail::is_optional_v<T>,
                                     typename detail::is_optional<T>::type, T>;
     using FixedType =
         std::conditional_t<std::is_floating_point_v<Type>, double, Type>;
     using MoreFixedType =
         std::conditional_t<std::is_integral_v<Type>, int64_t, FixedType>;
-    if (data[key].is<MoreFixedType>()) {
-        *value = static_cast<Type>(data[key].as<MoreFixedType>());
+    if (data.contains(key) && !data[key].is_null()) {
+        *value = static_cast<Type>(data[key].get<MoreFixedType>());
     }
 }
 
@@ -4936,13 +4936,13 @@ DECLARE_PARSER_TO_JSON(GameHighScore) {
 
 // GenericReply
 DECLARE_PARSER_FROM_JSON(GenericReply) {
-    if (data.isMember("force_reply")) {
+    if (data.contains("force_reply")) {
         return parse<ForceReply>(data);
-    } else if (data.isMember("remove_keyboard")) {
+    } else if (data.contains("remove_keyboard")) {
         return parse<ReplyKeyboardRemove>(data);
-    } else if (data.isMember("keyboard")) {
+    } else if (data.contains("keyboard")) {
         return parse<ReplyKeyboardMarkup>(data);
-    } else if (data.isMember("inline_keyboard")) {
+    } else if (data.contains("inline_keyboard")) {
         return parse<InlineKeyboardMarkup>(data);
     }
     return nullptr;

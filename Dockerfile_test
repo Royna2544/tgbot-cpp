@@ -17,7 +17,7 @@ RUN apt-get -qq update && \
         python2.7-dev \
         wget \
         zlib1g-dev \
-        libjsoncpp-dev \
+        nlohmann-json3-dev \
         pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +26,6 @@ COPY include include
 COPY src src
 COPY test test
 COPY CMakeLists.txt ./
-COPY CMake CMake
 
 RUN cmake -DENABLE_TESTS=ON . && \
     make -j$(nproc) && \

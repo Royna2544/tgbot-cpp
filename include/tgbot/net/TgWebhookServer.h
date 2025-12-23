@@ -1,7 +1,7 @@
 #ifndef TGBOT_TGHTTPSERVER_H
 #define TGBOT_TGHTTPSERVER_H
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 #include <string>
 #include <unordered_map>
@@ -38,9 +38,7 @@ class TgWebhookServer : public HttpServer<Protocol> {
         const std::string &data,
         const std::unordered_map<std::string, std::string> &headers) {
         if (headers.at("_method") == "POST" && headers.at("_path") == _path) {
-            Json::Value update;
-            Json::Reader reader;
-            reader.parse(data, update, false);
+            nlohmann::json update = nlohmann::json::parse(data);
             _eventHandler->handleUpdate(parse<Update>(update));
         }
         return HttpParser::generateResponse("", "text/plain", 200, "OK", false);

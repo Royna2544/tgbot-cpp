@@ -2,14 +2,13 @@ FROM debian:latest
 MAINTAINER Oleg Morozenkov <m@oleg.rocks>
 
 RUN apt-get -qq update && \
-    apt-get -qq install -y g++ make binutils cmake libssl-dev libboost-system-dev libcurl4-openssl-dev zlib1g-dev libjsoncpp-dev && \
+    apt-get -qq install -y g++ make binutils cmake libssl-dev libboost-system-dev libcurl4-openssl-dev zlib1g-dev nlohmann-json3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/tgbot-cpp
 COPY include include
 COPY src src
 COPY CMakeLists.txt ./
-COPY CMake CMake
 
 RUN cmake . && \
     make -j$(nproc) && \
