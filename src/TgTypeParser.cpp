@@ -38,7 +38,7 @@ struct JsonWrapper {
         data_[std::string(key)] = std::move(value);
     }
     void put(const std::string_view key, nlohmann::json value) {
-        if (value.empty()) {
+        if (value.is_null()) {
             return;
         }
         data_[std::string(key)] = std::move(value);
