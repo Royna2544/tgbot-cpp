@@ -7,8 +7,12 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 namespace TgBot {
+
+// Constant for InaccessibleMessage date field
+constexpr std::int64_t INACCESSIBLE_MESSAGE_DATE = 0;
 
 // T should be instance of std::shared_ptr.
 template <typename T>
@@ -587,8 +591,8 @@ DECLARE_PARSER_FROM_JSON(InaccessibleMessage) {
     auto result(std::make_shared<InaccessibleMessage>());
     result->chat = parse<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
-    // Always 0, omit this.
-    // parse(data, "date", &result->date);
+    // InaccessibleMessage always has date = 0
+    result->date = INACCESSIBLE_MESSAGE_DATE;
     return result;
 }
 
@@ -3303,7 +3307,16 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     auto result = std::make_shared<CallbackQuery>();
     parse(data, "id", &result->id);
     result->from = parse<User>(data, "from");
-    result->message = parse<Message>(data, "message");
+    // Parse MaybeInaccessibleMessage: check if message exists and determine type
+    if (data.contains("message") && !data["message"].is_null()) {
+        const auto& messageData = data["message"];
+        // According to Bot API, InaccessibleMessage has date=0, Message has date>0
+        if (messageData.contains("date") && messageData["date"].get<std::int64_t>() == INACCESSIBLE_MESSAGE_DATE) {
+            result->message = parse<InaccessibleMessage>(messageData);
+        } else {
+            result->message = parse<Message>(messageData);
+        }
+    }
     parse(data, "inline_message_id", &result->inlineMessageId);
     parse(data, "chat_instance", &result->chatInstance);
     parse(data, "data", &result->data);
@@ -3318,7 +3331,12 @@ DECLARE_PARSER_TO_JSON(CallbackQuery) {
     }
     ptree.put("id", object->id);
     ptree.put("from", put(object->from));
-    ptree.put("message", put(object->message));
+    // Handle MaybeInaccessibleMessage variant using std::visit
+    if (object->message.has_value()) {
+        std::visit([&ptree](auto&& msg) {
+            ptree.put("message", put(msg));
+        }, object->message.value());
+    }
     ptree.put("inline_message_id", object->inlineMessageId);
     ptree.put("chat_instance", object->chatInstance);
     ptree.put("data", object->data);
