@@ -81,6 +81,7 @@
 #include "tgbot/types/GiveawayCreated.h"
 #include "tgbot/types/GiveawayWinners.h"
 #include "tgbot/types/InaccessibleMessage.h"
+#include "tgbot/types/MaybeInaccessibleMessage.h"
 #include "tgbot/types/InlineKeyboardButton.h"
 #include "tgbot/types/InlineKeyboardMarkup.h"
 #include "tgbot/types/InlineQuery.h"

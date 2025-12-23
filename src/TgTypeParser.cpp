@@ -3303,7 +3303,16 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     auto result = std::make_shared<CallbackQuery>();
     parse(data, "id", &result->id);
     result->from = parse<User>(data, "from");
-    result->message = parse<Message>(data, "message");
+    // Parse MaybeInaccessibleMessage: check if message exists and determine type
+    if (data.isMember("message") && !data["message"].isNull()) {
+        const auto& messageData = data["message"];
+        // According to Bot API, InaccessibleMessage has date=0, Message has date>0
+        if (messageData.isMember("date") && messageData["date"].asInt64() == 0) {
+            result->message = parse<InaccessibleMessage>(messageData);
+        } else {
+            result->message = parse<Message>(messageData);
+        }
+    }
     parse(data, "inline_message_id", &result->inlineMessageId);
     parse(data, "chat_instance", &result->chatInstance);
     parse(data, "data", &result->data);
@@ -3318,7 +3327,14 @@ DECLARE_PARSER_TO_JSON(CallbackQuery) {
     }
     ptree.put("id", object->id);
     ptree.put("from", put(object->from));
-    ptree.put("message", put(object->message));
+    // Handle MaybeInaccessibleMessage variant
+    if (object->message.has_value()) {
+        if (std::holds_alternative<Message::Ptr>(object->message.value())) {
+            ptree.put("message", put(std::get<Message::Ptr>(object->message.value())));
+        } else if (std::holds_alternative<InaccessibleMessage::Ptr>(object->message.value())) {
+            ptree.put("message", put(std::get<InaccessibleMessage::Ptr>(object->message.value())));
+        }
+    }
     ptree.put("inline_message_id", object->inlineMessageId);
     ptree.put("chat_instance", object->chatInstance);
     ptree.put("data", object->data);

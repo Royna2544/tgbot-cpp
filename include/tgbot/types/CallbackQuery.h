@@ -2,7 +2,7 @@
 #define TGBOT_CALLBACKQUERY_H
 
 #include "tgbot/types/User.h"
-#include "tgbot/types/Message.h"
+#include "tgbot/types/MaybeInaccessibleMessage.h"
 
 #include <memory>
 #include <string>
@@ -28,9 +28,9 @@ public:
     User::Ptr from;
 
     /**
-     * @brief Optional. Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old.
+     * @brief Optional. Message sent by the bot with the callback button that originated the query.
      */
-    Message::Ptr message;
+    std::optional<MaybeInaccessibleMessage> message;
 
     /**
      * @brief Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
