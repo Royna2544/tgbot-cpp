@@ -7,8 +7,12 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 namespace TgBot {
+
+// Constant for InaccessibleMessage date field
+constexpr std::int64_t INACCESSIBLE_MESSAGE_DATE = 0;
 
 // T should be instance of std::shared_ptr.
 template <typename T>
@@ -3307,7 +3311,7 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     if (data.isMember("message") && !data["message"].isNull()) {
         const auto& messageData = data["message"];
         // According to Bot API, InaccessibleMessage has date=0, Message has date>0
-        if (messageData.isMember("date") && messageData["date"].asInt64() == 0) {
+        if (messageData.isMember("date") && messageData["date"].asInt64() == INACCESSIBLE_MESSAGE_DATE) {
             result->message = parse<InaccessibleMessage>(messageData);
         } else {
             result->message = parse<Message>(messageData);
@@ -3327,13 +3331,11 @@ DECLARE_PARSER_TO_JSON(CallbackQuery) {
     }
     ptree.put("id", object->id);
     ptree.put("from", put(object->from));
-    // Handle MaybeInaccessibleMessage variant
+    // Handle MaybeInaccessibleMessage variant using std::visit
     if (object->message.has_value()) {
-        if (std::holds_alternative<Message::Ptr>(object->message.value())) {
-            ptree.put("message", put(std::get<Message::Ptr>(object->message.value())));
-        } else if (std::holds_alternative<InaccessibleMessage::Ptr>(object->message.value())) {
-            ptree.put("message", put(std::get<InaccessibleMessage::Ptr>(object->message.value())));
-        }
+        std::visit([&ptree](auto&& msg) {
+            ptree.put("message", put(msg));
+        }, object->message.value());
     }
     ptree.put("inline_message_id", object->inlineMessageId);
     ptree.put("chat_instance", object->chatInstance);
