@@ -26,7 +26,6 @@ COPY include include
 COPY src src
 COPY test test
 COPY CMakeLists.txt ./
-COPY CMake CMake
 
 RUN cmake -DENABLE_TESTS=ON . && \
     make -j$(nproc) && \
