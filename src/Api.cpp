@@ -395,24 +395,24 @@ bool Api::setWebhook(
                        std::pair{"ip_address", ipAddress},
                        std::pair{"drop_pending_updates", dropPendingUpdates},
                        std::pair{"secret_token", secretToken})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteWebhook(optional<bool> dropPendingUpdates) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteWebhook",
                        std::pair{"drop_pending_updates", dropPendingUpdates})
-        .asBool();
+        .get<bool>();
 }
 
 WebhookInfo::Ptr Api::getWebhookInfo() const {
     const auto &p =
         sendRequest(_bot_api_baseurl, _httpClient, "getWebhookInfo");
 
-    if (!p.isMember("url")) {
+    if (!p.contains("url")) {
         return nullptr;
     }
 
-    if (!p["url"].asString().empty()) {
+    if (!p["url"].get<std::string>().empty()) {
         return parse<WebhookInfo>(p["url"]);
     } else {
         return nullptr;
@@ -424,11 +424,11 @@ User::Ptr Api::getMe() const {
 }
 
 bool Api::logOut() const {
-    return sendRequest(_bot_api_baseurl, _httpClient, "logOut").asBool();
+    return sendRequest(_bot_api_baseurl, _httpClient, "logOut").get<bool>();
 }
 
 bool Api::close() const {
-    return sendRequest(_bot_api_baseurl, _httpClient, "close").asBool();
+    return sendRequest(_bot_api_baseurl, _httpClient, "close").get<bool>();
 }
 
 Message::Ptr Api::sendMessage(
@@ -885,7 +885,7 @@ bool Api::setMessageReaction(ChatIdType chatId,
                        std::pair{"message_id", messageId},
                        std::pair{"reaction", reaction},
                        std::pair{"is_big", isBig})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::sendChatAction(
@@ -897,7 +897,7 @@ bool Api::sendChatAction(
                std::pair{"chat_id", chatId}, std::pair{"action", action},
                std::pair{"message_thread_id", messageThreadId},
                std::pair{"business_connection_id", businessConnectionId})
-        .asBool();
+        .get<bool>();
 }
 
 UserProfilePhotos::Ptr Api::getUserProfilePhotos(
@@ -923,7 +923,7 @@ bool Api::banChatMember(
                        std::pair{"user_id", userId},
                        std::pair{"until_date", untilDate},
                        std::pair{"revoke_messages", revokeMessages})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unbanChatMember(ChatIdType chatId, std::int64_t userId,
@@ -932,7 +932,7 @@ bool Api::unbanChatMember(ChatIdType chatId, std::int64_t userId,
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"user_id", userId},
                        std::pair{"only_if_banned", onlyIfBanned})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::restrictChatMember(
@@ -946,7 +946,7 @@ bool Api::restrictChatMember(
                        std::pair{"until_date", untilDate},
                        std::pair{"use_independent_chat_permissions",
                                  useIndependentChatPermissions})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::promoteChatMember(
@@ -976,7 +976,7 @@ bool Api::promoteChatMember(
                        std::pair{"can_post_stories", canPostStories},
                        std::pair{"can_edit_stories", canEditStories},
                        std::pair{"can_delete_stories", canDeleteStories})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setChatAdministratorCustomTitle(
@@ -987,7 +987,7 @@ bool Api::setChatAdministratorCustomTitle(
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"user_id", userId},
                        std::pair{"custom_title", customTitle})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::banChatSenderChat(ChatIdType chatId,
@@ -995,7 +995,7 @@ bool Api::banChatSenderChat(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "banChatSenderChat",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"sender_chat_id", senderChatId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unbanChatSenderChat(ChatIdType chatId,
@@ -1003,7 +1003,7 @@ bool Api::unbanChatSenderChat(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "unbanChatSenderChat",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"sender_chat_id", senderChatId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setChatPermissions(
@@ -1014,13 +1014,13 @@ bool Api::setChatPermissions(
                        std::pair{"permissions", std::move(permissions)},
                        std::pair{"use_independent_chat_permissions",
                                  useIndependentChatPermissions})
-        .asBool();
+        .get<bool>();
 }
 
 std::string Api::exportChatInviteLink(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "exportChatInviteLink",
                        std::pair{"chat_id", std::move(chatId)})
-        .asString();
+        .get<std::string>();
 }
 
 ChatInviteLink::Ptr Api::createChatInviteLink(
@@ -1062,34 +1062,34 @@ bool Api::approveChatJoinRequest(ChatIdType chatId, std::int64_t userId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "approveChatJoinRequest",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"user_id", userId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::declineChatJoinRequest(ChatIdType chatId, std::int64_t userId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "declineChatJoinRequest",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"user_id", userId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setChatPhoto(ChatIdType chatId, InputFile::Ptr photo) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setChatPhoto",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"photo", std::move(photo)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteChatPhoto(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteChatPhoto",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setChatTitle(ChatIdType chatId, const std::string_view title) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setChatTitle",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"title", title})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setChatDescription(ChatIdType chatId,
@@ -1097,7 +1097,7 @@ bool Api::setChatDescription(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "setChatDescription",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"description", description})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::pinChatMessage(ChatIdType chatId, std::int32_t messageId,
@@ -1106,7 +1106,7 @@ bool Api::pinChatMessage(ChatIdType chatId, std::int32_t messageId,
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_id", messageId},
                        std::pair{"disable_notification", disableNotification})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unpinChatMessage(ChatIdType chatId,
@@ -1114,19 +1114,19 @@ bool Api::unpinChatMessage(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "unpinChatMessage",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_id", messageId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unpinAllChatMessages(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "unpinAllChatMessages",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::leaveChat(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "leaveChat",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 Chat::Ptr Api::getChat(ChatIdType chatId) const {
@@ -1144,7 +1144,7 @@ std::vector<ChatMember::Ptr> Api::getChatAdministrators(
 int32_t Api::getChatMemberCount(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "getChatMemberCount",
                        std::pair{"chat_id", std::move(chatId)})
-        .asInt();
+        .get<int>();
 }
 
 ChatMember::Ptr Api::getChatMember(ChatIdType chatId,
@@ -1159,13 +1159,13 @@ bool Api::setChatStickerSet(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "setChatStickerSet",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"sticker_set_name", stickerSetName})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteChatStickerSet(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteChatStickerSet",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 std::vector<Sticker::Ptr> Api::getForumTopicIconStickers() const {
@@ -1193,7 +1193,7 @@ bool Api::editForumTopic(
                        std::pair{"message_thread_id", messageThreadId},
                        std::pair{"name", name},
                        std::pair{"icon_custom_emoji_id", std::move(iconCustomEmojiId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::closeForumTopic(ChatIdType chatId,
@@ -1201,7 +1201,7 @@ bool Api::closeForumTopic(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "closeForumTopic",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_thread_id", messageThreadId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::reopenForumTopic(ChatIdType chatId,
@@ -1209,7 +1209,7 @@ bool Api::reopenForumTopic(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "reopenForumTopic",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_thread_id", messageThreadId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteForumTopic(ChatIdType chatId,
@@ -1217,7 +1217,7 @@ bool Api::deleteForumTopic(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteForumTopic",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_thread_id", messageThreadId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unpinAllForumTopicMessages(ChatIdType chatId,
@@ -1226,45 +1226,45 @@ bool Api::unpinAllForumTopicMessages(ChatIdType chatId,
                        "unpinAllForumTopicMessages",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_thread_id", messageThreadId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::editGeneralForumTopic(ChatIdType chatId, std::string name) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "editGeneralForumTopic",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"name", std::move(name)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::closeGeneralForumTopic(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "closeGeneralForumTopic",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::reopenGeneralForumTopic(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "reopenGeneralForumTopic",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::hideGeneralForumTopic(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "hideGeneralForumTopic",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unhideGeneralForumTopic(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "unhideGeneralForumTopic",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::unpinAllGeneralForumTopicMessages(ChatIdType chatId) const {
     return sendRequest(_bot_api_baseurl, _httpClient,
                        "unpinAllGeneralForumTopicMessages",
                        std::pair{"chat_id", std::move(chatId)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::answerCallbackQuery(const std::string_view callbackQueryId,
@@ -1277,7 +1277,7 @@ bool Api::answerCallbackQuery(const std::string_view callbackQueryId,
                std::pair{"callback_query_id", callbackQueryId},
                std::pair{"text", text}, std::pair{"show_alert", showAlert},
                std::pair{"url", url}, std::pair{"cache_time", cacheTime})
-        .asBool();
+        .get<bool>();
 }
 
 UserChatBoosts::Ptr Api::getUserChatBoosts(ChatIdType chatId,
@@ -1301,7 +1301,7 @@ bool Api::setMyCommands(const std::vector<BotCommand::Ptr> &commands,
                        std::pair{"commands", commands},
                        std::pair{"scope", std::move(scope)},
                        std::pair{"language_code", languageCode})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteMyCommands(BotCommandScope::Ptr scope,
@@ -1309,7 +1309,7 @@ bool Api::deleteMyCommands(BotCommandScope::Ptr scope,
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteMyCommands",
                        std::pair{"scope", std::move(scope)},
                        std::pair{"language_code", languageCode})
-        .asBool();
+        .get<bool>();
 }
 
 std::vector<BotCommand::Ptr> Api::getMyCommands(
@@ -1326,7 +1326,7 @@ bool Api::setMyName(const optional<std::string_view> name,
     return sendRequest(_bot_api_baseurl, _httpClient, "setMyName",
                        std::pair{"name", name},
                        std::pair{"language_code", languageCode})
-        .asBool();
+        .get<bool>();
 }
 
 BotName::Ptr Api::getMyName(const optional<LanguageCode> languageCode) const {
@@ -1340,7 +1340,7 @@ bool Api::setMyDescription(const optional<std::string_view> description,
     return sendRequest(_bot_api_baseurl, _httpClient, "setMyDescription",
                        std::pair{"description", description},
                        std::pair{"language_code", languageCode})
-        .asBool();
+        .get<bool>();
 }
 
 BotDescription::Ptr Api::getMyDescription(
@@ -1356,7 +1356,7 @@ bool Api::setMyShortDescription(
     return sendRequest(_bot_api_baseurl, _httpClient, "setMyShortDescription",
                        std::pair{"short_description", shortDescription},
                        std::pair{"language_code", languageCode})
-        .asBool();
+        .get<bool>();
 }
 
 BotShortDescription::Ptr Api::getMyShortDescription(
@@ -1371,7 +1371,7 @@ bool Api::setChatMenuButton(optional<std::int64_t> chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "setChatMenuButton",
                        std::pair{"chat_id", chatId},
                        std::pair{"menu_button", std::move(menuButton)})
-        .asBool();
+        .get<bool>();
 }
 
 MenuButton::Ptr Api::getChatMenuButton(optional<std::int64_t> chatId) const {
@@ -1386,7 +1386,7 @@ bool Api::setMyDefaultAdministratorRights(ChatAdministratorRights::Ptr rights,
                        "setMyDefaultAdministratorRights",
                        std::pair{"rights", std::move(rights)},
                        std::pair{"for_channels", forChannels})
-        .asBool();
+        .get<bool>();
 }
 
 ChatAdministratorRights::Ptr Api::getMyDefaultAdministratorRights(
@@ -1413,7 +1413,7 @@ Message::Ptr Api::editMessageText(
         std::pair{"reply_markup", std::move(replyMarkup)},
         std::pair{"entities", entities},
         std::pair{"link_preview", std::move(linkPreviewOptions)});
-    if (p.isMember("message_id")) {
+    if (p.contains("message_id")) {
         return parse<Message>(p);
     } else {
         return nullptr;
@@ -1434,7 +1434,7 @@ Message::Ptr Api::editMessageCaption(
         std::pair{"reply_markup", std::move(replyMarkup)},
         std::pair{"parse_mode", parseMode},
         std::pair{"caption_entities", captionEntities});
-    if (p.isMember("message_id")) {
+    if (p.contains("message_id")) {
         return parse<Message>(p);
     } else {
         return nullptr;
@@ -1451,7 +1451,7 @@ Message::Ptr Api::editMessageMedia(
         std::pair{"message_id", messageId},
         std::pair{"inline_message_id", inlineMessageId},
         std::pair{"reply_markup", std::move(replyMarkup)});
-    if (p.isMember("message_id")) {
+    if (p.contains("message_id")) {
         return parse<Message>(p);
     } else {
         return nullptr;
@@ -1468,7 +1468,7 @@ Message::Ptr Api::editMessageReplyMarkup(
                     std::pair{"message_id", messageId},
                     std::pair{"inline_message_id", inlineMessageId},
                     std::pair{"reply_markup", std::move(replyMarkup)});
-    if (p.isMember("message_id")) {
+    if (p.contains("message_id")) {
         return parse<Message>(p);
     } else {
         return nullptr;
@@ -1488,7 +1488,7 @@ bool Api::deleteMessage(ChatIdType chatId, std::int32_t messageId) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteMessage",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_id", messageId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteMessages(ChatIdType chatId,
@@ -1496,7 +1496,7 @@ bool Api::deleteMessages(ChatIdType chatId,
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteMessages",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_ids", messageIds})
-        .asBool();
+        .get<bool>();
 }
 
 Message::Ptr Api::sendSticker(
@@ -1550,7 +1550,7 @@ bool Api::createNewStickerSet(
                        std::pair{"stickers", stickers},
                        std::pair{"sticker_type", stickerType},
                        std::pair{"needs_repainting", needsRepainting})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::addStickerToSet(std::int64_t userId, const std::string_view name,
@@ -1558,7 +1558,7 @@ bool Api::addStickerToSet(std::int64_t userId, const std::string_view name,
     return sendRequest(_bot_api_baseurl, _httpClient, "addStickerToSet",
                        std::pair{"user_id", userId}, std::pair{"name", name},
                        std::pair{"sticker", std::move(sticker)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setStickerPositionInSet(const std::string_view sticker,
@@ -1566,13 +1566,13 @@ bool Api::setStickerPositionInSet(const std::string_view sticker,
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerPositionInSet",
                        std::pair{"sticker", sticker},
                        std::pair{"position", position})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteStickerFromSet(const std::string_view sticker) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteStickerFromSet",
                        std::pair{"sticker", sticker})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::replaceStickerInSet(std::int64_t userId, const std::string_view name,
@@ -1582,7 +1582,7 @@ bool Api::replaceStickerInSet(std::int64_t userId, const std::string_view name,
                        std::pair{"user_id", userId}, std::pair{"name", name},
                        std::pair{"old_sticker", oldSticker},
                        std::pair{"sticker", std::move(sticker)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setStickerEmojiList(const std::string_view sticker,
@@ -1590,7 +1590,7 @@ bool Api::setStickerEmojiList(const std::string_view sticker,
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerEmojiList",
                        std::pair{"sticker", sticker},
                        std::pair{"emoji_list", emojiList})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setStickerKeywords(const std::string_view sticker,
@@ -1598,7 +1598,7 @@ bool Api::setStickerKeywords(const std::string_view sticker,
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerKeywords",
                        std::pair{"sticker", sticker},
                        std::pair{"keywords", keywords})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setStickerMaskPosition(const std::string_view sticker,
@@ -1606,14 +1606,14 @@ bool Api::setStickerMaskPosition(const std::string_view sticker,
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerMaskPosition",
                        std::pair{"sticker", sticker},
                        std::pair{"mask_position", std::move(maskPosition)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setStickerSetTitle(const std::string_view name,
                              const std::string_view title) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerSetTitle",
                        std::pair{"name", name}, std::pair{"title", title})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setStickerSetThumbnail(const std::string_view name,
@@ -1624,7 +1624,7 @@ bool Api::setStickerSetThumbnail(const std::string_view name,
                        std::pair{"name", name}, std::pair{"user_id", userId},
                        std::pair{"sticker_format", format},
                        std::pair{"thumbnail", std::move(thumbnail)})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setCustomEmojiStickerSetThumbnail(
@@ -1634,13 +1634,13 @@ bool Api::setCustomEmojiStickerSetThumbnail(
                        "setCustomEmojiStickerSetThumbnail",
                        std::pair{"name", name},
                        std::pair{"custom_emoji_id", customEmojiId})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::deleteStickerSet(const std::string_view name) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteStickerSet",
                        std::pair{"name", name})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::answerInlineQuery(const std::string_view inlineQueryId,
@@ -1656,7 +1656,7 @@ bool Api::answerInlineQuery(const std::string_view inlineQueryId,
                        std::pair{"is_personal", isPersonal},
                        std::pair{"next_offset", nextOffset},
                        std::pair{"button", std::move(button)})
-        .asBool();
+        .get<bool>();
 }
 
 SentWebAppMessage::Ptr Api::answerWebAppQuery(
@@ -1747,7 +1747,7 @@ std::string Api::createInvoiceLink(
                          sendPhoneNumberToProvider},
                std::pair{"send_email_to_provider", sendEmailToProvider},
                std::pair{"is_flexible", isFlexible})
-        .asString();
+        .get<std::string>();
 }
 
 bool Api::answerShippingQuery(
@@ -1759,7 +1759,7 @@ bool Api::answerShippingQuery(
                        std::pair{"ok", ok},
                        std::pair{"shipping_options", shippingOptions},
                        std::pair{"error_message", errorMessage})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::answerPreCheckoutQuery(
@@ -1769,7 +1769,7 @@ bool Api::answerPreCheckoutQuery(
                        std::pair{"pre_checkout_query_id", preCheckoutQueryId},
                        std::pair{"ok", ok},
                        std::pair{"error_message", errorMessage})
-        .asBool();
+        .get<bool>();
 }
 
 bool Api::setPassportDataErrors(
@@ -1778,7 +1778,7 @@ bool Api::setPassportDataErrors(
     return sendRequest(_bot_api_baseurl, _httpClient, "setPassportDataErrors",
                        std::pair{"user_id", userId},
                        std::pair{"errors", errors})
-        .asBool();
+        .get<bool>();
 }
 
 Message::Ptr Api::sendGame(

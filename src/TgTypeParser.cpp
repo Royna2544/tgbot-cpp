@@ -4954,13 +4954,13 @@ DECLARE_PARSER_TO_JSON(GameHighScore) {
 
 // GenericReply
 DECLARE_PARSER_FROM_JSON(GenericReply) {
-    if (data.isMember("force_reply")) {
+    if (data.contains("force_reply")) {
         return parse<ForceReply>(data);
-    } else if (data.isMember("remove_keyboard")) {
+    } else if (data.contains("remove_keyboard")) {
         return parse<ReplyKeyboardRemove>(data);
-    } else if (data.isMember("keyboard")) {
+    } else if (data.contains("keyboard")) {
         return parse<ReplyKeyboardMarkup>(data);
-    } else if (data.isMember("inline_keyboard")) {
+    } else if (data.contains("inline_keyboard")) {
         return parse<InlineKeyboardMarkup>(data);
     }
     return nullptr;
