@@ -84,8 +84,10 @@ void parse(const nlohmann::json &data, const std::string &key, T *value) {
         std::conditional_t<std::is_floating_point_v<Type>, double, Type>;
     using MoreFixedType =
         std::conditional_t<std::is_integral_v<Type>, int64_t, FixedType>;
+    using FinalType =
+        std::conditional_t<std::is_same_v<Type, bool>, bool, MoreFixedType>;
     if (data.contains(key) && !data[key].is_null()) {
-        *value = static_cast<Type>(data[key].get<MoreFixedType>());
+        *value = static_cast<Type>(data[key].get<FinalType>());
     }
 }
 
