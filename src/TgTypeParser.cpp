@@ -3308,10 +3308,10 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     parse(data, "id", &result->id);
     result->from = parse<User>(data, "from");
     // Parse MaybeInaccessibleMessage: check if message exists and determine type
-    if (data.isMember("message") && !data["message"].isNull()) {
+    if (data.contains("message") && !data["message"].is_null()) {
         const auto& messageData = data["message"];
         // According to Bot API, InaccessibleMessage has date=0, Message has date>0
-        if (messageData.isMember("date") && messageData["date"].asInt64() == INACCESSIBLE_MESSAGE_DATE) {
+        if (messageData.contains("date") && messageData["date"].get<std::int64_t>() == INACCESSIBLE_MESSAGE_DATE) {
             result->message = parse<InaccessibleMessage>(messageData);
         } else {
             result->message = parse<Message>(messageData);
