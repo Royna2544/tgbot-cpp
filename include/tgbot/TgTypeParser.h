@@ -1,7 +1,7 @@
 #ifndef TGBOT_TGTYPEPARSER_H
 #define TGBOT_TGTYPEPARSER_H
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 #include <memory>
 #include <sstream>
@@ -257,15 +257,15 @@ constexpr bool is_matrix_v = is_matrix<T>::value;
 
 // Parse function for shared_ptr<T>
 template <typename T>
-std::shared_ptr<T> parse(const Json::Value &data) = delete;
+std::shared_ptr<T> parse(const nlohmann::json &data) = delete;
 
 #define DECLARE_PARSER_FROM_JSON(TYPE) \
     template <>                        \
-    TYPE::Ptr parse(const Json::Value &data)
+    TYPE::Ptr parse(const nlohmann::json &data)
 
 // Grab array of T from JSON array.
 template <typename T>
-std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data) {
+std::vector<std::shared_ptr<T>> parseArray(const nlohmann::json &data) {
     std::vector<std::shared_ptr<T>> result;
     for (const auto &item : data) {
         result.emplace_back(parse<T>(item));
@@ -275,9 +275,9 @@ std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data) {
 
 // Parse array from a key.
 template <typename T>
-std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data,
+std::vector<std::shared_ptr<T>> parseArray(const nlohmann::json &data,
                                            const std::string &key) {
-    if (!data.isMember(key)) {
+    if (!data.contains(key)) {
         return {};
     }
     return parseArray<T>(data[key]);
@@ -285,7 +285,7 @@ std::vector<std::shared_ptr<T>> parseArray(const Json::Value &data,
 
 // Parse 2D array of T from JSON.
 template <typename T>
-Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data) {
+Matrix<std::shared_ptr<T>> parseMatrix(const nlohmann::json &data) {
     Matrix<std::shared_ptr<T>> result;
     for (const auto &item : data) {
         result.emplace_back(parseArray<T>(item));
@@ -294,9 +294,9 @@ Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data) {
 }
 
 template <typename T>
-Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data,
+Matrix<std::shared_ptr<T>> parseMatrix(const nlohmann::json &data,
                                        const std::string &key) {
-    if (!data.isMember(key)) {
+    if (!data.contains(key)) {
         return {};
     }
     return parseMatrix<T>(data[key]);
@@ -304,25 +304,25 @@ Matrix<std::shared_ptr<T>> parseMatrix(const Json::Value &data,
 
 // Parse an array of primitive types.
 template <typename T>
-std::vector<T> parsePrimitiveArray(const Json::Value &data,
+std::vector<T> parsePrimitiveArray(const nlohmann::json &data,
                                    const std::string &key) {
-    if (!data.isMember(key)) {
+    if (!data.contains(key)) {
         return {};
     }
     std::vector<T> result;
     for (const auto &item : data[key]) {
-        result.emplace_back(item.as<T>());
+        result.emplace_back(item.get<T>());
     }
     return result;
 }
 
 // Put function for objects to JSON
 template <typename T>
-Json::Value put(const T &value) = delete;
+nlohmann::json put(const T &value) = delete;
 
 #define DECLARE_PARSER_TO_JSON(TYPE) \
     template <>                      \
-    Json::Value put(const TYPE::Ptr &object)
+    nlohmann::json put(const TYPE::Ptr &object)
 
 // Helper to put base class shared_ptr to derived T.
 template <typename T, typename V,
@@ -330,22 +330,22 @@ template <typename T, typename V,
                                !std::is_same_v<typename T::Ptr, V> &&
                                std::is_base_of_v<typename V::element_type, T>,
                            bool> = true>
-Json::Value put(const V &data) {
+nlohmann::json put(const V &data) {
     return put(std::static_pointer_cast<T>(data));
 }
 
 // Put vector to JSON.
 template <typename T, std::enable_if_t<!detail::is_vector_v<T>, bool> = true>
-Json::Value put(const std::vector<T> &vector) {
-    Json::Value dataArray(Json::arrayValue);
+nlohmann::json put(const std::vector<T> &vector) {
+    nlohmann::json dataArray = nlohmann::json::array();
     for (const auto &item : vector) {
         if constexpr (detail::is_primitive_v<T>) {
-            dataArray.append(item);
+            dataArray.push_back(item);
         } else if constexpr (std::is_same_v<std::string_view, T>) {
-            dataArray.append(std::string(item));
+            dataArray.push_back(std::string(item));
         } else {
             // Recursively call put for non-primitives
-            dataArray.append(put(item));
+            dataArray.push_back(put(item));
         }
     }
     return dataArray;
@@ -353,10 +353,10 @@ Json::Value put(const std::vector<T> &vector) {
 
 // Put 2D array (Matrix) to JSON.
 template <typename T>
-Json::Value put(const Matrix<T> &matrix) {
-    Json::Value dataMatrix(Json::arrayValue);
+nlohmann::json put(const Matrix<T> &matrix) {
+    nlohmann::json dataMatrix = nlohmann::json::array();
     for (const auto &row : matrix) {
-        dataMatrix.append(put(row));  // Recursively call put for each row
+        dataMatrix.push_back(put(row));  // Recursively call put for each row
     }
     return dataMatrix;
 }
@@ -364,8 +364,7 @@ Json::Value put(const Matrix<T> &matrix) {
 // Serialize object to JSON string.
 template <typename T>
 std::string putJSON(const T &object) {
-    Json::StreamWriterBuilder writer;
-    return Json::writeString(writer, put(object));
+    return put(object).dump();
 }
 
 #define IMPLEMENT_PARSERS(type)     \

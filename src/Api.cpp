@@ -1,6 +1,4 @@
-#include <json/json.h>
-#include <json/value.h>
-#include <json/writer.h>
+#include <nlohmann/json.hpp>
 #include <tgbot/Api.h>
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
@@ -101,7 +99,7 @@ using TgBot::TgException;
 constexpr bool kSendRequestDebug = false;
 
 template <typename... Args>
-Json::Value sendRequest(const std::string_view _bot_url,
+nlohmann::json sendRequest(const std::string_view _bot_url,
                         TgBot::HttpClient *_httpClient,
                         const std::string_view method,
                         std::pair<const char *, Args> &&...args) {
@@ -166,9 +164,10 @@ Json::Value sendRequest(const std::string_view _bot_url,
                                   TgException::ErrorCode::HtmlResponse);
             }
 
-            Json::Value result;
-            Json::Reader reader;
-            if (!reader.parse(serverResponse, result, false)) {
+            nlohmann::json result;
+            try {
+                result = nlohmann::json::parse(serverResponse);
+            } catch (const nlohmann::json::parse_error &e) {
                 if constexpr (kSendRequestDebug) {
                     std::cerr << "tgbot-cpp: Failed to parse response:"
                               << serverResponse << std::endl;
@@ -178,11 +177,11 @@ Json::Value sendRequest(const std::string_view _bot_url,
                     TgException::ErrorCode::InvalidJson);
             }
 
-            if (result["ok"].asBool()) {
+            if (result["ok"].get<bool>()) {
                 return result["result"];
             } else {
-                std::string message = result["description"].asString();
-                int errorCode = result["error_code"].as<int>();
+                std::string message = result["description"].get<std::string>();
+                int errorCode = result["error_code"].get<int>();
 
                 throw TgException(
                     message, static_cast<TgException::ErrorCode>(errorCode));
@@ -209,78 +208,77 @@ namespace TgBot {
 
 template <>
 std::string putJSON<TgBot::Update::Types>(const TgBot::Update::Types &object) {
-    Json::Value json;
+    nlohmann::json json = nlohmann::json::array();
     if (object & Update::Types::business_connection) {
-        json.append("business_connection");
+        json.push_back("business_connection");
     }
     if (object & Update::Types::edited_business_message) {
-        json.append("edited_business_message");
+        json.push_back("edited_business_message");
     }
     if (object & Update::Types::edited_channel_post) {
-        json.append("edited_channel_post");
+        json.push_back("edited_channel_post");
     }
     if (object & Update::Types::edited_message) {
-        json.append("edited_message");
+        json.push_back("edited_message");
     }
     if (object & Update::Types::message) {
-        json.append("message");
+        json.push_back("message");
     }
     if (object & Update::Types::channel_post) {
-        json.append("channel_post");
+        json.push_back("channel_post");
     }
     if (object & Update::Types::business_message) {
-        json.append("business_message");
+        json.push_back("business_message");
     }
     if (object & Update::Types::deleted_business_messages) {
-        json.append("deleted_business_messages");
+        json.push_back("deleted_business_messages");
     }
     if (object & Update::Types::inline_query) {
-        json.append("inline_query");
+        json.push_back("inline_query");
     }
     if (object & Update::Types::poll) {
-        json.append("poll");
+        json.push_back("poll");
     }
     if (object & Update::Types::shipping_query) {
-        json.append("shipping_query");
+        json.push_back("shipping_query");
     }
     if (object & Update::Types::chosen_inline_result) {
-        json.append("chosen_inline_result");
+        json.push_back("chosen_inline_result");
     }
     if (object & Update::Types::callback_query) {
-        json.append("callback_query");
+        json.push_back("callback_query");
     }
     if (object & Update::Types::poll_answer) {
-        json.append("poll_answer");
+        json.push_back("poll_answer");
     }
     if (object & Update::Types::message_reaction) {
-        json.append("message_reaction");
+        json.push_back("message_reaction");
     }
     if (object & Update::Types::message_reaction_count) {
-        json.append("message_reaction_count");
+        json.push_back("message_reaction_count");
     }
     if (object & Update::Types::my_chat_member) {
-        json.append("my_chat_member");
+        json.push_back("my_chat_member");
     }
     if (object & Update::Types::chat_member) {
-        json.append("chat_member");
+        json.push_back("chat_member");
     }
     if (object & Update::Types::chat_join_request) {
-        json.append("chat_join_request");
+        json.push_back("chat_join_request");
     }
     if (object & Update::Types::chat_boost) {
-        json.append("chat_boost");
+        json.push_back("chat_boost");
     }
     if (object & Update::Types::removed_chat_boost) {
-        json.append("removed_chat_boost");
+        json.push_back("removed_chat_boost");
     }
     if (object & Update::Types::pre_checkout_query) {
-        json.append("pre_checkout_query");
+        json.push_back("pre_checkout_query");
     }
     if (object & Update::Types::purchased_paid_media) {
-        json.append("purchased_paid_media");
+        json.push_back("purchased_paid_media");
     }
-    Json::FastWriter writer;
-    return writer.write(json);
+    return json.dump();
 }
 
 template <>
