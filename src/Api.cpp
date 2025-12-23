@@ -413,7 +413,7 @@ WebhookInfo::Ptr Api::getWebhookInfo() const {
     }
 
     if (!p["url"].get<std::string>().empty()) {
-        return parse<WebhookInfo>(p["url"]);
+        return parse<WebhookInfo>(p);
     } else {
         return nullptr;
     }
