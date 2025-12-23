@@ -591,8 +591,8 @@ DECLARE_PARSER_FROM_JSON(InaccessibleMessage) {
     auto result(std::make_shared<InaccessibleMessage>());
     result->chat = parse<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
-    // Always 0, omit this.
-    // parse(data, "date", &result->date);
+    // InaccessibleMessage always has date = 0
+    result->date = INACCESSIBLE_MESSAGE_DATE;
     return result;
 }
 
