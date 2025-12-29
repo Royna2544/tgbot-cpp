@@ -254,7 +254,7 @@ public:
     /**
      * @brief Optional. Caption for the animation, audio, document, photo, video or voice
      */
-    std::string caption;
+    std::optional<std::string> caption;
 
     /**
      * @brief Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption

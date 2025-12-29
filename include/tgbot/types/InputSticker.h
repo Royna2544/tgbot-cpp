@@ -4,6 +4,7 @@
 #include "tgbot/types/MaskPosition.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -50,7 +51,7 @@ public:
      *
      * For “regular” and “custom_emoji” stickers only.
      */
-    std::vector<std::string> keywords;
+    std::optional<std::vector<std::string>> keywords;
 };
 }
 

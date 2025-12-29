@@ -375,8 +375,10 @@ DECLARE_PARSER_FROM_JSON(WebhookInfo) {
     parse(data, "last_synchronization_error_date",
           &result->lastSynchronizationErrorDate);
     parse(data, "max_connections", &result->maxConnections);
-    result->allowedUpdates =
-        parsePrimitiveArray<std::string>(data, "allowed_updates");
+    if (data.contains("allowed_updates") && !data["allowed_updates"].is_null()) {
+        result->allowedUpdates =
+            parsePrimitiveArray<std::string>(data, "allowed_updates");
+    }
     return result;
 }
 
@@ -393,7 +395,7 @@ DECLARE_PARSER_TO_JSON(WebhookInfo) {
                  object->lastSynchronizationErrorDate);
         json.put("max_connections", object->maxConnections);
 
-        json.put("allowed_updates", put(object->allowedUpdates));
+        json.put("allowed_updates", object->allowedUpdates);
     }
     return json;
 }
@@ -3489,7 +3491,9 @@ DECLARE_PARSER_FROM_JSON(InputSticker) {
     parse(data, "format", &result->format);
     result->emojiList = parsePrimitiveArray<std::string>(data, "emoji_list");
     result->maskPosition = parse<MaskPosition>(data, "mask_position");
-    result->keywords = parsePrimitiveArray<std::string>(data, "keywords");
+    if (data.contains("keywords") && !data["keywords"].is_null()) {
+        result->keywords = parsePrimitiveArray<std::string>(data, "keywords");
+    }
     return result;
 }
 
@@ -3503,7 +3507,7 @@ DECLARE_PARSER_TO_JSON(InputSticker) {
     ptree.put("format", object->format);
     ptree.put("emoji_list", put(object->emojiList));
     ptree.put("mask_position", put(object->maskPosition));
-    ptree.put("keywords", put(object->keywords));
+    ptree.put("keywords", object->keywords);
 
     return ptree;
 }
@@ -4343,8 +4347,10 @@ DECLARE_PARSER_FROM_JSON(InputInvoiceMessageContent) {
     parse(data, "currency", &result->currency);
     result->prices = parseArray<LabeledPrice>(data, "prices");
     parse(data, "max_tip_amount", &result->maxTipAmount);
-    result->suggestedTipAmounts =
-        parsePrimitiveArray<std::int32_t>(data, "suggested_tip_amounts");
+    if (data.contains("suggested_tip_amounts") && !data["suggested_tip_amounts"].is_null()) {
+        result->suggestedTipAmounts =
+            parsePrimitiveArray<std::int32_t>(data, "suggested_tip_amounts");
+    }
     parse(data, "provider_data", &result->providerData);
     parse(data, "photo_url", &result->photoUrl);
     parse(data, "photo_size", &result->photoSize);
@@ -4373,7 +4379,7 @@ DECLARE_PARSER_TO_JSON(InputInvoiceMessageContent) {
     ptree.put("currency", object->currency);
     ptree.put("prices", put(object->prices));
     ptree.put("max_tip_amount", object->maxTipAmount);
-    ptree.put("suggested_tip_amounts", put(object->suggestedTipAmounts));
+    ptree.put("suggested_tip_amounts", object->suggestedTipAmounts);
     ptree.put("provider_data", object->providerData);
     ptree.put("photo_url", object->photoUrl);
     ptree.put("photo_size", object->photoSize);
