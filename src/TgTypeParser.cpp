@@ -47,6 +47,14 @@ struct JsonWrapper {
         }
         data_[std::string(key)] = *value;
     }
+    template <typename T,
+              std::enable_if_t<detail::is_vector_v<T>, bool> = true>
+    void put(const std::string_view key, std::optional<T> value) {
+        if (!value) {
+            return;  // Skip empty optional
+        }
+        data_[std::string(key)] = TgBot::put(*value);
+    }
 
     static void merge(nlohmann::json &thiz, const nlohmann::json &other) {
         if (!thiz.is_object() || !other.is_object()) {
@@ -818,7 +826,9 @@ DECLARE_PARSER_FROM_JSON(ReplyParameters) {
           &result->allowSendingWithoutReply);
     parse(data, "quote", &result->quote);
     parse(data, "quote_parse_mode", &result->quoteParseMode);
-    result->quoteEntities = parseArray<MessageEntity>(data, "quote_entities");
+    if (data.contains("quote_entities")) {
+        result->quoteEntities = parseArray<MessageEntity>(data, "quote_entities");
+    }
     parse(data, "quote_position", &result->quotePosition);
     return result;
 }
@@ -833,7 +843,7 @@ DECLARE_PARSER_TO_JSON(ReplyParameters) {
                  object->allowSendingWithoutReply);
         json.put("quote", object->quote);
         json.put("quote_parse_mode", object->quoteParseMode);
-        json.put("quote_entities", put(object->quoteEntities));
+        json.put("quote_entities", object->quoteEntities);
         json.put("quote_position", object->quotePosition);
     }
 
