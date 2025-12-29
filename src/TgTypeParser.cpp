@@ -375,8 +375,10 @@ DECLARE_PARSER_FROM_JSON(WebhookInfo) {
     parse(data, "last_synchronization_error_date",
           &result->lastSynchronizationErrorDate);
     parse(data, "max_connections", &result->maxConnections);
-    result->allowedUpdates =
-        parsePrimitiveArray<std::string>(data, "allowed_updates");
+    if (data.contains("allowed_updates") && !data["allowed_updates"].is_null()) {
+        result->allowedUpdates =
+            parsePrimitiveArray<std::string>(data, "allowed_updates");
+    }
     return result;
 }
 
@@ -3489,7 +3491,9 @@ DECLARE_PARSER_FROM_JSON(InputSticker) {
     parse(data, "format", &result->format);
     result->emojiList = parsePrimitiveArray<std::string>(data, "emoji_list");
     result->maskPosition = parse<MaskPosition>(data, "mask_position");
-    result->keywords = parsePrimitiveArray<std::string>(data, "keywords");
+    if (data.contains("keywords") && !data["keywords"].is_null()) {
+        result->keywords = parsePrimitiveArray<std::string>(data, "keywords");
+    }
     return result;
 }
 
@@ -4343,8 +4347,10 @@ DECLARE_PARSER_FROM_JSON(InputInvoiceMessageContent) {
     parse(data, "currency", &result->currency);
     result->prices = parseArray<LabeledPrice>(data, "prices");
     parse(data, "max_tip_amount", &result->maxTipAmount);
-    result->suggestedTipAmounts =
-        parsePrimitiveArray<std::int32_t>(data, "suggested_tip_amounts");
+    if (data.contains("suggested_tip_amounts") && !data["suggested_tip_amounts"].is_null()) {
+        result->suggestedTipAmounts =
+            parsePrimitiveArray<std::int32_t>(data, "suggested_tip_amounts");
+    }
     parse(data, "provider_data", &result->providerData);
     parse(data, "photo_url", &result->photoUrl);
     parse(data, "photo_size", &result->photoSize);

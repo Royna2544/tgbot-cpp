@@ -71,7 +71,7 @@ public:
      * At most 4 suggested tip amounts can be specified.
      * The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed maxTipAmount.
      */
-    std::vector<std::int32_t> suggestedTipAmounts;
+    std::optional<std::vector<std::int32_t>> suggestedTipAmounts;
 
     /**
      * @brief Optional. A JSON-serialized object for data about the invoice, which will be shared with the payment provider.

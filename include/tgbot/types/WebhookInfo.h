@@ -61,7 +61,7 @@ public:
     /**
      * @brief Optional. A list of update types the bot is subscribed to. Defaults to all update types except chatMember
      */
-    std::vector<std::string> allowedUpdates;
+    std::optional<std::vector<std::string>> allowedUpdates;
 };
 }
 

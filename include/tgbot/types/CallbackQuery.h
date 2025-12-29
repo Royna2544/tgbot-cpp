@@ -5,6 +5,7 @@
 #include "tgbot/types/Message.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace TgBot {
@@ -35,7 +36,7 @@ public:
     /**
      * @brief Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
      */
-    std::string inlineMessageId;
+    std::optional<std::string> inlineMessageId;
 
     /**
      * @brief Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games.
