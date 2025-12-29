@@ -395,7 +395,7 @@ DECLARE_PARSER_TO_JSON(WebhookInfo) {
                  object->lastSynchronizationErrorDate);
         json.put("max_connections", object->maxConnections);
 
-        json.put("allowed_updates", put(object->allowedUpdates));
+        json.put("allowed_updates", object->allowedUpdates);
     }
     return json;
 }
@@ -3507,7 +3507,7 @@ DECLARE_PARSER_TO_JSON(InputSticker) {
     ptree.put("format", object->format);
     ptree.put("emoji_list", put(object->emojiList));
     ptree.put("mask_position", put(object->maskPosition));
-    ptree.put("keywords", put(object->keywords));
+    ptree.put("keywords", object->keywords);
 
     return ptree;
 }
@@ -4379,7 +4379,7 @@ DECLARE_PARSER_TO_JSON(InputInvoiceMessageContent) {
     ptree.put("currency", object->currency);
     ptree.put("prices", put(object->prices));
     ptree.put("max_tip_amount", object->maxTipAmount);
-    ptree.put("suggested_tip_amounts", put(object->suggestedTipAmounts));
+    ptree.put("suggested_tip_amounts", object->suggestedTipAmounts);
     ptree.put("provider_data", object->providerData);
     ptree.put("photo_url", object->photoUrl);
     ptree.put("photo_size", object->photoSize);
