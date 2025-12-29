@@ -12,6 +12,8 @@
 #include "tgbot/types/PollAnswer.h"
 #include "tgbot/types/ChatMemberUpdated.h"
 #include "tgbot/types/ChatJoinRequest.h"
+#include "tgbot/types/MessageReactionUpdated.h"
+#include "tgbot/types/MessageReactionCountUpdated.h"
 
 #include <functional>
 #include <initializer_list>
@@ -43,6 +45,8 @@ public:
     typedef std::function<void (const PollAnswer::Ptr)> PollAnswerListener;
     typedef std::function<void (const ChatMemberUpdated::Ptr)> ChatMemberUpdatedListener;
     typedef std::function<void (const ChatJoinRequest::Ptr)> ChatJoinRequestListener;
+    typedef std::function<void (const MessageReactionUpdated::Ptr)> MessageReactionUpdatedListener;
+    typedef std::function<void (const MessageReactionCountUpdated::Ptr)> MessageReactionCountUpdatedListener;
 
     /**
      * @brief Registers listener which receives new incoming message of any kind - text, photo, sticker, etc.
@@ -202,6 +206,32 @@ public:
         _onChatJoinRequestListeners.push_back(listener);
     }
 
+    /**
+     * @brief Registers listener which receives message reaction updates.
+     * 
+     * The bot must be an administrator in the chat and must explicitly specify
+     * "message_reaction" in the list of allowedUpdates to receive these updates.
+     * The update isn't received for reactions set by bots.
+     * 
+     * @param listener Listener.
+     */
+    inline void onMessageReaction(const MessageReactionUpdatedListener& listener){
+        _onMessageReactionUpdatedListeners.push_back(listener);
+    }
+
+    /**
+     * @brief Registers listener which receives message reaction count updates.
+     * 
+     * The bot must be an administrator in the chat and must explicitly specify
+     * "message_reaction_count" in the list of allowedUpdates to receive these updates.
+     * The updates are grouped and can be sent with delay up to a few minutes.
+     * 
+     * @param listener Listener.
+     */
+    inline void onMessageReactionCount(const MessageReactionCountUpdatedListener& listener){
+        _onMessageReactionCountUpdatedListeners.push_back(listener);
+    }
+
 private:
     template<typename ListenerType, typename ObjectType>
     inline void broadcast(const std::vector<ListenerType>& listeners, const ObjectType object) const {
@@ -278,6 +308,14 @@ private:
         broadcast<ChatJoinRequestListener, ChatJoinRequest::Ptr>(_onChatJoinRequestListeners, result);
     }
 
+    inline void broadcastMessageReactionUpdated(const MessageReactionUpdated::Ptr& result) const {
+        broadcast<MessageReactionUpdatedListener, MessageReactionUpdated::Ptr>(_onMessageReactionUpdatedListeners, result);
+    }
+
+    inline void broadcastMessageReactionCountUpdated(const MessageReactionCountUpdated::Ptr& result) const {
+        broadcast<MessageReactionCountUpdatedListener, MessageReactionCountUpdated::Ptr>(_onMessageReactionCountUpdatedListeners, result);
+    }
+
     std::vector<MessageListener> _onAnyMessageListeners;
     std::unordered_map<std::string, MessageListener> _onCommandListeners;
     std::vector<MessageListener> _onUnknownCommandListeners;
@@ -293,6 +331,8 @@ private:
     std::vector<ChatMemberUpdatedListener> _onMyChatMemberListeners;
     std::vector<ChatMemberUpdatedListener> _onChatMemberListeners;
     std::vector<ChatJoinRequestListener> _onChatJoinRequestListeners;
+    std::vector<MessageReactionUpdatedListener> _onMessageReactionUpdatedListeners;
+    std::vector<MessageReactionCountUpdatedListener> _onMessageReactionCountUpdatedListeners;
 };
 
 }

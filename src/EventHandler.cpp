@@ -46,6 +46,12 @@ void EventHandler::handleUpdate(const Update::Ptr& update) const {
     if (update->chatJoinRequest != nullptr) {
         _broadcaster->broadcastChatJoinRequest(update->chatJoinRequest);
     }
+    if (update->messageReaction != nullptr) {
+        _broadcaster->broadcastMessageReactionUpdated(update->messageReaction);
+    }
+    if (update->messageReactionCount != nullptr) {
+        _broadcaster->broadcastMessageReactionCountUpdated(update->messageReactionCount);
+    }
 }
 
 void EventHandler::handleMessage(const Message::Ptr& message) const {
