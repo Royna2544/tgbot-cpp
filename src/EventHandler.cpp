@@ -16,6 +16,24 @@ void EventHandler::handleUpdate(const Update::Ptr& update) const {
     if (update->editedChannelPost != nullptr) {
         _broadcaster->broadcastEditedMessage(update->editedChannelPost);
     }
+    if (update->businessConnection != nullptr) {
+        _broadcaster->broadcastBusinessConnection(update->businessConnection);
+    }
+    if (update->businessMessage != nullptr) {
+        _broadcaster->broadcastBusinessMessage(update->businessMessage);
+    }
+    if (update->editedBusinessMessage != nullptr) {
+        _broadcaster->broadcastEditedBusinessMessage(update->editedBusinessMessage);
+    }
+    if (update->deletedBusinessMessages != nullptr) {
+        _broadcaster->broadcastDeletedBusinessMessages(update->deletedBusinessMessages);
+    }
+    if (update->messageReaction != nullptr) {
+        _broadcaster->broadcastMessageReactionUpdated(update->messageReaction);
+    }
+    if (update->messageReactionCount != nullptr) {
+        _broadcaster->broadcastMessageReactionCountUpdated(update->messageReactionCount);
+    }
     if (update->inlineQuery != nullptr) {
         _broadcaster->broadcastInlineQuery(update->inlineQuery);
     }
@@ -46,11 +64,11 @@ void EventHandler::handleUpdate(const Update::Ptr& update) const {
     if (update->chatJoinRequest != nullptr) {
         _broadcaster->broadcastChatJoinRequest(update->chatJoinRequest);
     }
-    if (update->messageReaction != nullptr) {
-        _broadcaster->broadcastMessageReactionUpdated(update->messageReaction);
+    if (update->chatBoost != nullptr) {
+        _broadcaster->broadcastChatBoostUpdated(update->chatBoost);
     }
-    if (update->messageReactionCount != nullptr) {
-        _broadcaster->broadcastMessageReactionCountUpdated(update->messageReactionCount);
+    if (update->removedChatBoost != nullptr) {
+        _broadcaster->broadcastRemovedChatBoost(update->removedChatBoost);
     }
 }
 
