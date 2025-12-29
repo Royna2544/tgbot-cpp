@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -60,7 +61,7 @@ public:
      *
      * It can be specified instead of quoteParseMode.
      */
-    std::vector<MessageEntity::Ptr> quoteEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> quoteEntities;
 
     /**
      * @brief Optional. Position of the quote in the original message in UTF-16 code units
