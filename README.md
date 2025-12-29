@@ -9,11 +9,27 @@ Documentation is located [here](http://reo7sp.github.io/tgbot-cpp).
 
 ## State
 
-- [x] Telegram Bot API 7.2
-- [ ] [MaybeInaccessibleMessage](https://core.telegram.org/bots/api#maybeinaccessiblemessage)
-- [ ] [Message->pinnedMessage](https://core.telegram.org/bots/api#message)
-- [ ] [CallbackQuery->message](https://core.telegram.org/bots/api#callbackquery)
+This library implements most features from **Telegram Bot API 7.2** with additional features from later versions.
+
+### Recently Added Features:
+- [x] Message Reactions (Bot API 7.x+)
+  - MessageReactionUpdated event handling
+  - MessageReactionCountUpdated event handling
+- [x] Business Account Integration (Bot API 7.x+)
+  - BusinessConnection updates
+  - Business message handling
+  - Deleted business messages tracking
+- [x] Chat Boosts (Bot API 7.x+)
+  - ChatBoostUpdated events
+  - ChatBoostRemoved events
+
+### Known Limitations:
+- [ ] [MaybeInaccessibleMessage](https://core.telegram.org/bots/api#maybeinaccessiblemessage) - Planned for future implementation
+- [ ] [Message->pinnedMessage](https://core.telegram.org/bots/api#message) - Requires MaybeInaccessibleMessage
+- [ ] [CallbackQuery->message](https://core.telegram.org/bots/api#callbackquery) - Requires MaybeInaccessibleMessage
 - [ ] [Deep Linking](https://core.telegram.org/bots/features#deep-linking)
+
+**Note:** Full Bot API 8.x and 9.x support is planned. Contributions are welcome!
 
 
 ## Sample
