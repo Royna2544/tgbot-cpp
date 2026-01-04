@@ -4,6 +4,7 @@
 #include <boost/asio/ssl/error.hpp>
 #include <boost/asio/ssl/verify_mode.hpp>
 #include <boost/asio/use_future.hpp>
+#include <boost/range/algorithm/find.hpp>
 #include <boost/system/system_error.hpp>
 #include <boost/throw_exception.hpp>
 #include <chrono>
@@ -74,7 +75,6 @@ std::string BoostSslClient::makeRequest(const Url& url,
         throw NetworkException(NetworkException::State::Connect, e.what());
     }
 
-    std::string result;
     auto tcp =
         async_connect(socket.lowest_layer(), results, boost::asio::use_future);
 
@@ -150,9 +150,8 @@ std::string BoostSslClient::makeRequest(const Url& url,
                     boost::asio::error::connection_reset,
                     boost::asio::ssl::error::stream_truncated,
                 };
-            if (kIgnoredErrors.end() != std::find(kIgnoredErrors.begin(),
-                                                  kIgnoredErrors.end(),
-                                                  e.code())) {
+            if (kIgnoredErrors.end() !=
+                boost::range::find(kIgnoredErrors, e.code())) {
                 break;
             }
             throw NetworkException(NetworkException::State::Read, e.what());
