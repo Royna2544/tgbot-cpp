@@ -3,6 +3,7 @@
 #include <curl/easy.h>
 
 #include <chrono>
+#include <iostream>
 
 #include "tgbot/TgException.h"
 #include "tgbot/net/HttpClient.h"
@@ -34,7 +35,6 @@ static std::size_t curlWriteString(char* ptr, std::size_t size,
 }
 
 std::string CurlHttpClient::makeRequest(const Url& url,
-
                                         const HttpReqArg::Vec& args) const {
     CURL* curl = nullptr;
     {
@@ -43,7 +43,7 @@ std::string CurlHttpClient::makeRequest(const Url& url,
         auto it = curlHandles.find(id);
         if (it == curlHandles.end()) {
             curl = curl_easy_init();
-            if (!curl) {
+            if (curl == nullptr) {
                 throw NetworkException(NetworkException::State::Unknown,
                                        "curl_easy_init() failed");
             }
@@ -55,8 +55,15 @@ std::string CurlHttpClient::makeRequest(const Url& url,
     }
 
     std::string u = url.protocol + "://" + url.host + url.path;
-    if (args.empty()) {
+    if (args.empty() && !url.query.empty()) {
         u += "?" + url.query;
+    }
+    if (args.empty()) {
+        // GET request
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+    } else {
+        // POST request
+        curl_easy_setopt(curl, CURLOPT_POST, 1L);
     }
     curl_easy_setopt(curl, CURLOPT_URL, u.c_str());
 
