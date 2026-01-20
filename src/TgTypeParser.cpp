@@ -1,8 +1,8 @@
-#include <nlohmann/json.hpp>
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
 
 #include <cstdint>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string_view>
 #include <type_traits>
@@ -12,7 +12,7 @@ namespace TgBot {
 
 // T should be instance of std::shared_ptr.
 template <typename T>
-std::shared_ptr<T> parse(const nlohmann::json &data, const std::string &key) {
+std::shared_ptr<T> parse(const nlohmann::json& data, const std::string& key) {
     if (!data.contains(key)) {
         return nullptr;
     }
@@ -34,7 +34,7 @@ struct JsonWrapper {
         data_[std::string(key)] = std::move(value);
     }
     void put(const std::string_view key, nlohmann::json value) {
-        if (value.is_null()) {
+        if (value.is_null() || value.size() == 0) {
             return;
         }
         data_[std::string(key)] = std::move(value);
@@ -47,8 +47,7 @@ struct JsonWrapper {
         }
         data_[std::string(key)] = *value;
     }
-    template <typename T,
-              std::enable_if_t<detail::is_vector_v<T>, bool> = true>
+    template <typename T, std::enable_if_t<detail::is_vector_v<T>, bool> = true>
     void put(const std::string_view key, std::optional<T> value) {
         if (!value) {
             return;  // Skip empty optional
@@ -56,7 +55,7 @@ struct JsonWrapper {
         data_[std::string(key)] = TgBot::put(*value);
     }
 
-    static void merge(nlohmann::json &thiz, const nlohmann::json &other) {
+    static void merge(nlohmann::json& thiz, const nlohmann::json& other) {
         if (!thiz.is_object() || !other.is_object()) {
             return;
         }
@@ -70,10 +69,10 @@ struct JsonWrapper {
         }
     }
 
-    void operator+=(const nlohmann::json &other) { merge(data_, other); }
+    void operator+=(const nlohmann::json& other) { merge(data_, other); }
 
-    JsonWrapper &operator=(nlohmann::json &&other) {
-        data_ = std::forward<decltype(other)>(other);
+    JsonWrapper& operator=(nlohmann::json&& other) {
+        data_ = std::move(other);
         return *this;
     }
     operator nlohmann::json() const { return data_; }
@@ -85,7 +84,7 @@ struct JsonWrapper {
 template <typename T, std::enable_if_t<detail::is_primitive_v<T> ||
                                            detail::is_optional_v<T>,
                                        bool> = true>
-void parse(const nlohmann::json &data, const std::string &key, T *value) {
+void parse(const nlohmann::json& data, const std::string& key, T* value) {
     using Type = std::conditional_t<detail::is_optional_v<T>,
                                     typename detail::is_optional<T>::type, T>;
     using FixedType =
@@ -375,7 +374,8 @@ DECLARE_PARSER_FROM_JSON(WebhookInfo) {
     parse(data, "last_synchronization_error_date",
           &result->lastSynchronizationErrorDate);
     parse(data, "max_connections", &result->maxConnections);
-    if (data.contains("allowed_updates") && !data["allowed_updates"].is_null()) {
+    if (data.contains("allowed_updates") &&
+        !data["allowed_updates"].is_null()) {
         result->allowedUpdates =
             parsePrimitiveArray<std::string>(data, "allowed_updates");
     }
@@ -829,7 +829,8 @@ DECLARE_PARSER_FROM_JSON(ReplyParameters) {
     parse(data, "quote", &result->quote);
     parse(data, "quote_parse_mode", &result->quoteParseMode);
     if (data.contains("quote_entities")) {
-        result->quoteEntities = parseArray<MessageEntity>(data, "quote_entities");
+        result->quoteEntities =
+            parseArray<MessageEntity>(data, "quote_entities");
     }
     parse(data, "quote_position", &result->quotePosition);
     return result;
@@ -3430,7 +3431,7 @@ DECLARE_PARSER_TO_JSON(InlineKeyboardButton) {
 }
 
 template <typename T, typename CachedT>
-auto put(const InlineQueryResult::Ptr &ptr) {
+auto put(const InlineQueryResult::Ptr& ptr) {
     if (ptr->isCached) {
         return put<CachedT>(ptr);
     } else {
@@ -4347,7 +4348,8 @@ DECLARE_PARSER_FROM_JSON(InputInvoiceMessageContent) {
     parse(data, "currency", &result->currency);
     result->prices = parseArray<LabeledPrice>(data, "prices");
     parse(data, "max_tip_amount", &result->maxTipAmount);
-    if (data.contains("suggested_tip_amounts") && !data["suggested_tip_amounts"].is_null()) {
+    if (data.contains("suggested_tip_amounts") &&
+        !data["suggested_tip_amounts"].is_null()) {
         result->suggestedTipAmounts =
             parsePrimitiveArray<std::int32_t>(data, "suggested_tip_amounts");
     }
