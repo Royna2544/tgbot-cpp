@@ -1,4 +1,3 @@
-#include <nlohmann/json.hpp>
 #include <tgbot/Api.h>
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
@@ -8,6 +7,7 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <string_view>
 #include <thread>
 #include <type_traits>
@@ -78,7 +78,7 @@ namespace {
 
 // Specialized handling for generic T
 template <typename T>
-auto putArg(std::string name, const T &data) {
+auto putArg(std::string name, const T& data) {
     if constexpr (std::is_same_v<T, std::string_view> ||
                   detail::is_primitive_v<T>) {
         return std::make_unique<TgBot::HttpReqArg>(std::move(name), data);
@@ -100,16 +100,16 @@ constexpr bool kSendRequestDebug = false;
 
 template <typename... Args>
 nlohmann::json sendRequest(const std::string_view _bot_url,
-                        TgBot::HttpClient *_httpClient,
-                        const std::string_view method,
-                        std::pair<const char *, Args> &&...args) {
+                           TgBot::HttpClient* _httpClient,
+                           const std::string_view method,
+                           std::pair<const char*, Args>&&... args) {
     TgBot::HttpReqArg::Vec vec;
     std::string url(_bot_url);
     url += method;
 
     vec.reserve(sizeof...(Args));
     (
-        [&vec](const std::pair<const char *, Args> arg) {
+        [&vec](const std::pair<const char*, Args> arg) {
             using T = std::decay_t<Args>;
             if constexpr (detail::is_optional_v<T>) {
                 if (static_cast<bool>(arg.second)) {
@@ -118,7 +118,7 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
             } else if constexpr (detail::is_variant_v<T>) {
                 if (arg.second.index() != std::variant_npos) {
                     std::visit(
-                        [&](const auto &v) {
+                        [&](const auto& v) {
                             using T = std::decay_t<decltype(v)>;
                             if constexpr (detail::is_shared_ptr_v<T>) {
                                 if (v != nullptr) {
@@ -147,7 +147,7 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
     int retries = 0;
     if constexpr (kSendRequestDebug) {
         std::cout << "tgbot-cpp: Sending request: " << method << std::endl;
-        for (const auto &arg : vec) {
+        for (const auto& arg : vec) {
             arg->print(std::cout) << std::endl;
         }
     }
@@ -167,7 +167,7 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
             nlohmann::json result;
             try {
                 result = nlohmann::json::parse(serverResponse);
-            } catch (const nlohmann::json::parse_error &e) {
+            } catch (const nlohmann::json::parse_error& e) {
                 if constexpr (kSendRequestDebug) {
                     std::cerr << "tgbot-cpp: Failed to parse response:"
                               << serverResponse << std::endl;
@@ -186,7 +186,7 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
                 throw TgException(
                     message, static_cast<TgException::ErrorCode>(errorCode));
             }
-        } catch (const TgException &ex) {
+        } catch (const TgException& ex) {
             if constexpr (kSendRequestDebug) {
                 std::cerr << "tgbot-cpp: Error: " << ex.what() << std::endl;
             }
@@ -207,7 +207,7 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
 namespace TgBot {
 
 template <>
-std::string putJSON<TgBot::Update::Types>(const TgBot::Update::Types &object) {
+std::string putJSON<TgBot::Update::Types>(const TgBot::Update::Types& object) {
     nlohmann::json json = nlohmann::json::array();
     if (object & Update::Types::business_connection) {
         json.push_back("business_connection");
@@ -282,7 +282,7 @@ std::string putJSON<TgBot::Update::Types>(const TgBot::Update::Types &object) {
 }
 
 template <>
-std::string putJSON<Api::ParseMode>(const Api::ParseMode &object) {
+std::string putJSON<Api::ParseMode>(const Api::ParseMode& object) {
     switch (object) {
         case Api::ParseMode::Markdown:
             return "Markdown";
@@ -297,7 +297,7 @@ std::string putJSON<Api::ParseMode>(const Api::ParseMode &object) {
 }
 
 template <>
-std::string putJSON<Api::PollType>(const Api::PollType &object) {
+std::string putJSON<Api::PollType>(const Api::PollType& object) {
     switch (object) {
         case Api::PollType::regular:
             return "regular";
@@ -308,7 +308,7 @@ std::string putJSON<Api::PollType>(const Api::PollType &object) {
 }
 
 template <>
-std::string putJSON<Api::StickerFormat>(const Api::StickerFormat &object) {
+std::string putJSON<Api::StickerFormat>(const Api::StickerFormat& object) {
     switch (object) {
         case Api::StickerFormat::Static:
             return "static";
@@ -321,7 +321,7 @@ std::string putJSON<Api::StickerFormat>(const Api::StickerFormat &object) {
 }
 
 template <>
-std::string putJSON<Api::ChatAction>(const Api::ChatAction &object) {
+std::string putJSON<Api::ChatAction>(const Api::ChatAction& object) {
     switch (object) {
         case Api::ChatAction::typing:
             return "typing";
@@ -350,7 +350,7 @@ std::string putJSON<Api::ChatAction>(const Api::ChatAction &object) {
 }
 
 template <>
-std::string putJSON<Sticker::Type>(const Sticker::Type &object) {
+std::string putJSON<Sticker::Type>(const Sticker::Type& object) {
     switch (object) {
         case Sticker::Type::Regular:
             return "regular";
@@ -362,7 +362,7 @@ std::string putJSON<Sticker::Type>(const Sticker::Type &object) {
     return {};
 }
 
-Api::Api(std::string token, HttpClient *httpClient, std::string url)
+Api::Api(std::string token, HttpClient* httpClient, std::string url)
     : _bot_api_baseurl(url + "/bot" + token + "/"),
       _token(std::move(token)),
       _url(std::move(url)),
@@ -405,7 +405,7 @@ bool Api::deleteWebhook(optional<bool> dropPendingUpdates) const {
 }
 
 WebhookInfo::Ptr Api::getWebhookInfo() const {
-    const auto &p =
+    const auto& p =
         sendRequest(_bot_api_baseurl, _httpClient, "getWebhookInfo");
 
     if (!p.contains("url")) {
@@ -436,7 +436,7 @@ Message::Ptr Api::sendMessage(
     LinkPreviewOptions::Ptr linkPreviewOptions,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &entities,
+    const std::vector<MessageEntity::Ptr>& entities,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     const optional<std::string_view> businessConnectionId) const {
     return parse<Message>(sendRequest(
@@ -470,7 +470,7 @@ Message::Ptr Api::forwardMessage(ChatIdType chatId, ChatIdType fromChatId,
 
 std::vector<MessageId::Ptr> Api::forwardMessages(
     ChatIdType chatId, ChatIdType fromChatId,
-    const std::vector<std::int32_t> &messageIds,
+    const std::vector<std::int32_t>& messageIds,
     optional<std::int32_t> messageThreadId, optional<bool> disableNotification,
     optional<bool> protectContent) const {
     return parseArray<MessageId>(
@@ -487,7 +487,7 @@ MessageId::Ptr Api::copyMessage(
     ChatIdType chatId, ChatIdType fromChatId, std::int32_t messageId,
     const optional<std::string_view> caption,
     const optional<ParseMode> parseMode,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
     GenericReply::Ptr replyMarkup, optional<bool> protectContent,
     optional<std::int32_t> messageThreadId) const {
@@ -507,7 +507,7 @@ MessageId::Ptr Api::copyMessage(
 
 std::vector<MessageId::Ptr> Api::copyMessages(
     ChatIdType chatId, ChatIdType fromChatId,
-    const std::vector<std::int32_t> &messageIds,
+    const std::vector<std::int32_t>& messageIds,
     optional<std::int32_t> messageThreadId, optional<bool> disableNotification,
     optional<bool> protectContent, optional<bool> removeCaption) const {
     return parseArray<MessageId>(
@@ -526,23 +526,23 @@ Message::Ptr Api::sendPhoto(
     const optional<std::string_view> caption,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     optional<bool> hasSpoiler,
     const optional<std::string_view> businessConnectionId) const {
-    return parse<Message>(
-        sendRequest(_bot_api_baseurl, _httpClient, "sendPhoto",
-                    std::pair{"chat_id", std::move(chatId)},
-                    std::pair{"photo", std::move(photo)}, std::pair{"caption", caption},
-                    std::pair{"reply_parameters", std::move(replyParameters)},
-                    std::pair{"reply_markup", std::move(replyMarkup)},
-                    std::pair{"parse_mode", parseMode},
-                    std::pair{"disable_notification", disableNotification},
-                    std::pair{"caption_entities", captionEntities},
-                    std::pair{"message_thread_id", messageThreadId},
-                    std::pair{"protect_content", protectContent},
-                    std::pair{"has_spoiler", hasSpoiler},
-                    std::pair{"business_connection_id", businessConnectionId}));
+    return parse<Message>(sendRequest(
+        _bot_api_baseurl, _httpClient, "sendPhoto",
+        std::pair{"chat_id", std::move(chatId)},
+        std::pair{"photo", std::move(photo)}, std::pair{"caption", caption},
+        std::pair{"reply_parameters", std::move(replyParameters)},
+        std::pair{"reply_markup", std::move(replyMarkup)},
+        std::pair{"parse_mode", parseMode},
+        std::pair{"disable_notification", disableNotification},
+        std::pair{"caption_entities", captionEntities},
+        std::pair{"message_thread_id", messageThreadId},
+        std::pair{"protect_content", protectContent},
+        std::pair{"has_spoiler", hasSpoiler},
+        std::pair{"business_connection_id", businessConnectionId}));
 }
 
 Message::Ptr Api::sendAudio(
@@ -552,15 +552,15 @@ Message::Ptr Api::sendAudio(
     const optional<std::string_view> title, FileHandleType thumbnail,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     const optional<std::string_view> businessConnectionId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendAudio",
-        std::pair{"chat_id", std::move(chatId)}, std::pair{"audio", std::move(audio)},
-        std::pair{"caption", caption}, std::pair{"duration", duration},
-        std::pair{"performer", performer}, std::pair{"title", title},
-        std::pair{"thumbnail", std::move(thumbnail)},
+        std::pair{"chat_id", std::move(chatId)},
+        std::pair{"audio", std::move(audio)}, std::pair{"caption", caption},
+        std::pair{"duration", duration}, std::pair{"performer", performer},
+        std::pair{"title", title}, std::pair{"thumbnail", std::move(thumbnail)},
         std::pair{"reply_parameters", std::move(replyParameters)},
         std::pair{"reply_markup", std::move(replyMarkup)},
         std::pair{"parse_mode", parseMode},
@@ -576,7 +576,7 @@ Message::Ptr Api::sendDocument(
     const optional<std::string_view> caption,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<bool> disableContentTypeDetection,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     const optional<std::string_view> businessConnectionId) const {
@@ -605,27 +605,28 @@ Message::Ptr Api::sendVideo(
     const optional<std::string_view> caption,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     optional<bool> hasSpoiler,
     const optional<std::string_view> businessConnectionId) const {
-    return parse<Message>(sendRequest(
-        _bot_api_baseurl, _httpClient, "sendVideo",
-        std::pair{"chat_id", std::move(chatId)}, std::pair{"video", std::move(video)},
-        std::pair{"supports_streaming", supportsStreaming},
-        std::pair{"duration", duration}, std::pair{"width", width},
-        std::pair{"height", height},
-        std::pair{"thumbnail", std::move(thumbnail)},
-        std::pair{"caption", caption},
-        std::pair{"reply_parameters", std::move(replyParameters)},
-        std::pair{"reply_markup", std::move(replyMarkup)},
-        std::pair{"parse_mode", parseMode},
-        std::pair{"disable_notification", disableNotification},
-        std::pair{"caption_entities", captionEntities},
-        std::pair{"message_thread_id", messageThreadId},
-        std::pair{"protect_content", protectContent},
-        std::pair{"has_spoiler", hasSpoiler},
-        std::pair{"business_connection_id", businessConnectionId}));
+    return parse<Message>(
+        sendRequest(_bot_api_baseurl, _httpClient, "sendVideo",
+                    std::pair{"chat_id", std::move(chatId)},
+                    std::pair{"video", std::move(video)},
+                    std::pair{"supports_streaming", supportsStreaming},
+                    std::pair{"duration", duration}, std::pair{"width", width},
+                    std::pair{"height", height},
+                    std::pair{"thumbnail", std::move(thumbnail)},
+                    std::pair{"caption", caption},
+                    std::pair{"reply_parameters", std::move(replyParameters)},
+                    std::pair{"reply_markup", std::move(replyMarkup)},
+                    std::pair{"parse_mode", parseMode},
+                    std::pair{"disable_notification", disableNotification},
+                    std::pair{"caption_entities", captionEntities},
+                    std::pair{"message_thread_id", messageThreadId},
+                    std::pair{"protect_content", protectContent},
+                    std::pair{"has_spoiler", hasSpoiler},
+                    std::pair{"business_connection_id", businessConnectionId}));
 }
 
 Message::Ptr Api::sendAnimation(
@@ -635,26 +636,27 @@ Message::Ptr Api::sendAnimation(
     const optional<std::string_view> caption,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     optional<bool> hasSpoiler,
     const optional<std::string_view> businessConnectionId) const {
-    return parse<Message>(sendRequest(
-        _bot_api_baseurl, _httpClient, "sendAnimation",
-        std::pair{"chat_id", std::move(chatId)},
-        std::pair{"animation", std::move(animation)}, std::pair{"duration", duration},
-        std::pair{"width", width}, std::pair{"height", height},
-        std::pair{"thumbnail", std::move(thumbnail)},
-        std::pair{"caption", caption},
-        std::pair{"reply_parameters", std::move(replyParameters)},
-        std::pair{"reply_markup", std::move(replyMarkup)},
-        std::pair{"parse_mode", parseMode},
-        std::pair{"disable_notification", disableNotification},
-        std::pair{"caption_entities", captionEntities},
-        std::pair{"message_thread_id", messageThreadId},
-        std::pair{"protect_content", protectContent},
-        std::pair{"has_spoiler", hasSpoiler},
-        std::pair{"business_connection_id", businessConnectionId}));
+    return parse<Message>(
+        sendRequest(_bot_api_baseurl, _httpClient, "sendAnimation",
+                    std::pair{"chat_id", std::move(chatId)},
+                    std::pair{"animation", std::move(animation)},
+                    std::pair{"duration", duration}, std::pair{"width", width},
+                    std::pair{"height", height},
+                    std::pair{"thumbnail", std::move(thumbnail)},
+                    std::pair{"caption", caption},
+                    std::pair{"reply_parameters", std::move(replyParameters)},
+                    std::pair{"reply_markup", std::move(replyMarkup)},
+                    std::pair{"parse_mode", parseMode},
+                    std::pair{"disable_notification", disableNotification},
+                    std::pair{"caption_entities", captionEntities},
+                    std::pair{"message_thread_id", messageThreadId},
+                    std::pair{"protect_content", protectContent},
+                    std::pair{"has_spoiler", hasSpoiler},
+                    std::pair{"business_connection_id", businessConnectionId}));
 }
 
 Message::Ptr Api::sendVoice(
@@ -662,13 +664,14 @@ Message::Ptr Api::sendVoice(
     const optional<std::string_view> caption, optional<std::int32_t> duration,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<ParseMode> parseMode, optional<bool> disableNotification,
-    const std::vector<MessageEntity::Ptr> &captionEntities,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     const optional<std::string_view> businessConnectionId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendVoice",
-        std::pair{"chat_id", std::move(chatId)}, std::pair{"voice", std::move(voice)},
-        std::pair{"caption", caption}, std::pair{"duration", duration},
+        std::pair{"chat_id", std::move(chatId)},
+        std::pair{"voice", std::move(voice)}, std::pair{"caption", caption},
+        std::pair{"duration", duration},
         std::pair{"reply_parameters", std::move(replyParameters)},
         std::pair{"reply_markup", std::move(replyMarkup)},
         std::pair{"parse_mode", parseMode},
@@ -701,7 +704,7 @@ Message::Ptr Api::sendVideoNote(
 }
 
 std::vector<Message::Ptr> Api::sendMediaGroup(
-    ChatIdType chatId, const std::vector<InputMedia::Ptr> &media,
+    ChatIdType chatId, const std::vector<InputMedia::Ptr>& media,
     optional<bool> disableNotification, ReplyParameters::Ptr replyParameters,
     optional<std::int32_t> messageThreadId, optional<bool> protectContent,
     const optional<std::string_view> businessConnectionId) const {
@@ -824,7 +827,7 @@ Message::Ptr Api::sendContact(
 
 Message::Ptr Api::sendPoll(
     ChatIdType chatId, const std::string_view question,
-    const std::vector<std::string> &options, optional<bool> disableNotification,
+    const std::vector<std::string>& options, optional<bool> disableNotification,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     optional_default<bool, true> isAnonymous,
     const optional_default<PollType, PollType::regular> type,
@@ -832,7 +835,7 @@ Message::Ptr Api::sendPoll(
     optional<std::int32_t> correctOptionId,
     const optional<std::string_view> explanation,
     const optional<ParseMode> explanationParseMode,
-    const std::vector<MessageEntity::Ptr> &explanationEntities,
+    const std::vector<MessageEntity::Ptr>& explanationEntities,
     optional<std::int32_t> openPeriod,
     optional<std::chrono::system_clock::time_point> closeDate,
     optional<bool> isClosed, optional<std::int32_t> messageThreadId,
@@ -878,7 +881,7 @@ Message::Ptr Api::sendDice(
 
 bool Api::setMessageReaction(ChatIdType chatId,
                              optional<std::int32_t> messageId,
-                             const std::vector<ReactionType::Ptr> &reaction,
+                             const std::vector<ReactionType::Ptr>& reaction,
                              optional<bool> isBig) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setMessageReaction",
                        std::pair{"chat_id", std::move(chatId)},
@@ -1188,11 +1191,12 @@ bool Api::editForumTopic(
     ChatIdType chatId, std::int32_t messageThreadId,
     const optional<std::string_view> name,
     std::variant<std::int32_t, std::string> iconCustomEmojiId) const {
-    return sendRequest(_bot_api_baseurl, _httpClient, "editForumTopic",
-                       std::pair{"chat_id", std::move(chatId)},
-                       std::pair{"message_thread_id", messageThreadId},
-                       std::pair{"name", name},
-                       std::pair{"icon_custom_emoji_id", std::move(iconCustomEmojiId)})
+    return sendRequest(
+               _bot_api_baseurl, _httpClient, "editForumTopic",
+               std::pair{"chat_id", std::move(chatId)},
+               std::pair{"message_thread_id", messageThreadId},
+               std::pair{"name", name},
+               std::pair{"icon_custom_emoji_id", std::move(iconCustomEmojiId)})
         .get<bool>();
 }
 
@@ -1294,7 +1298,7 @@ BusinessConnection::Ptr Api::getBusinessConnection(
                     std::pair{"business_connection_id", businessConnectionId}));
 }
 
-bool Api::setMyCommands(const std::vector<BotCommand::Ptr> &commands,
+bool Api::setMyCommands(const std::vector<BotCommand::Ptr>& commands,
                         BotCommandScope::Ptr scope,
                         const optional<LanguageCode> languageCode) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setMyCommands",
@@ -1403,7 +1407,7 @@ Message::Ptr Api::editMessageText(
     const optional<ParseMode> parseMode,
     LinkPreviewOptions::Ptr linkPreviewOptions,
     InlineKeyboardMarkup::Ptr replyMarkup,
-    const std::vector<MessageEntity::Ptr> &entities) const {
+    const std::vector<MessageEntity::Ptr>& entities) const {
     const auto p = sendRequest(
         _bot_api_baseurl, _httpClient, "editMessageText",
         std::pair{"text", text}, std::pair{"chat_id", std::move(chatId)},
@@ -1425,7 +1429,7 @@ Message::Ptr Api::editMessageCaption(
     const optional<std::string_view> caption,
     const optional<std::string_view> inlineMessageId,
     GenericReply::Ptr replyMarkup, const optional<ParseMode> parseMode,
-    const std::vector<MessageEntity::Ptr> &captionEntities) const {
+    const std::vector<MessageEntity::Ptr>& captionEntities) const {
     const auto p = sendRequest(
         _bot_api_baseurl, _httpClient, "editMessageCaption",
         std::pair{"chat_id", std::move(chatId)},
@@ -1445,12 +1449,13 @@ Message::Ptr Api::editMessageMedia(
     InputMedia::Ptr media, ChatIdType chatId, optional<std::int32_t> messageId,
     const optional<std::string_view> inlineMessageId,
     GenericReply::Ptr replyMarkup) const {
-    const auto &p = sendRequest(
-        _bot_api_baseurl, _httpClient, "editMessageMedia",
-        std::pair{"media", std::move(media)}, std::pair{"chat_id", std::move(chatId)},
-        std::pair{"message_id", messageId},
-        std::pair{"inline_message_id", inlineMessageId},
-        std::pair{"reply_markup", std::move(replyMarkup)});
+    const auto& p =
+        sendRequest(_bot_api_baseurl, _httpClient, "editMessageMedia",
+                    std::pair{"media", std::move(media)},
+                    std::pair{"chat_id", std::move(chatId)},
+                    std::pair{"message_id", messageId},
+                    std::pair{"inline_message_id", inlineMessageId},
+                    std::pair{"reply_markup", std::move(replyMarkup)});
     if (p.contains("message_id")) {
         return parse<Message>(p);
     } else {
@@ -1462,7 +1467,7 @@ Message::Ptr Api::editMessageReplyMarkup(
     ChatIdType chatId, optional<std::int32_t> messageId,
     const optional<std::string_view> inlineMessageId,
     GenericReply::Ptr replyMarkup) const {
-    const auto &p =
+    const auto& p =
         sendRequest(_bot_api_baseurl, _httpClient, "editMessageReplyMarkup",
                     std::pair{"chat_id", std::move(chatId)},
                     std::pair{"message_id", messageId},
@@ -1492,7 +1497,7 @@ bool Api::deleteMessage(ChatIdType chatId, std::int32_t messageId) const {
 }
 
 bool Api::deleteMessages(ChatIdType chatId,
-                         const std::vector<std::int32_t> &messageIds) const {
+                         const std::vector<std::int32_t>& messageIds) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "deleteMessages",
                        std::pair{"chat_id", std::move(chatId)},
                        std::pair{"message_ids", messageIds})
@@ -1524,7 +1529,7 @@ StickerSet::Ptr Api::getStickerSet(const std::string_view name) const {
 }
 
 std::vector<Sticker::Ptr> Api::getCustomEmojiStickers(
-    const std::vector<std::string> &customEmojiIds) const {
+    const std::vector<std::string>& customEmojiIds) const {
     return parseArray<Sticker>(
         sendRequest(_bot_api_baseurl, _httpClient, "getCustomEmojiStickers",
                     std::pair{"custom_emoji_ids", customEmojiIds}));
@@ -1541,7 +1546,7 @@ File::Ptr Api::uploadStickerFile(std::int64_t userId, InputFile::Ptr sticker,
 bool Api::createNewStickerSet(
     std::int64_t userId, const std::string_view name,
     const std::string_view title,
-    const std::vector<InputSticker::Ptr> &stickers,
+    const std::vector<InputSticker::Ptr>& stickers,
     optional_default<Sticker::Type, Sticker::Type::Regular> stickerType,
     optional<bool> needsRepainting) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "createNewStickerSet",
@@ -1586,7 +1591,7 @@ bool Api::replaceStickerInSet(std::int64_t userId, const std::string_view name,
 }
 
 bool Api::setStickerEmojiList(const std::string_view sticker,
-                              const std::vector<std::string> &emojiList) const {
+                              const std::vector<std::string>& emojiList) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerEmojiList",
                        std::pair{"sticker", sticker},
                        std::pair{"emoji_list", emojiList})
@@ -1594,7 +1599,7 @@ bool Api::setStickerEmojiList(const std::string_view sticker,
 }
 
 bool Api::setStickerKeywords(const std::string_view sticker,
-                             const std::vector<std::string> &keywords) const {
+                             const std::vector<std::string>& keywords) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setStickerKeywords",
                        std::pair{"sticker", sticker},
                        std::pair{"keywords", keywords})
@@ -1644,7 +1649,7 @@ bool Api::deleteStickerSet(const std::string_view name) const {
 }
 
 bool Api::answerInlineQuery(const std::string_view inlineQueryId,
-                            const std::vector<InlineQueryResult::Ptr> &results,
+                            const std::vector<InlineQueryResult::Ptr>& results,
                             optional_default<std::int32_t, 300> cacheTime,
                             optional<bool> isPersonal,
                             const optional<std::string_view> nextOffset,
@@ -1671,7 +1676,7 @@ Message::Ptr Api::sendInvoice(
     ChatIdType chatId, const std::string_view title,
     const std::string_view description, const std::string_view payload,
     const std::string_view providerToken, const std::string_view currency,
-    const std::vector<LabeledPrice::Ptr> &prices,
+    const std::vector<LabeledPrice::Ptr>& prices,
     const optional<std::string_view> providerData,
     const optional<std::string_view> photoUrl, optional<std::int32_t> photoSize,
     optional<std::int32_t> photoWidth, optional<std::int32_t> photoHeight,
@@ -1682,7 +1687,7 @@ Message::Ptr Api::sendInvoice(
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     optional<bool> disableNotification, optional<std::int32_t> messageThreadId,
     optional<std::int32_t> maxTipAmount,
-    const std::vector<std::int32_t> &suggestedTipAmounts,
+    const std::vector<std::int32_t>& suggestedTipAmounts,
     const optional<std::string_view> startParameter,
     optional<bool> protectContent) const {
     return parse<Message>(sendRequest(
@@ -1716,9 +1721,9 @@ std::string Api::createInvoiceLink(
     const std::string_view title, const std::string_view description,
     const std::string_view payload, const std::string_view providerToken,
     const std::string_view currency,
-    const std::vector<LabeledPrice::Ptr> &prices,
+    const std::vector<LabeledPrice::Ptr>& prices,
     optional<std::int32_t> maxTipAmount,
-    const std::vector<std::int32_t> &suggestedTipAmounts,
+    const std::vector<std::int32_t>& suggestedTipAmounts,
     const optional<std::string_view> providerData,
     const optional<std::string_view> photoUrl, optional<std::int32_t> photoSize,
     optional<std::int32_t> photoWidth, optional<std::int32_t> photoHeight,
@@ -1752,7 +1757,7 @@ std::string Api::createInvoiceLink(
 
 bool Api::answerShippingQuery(
     const std::string_view shippingQueryId, bool ok,
-    const std::vector<ShippingOption::Ptr> &shippingOptions,
+    const std::vector<ShippingOption::Ptr>& shippingOptions,
     const optional<std::string_view> errorMessage) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "answerShippingQuery",
                        std::pair{"shipping_query_id", shippingQueryId},
@@ -1774,7 +1779,7 @@ bool Api::answerPreCheckoutQuery(
 
 bool Api::setPassportDataErrors(
     std::int64_t userId,
-    const std::vector<PassportElementError::Ptr> &errors) const {
+    const std::vector<PassportElementError::Ptr>& errors) const {
     return sendRequest(_bot_api_baseurl, _httpClient, "setPassportDataErrors",
                        std::pair{"user_id", userId},
                        std::pair{"errors", errors})
@@ -1824,8 +1829,27 @@ std::vector<GameHighScore::Ptr> Api::getGameHighScores(
 }
 
 std::string Api::downloadFile(const std::string_view filePath,
-                              const HttpReqArg::Vec &args) const {
+                              const HttpReqArg::Vec& args) const {
     std::string url(_url);
+
+    static bool is_local = [&filePath] {
+        std::filesystem::path dir = filePath;
+        // Surely if the path is absolute, it is a local file
+        return dir.is_absolute();
+    }();
+
+    if (is_local) {
+        std::ifstream fileStream(std::string(filePath),
+                                 std::ios::in | std::ios::binary);
+        if (!fileStream) {
+            throw TgException("Could not open file: " + std::string(filePath),
+                              TgException::ErrorCode::Internal);
+        }
+        std::string fileContent((std::istreambuf_iterator<char>(fileStream)),
+                                std::istreambuf_iterator<char>());
+        return fileContent;
+    }
+
     url += "/file/bot";
     url += _token;
     url += "/";
@@ -1840,7 +1864,7 @@ bool Api::blockedByUser(std::int64_t chatId) const {
     try {
         sendChatAction(chatId, ChatAction::typing);
 
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
         std::string error = e.what();
 
         if (error.find("Forbidden: bot was blocked by the user") ==

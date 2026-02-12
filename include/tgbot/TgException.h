@@ -32,8 +32,7 @@ class TGBOT_API TgException : public std::runtime_error {
         InvalidJson = 101
     };
 
-    explicit inline TgException(const std::string& description,
-                                ErrorCode errorCode)
+    explicit TgException(const std::string& description, ErrorCode errorCode)
         : runtime_error(description), errorCode(errorCode) {}
 
     ErrorCode errorCode;
