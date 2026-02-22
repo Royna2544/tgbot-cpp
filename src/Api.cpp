@@ -1829,7 +1829,8 @@ std::vector<GameHighScore::Ptr> Api::getGameHighScores(
 }
 
 std::string Api::downloadFile(const std::string_view filePath,
-                              const HttpReqArg::Vec& args) const {
+                              const HttpReqArg::Vec& args,
+                              LocalFileMapper localFilePathMapper) const {
     std::string url(_url);
 
     static bool is_local = [&filePath] {
@@ -1838,7 +1839,7 @@ std::string Api::downloadFile(const std::string_view filePath,
         return dir.is_absolute();
     }();
 
-    if (is_local) {
+    if (is_local && !localFilePathMapper) {
         std::ifstream fileStream(std::string(filePath),
                                  std::ios::in | std::ios::binary);
         if (!fileStream) {
@@ -1848,12 +1849,14 @@ std::string Api::downloadFile(const std::string_view filePath,
         std::string fileContent((std::istreambuf_iterator<char>(fileStream)),
                                 std::istreambuf_iterator<char>());
         return fileContent;
+    } else if (is_local) {
+        url = localFilePathMapper(filePath);
+    } else {
+        url += "/file/bot";
+        url += _token;
+        url += "/";
+        url += filePath;
     }
-
-    url += "/file/bot";
-    url += _token;
-    url += "/";
-    url += filePath;
 
     return _httpClient->makeRequest(url, args);
 }
