@@ -117,7 +117,7 @@ void parse(const nlohmann::json& data, const std::string& key, T* value) {
         if constexpr (detail::is_primitive_v<Type>) {
             *value = static_cast<Type>(data[key].get<FinalType>());
         } else {
-            *value = parse<detail::is_shared_ptr<Type>::type>(data[key]);
+            *value = parse<typename detail::is_shared_ptr<Type>::type>(data[key]);
         }
     }
 }
