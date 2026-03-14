@@ -199,6 +199,95 @@
 #include "tgbot/types/WebAppInfo.h"
 #include "tgbot/types/WebhookInfo.h"
 #include "tgbot/types/WriteAccessAllowed.h"
+#include "tgbot/types/AcceptedGiftTypes.h"
+#include "tgbot/types/BackgroundFillFreeformGradient.h"
+#include "tgbot/types/BackgroundFillGradient.h"
+#include "tgbot/types/BackgroundFillSolid.h"
+#include "tgbot/types/BackgroundTypeChatTheme.h"
+#include "tgbot/types/BackgroundTypeFill.h"
+#include "tgbot/types/BackgroundTypePattern.h"
+#include "tgbot/types/BackgroundTypeWallpaper.h"
+#include "tgbot/types/BusinessBotRights.h"
+#include "tgbot/types/ChatBackground.h"
+#include "tgbot/types/ChatFullInfo.h"
+#include "tgbot/types/ChatOwnerChanged.h"
+#include "tgbot/types/ChatOwnerLeft.h"
+#include "tgbot/types/Checklist.h"
+#include "tgbot/types/ChecklistTask.h"
+#include "tgbot/types/ChecklistTasksAdded.h"
+#include "tgbot/types/ChecklistTasksDone.h"
+#include "tgbot/types/CopyTextButton.h"
+#include "tgbot/types/DirectMessagePriceChanged.h"
+#include "tgbot/types/DirectMessagesTopic.h"
+#include "tgbot/types/Gift.h"
+#include "tgbot/types/GiftBackground.h"
+#include "tgbot/types/GiftInfo.h"
+#include "tgbot/types/Gifts.h"
+#include "tgbot/types/InputChecklist.h"
+#include "tgbot/types/InputChecklistTask.h"
+#include "tgbot/types/InputPaidMediaPhoto.h"
+#include "tgbot/types/InputPaidMediaVideo.h"
+#include "tgbot/types/InputPollOption.h"
+#include "tgbot/types/InputProfilePhoto.h"
+#include "tgbot/types/InputProfilePhotoAnimated.h"
+#include "tgbot/types/InputProfilePhotoStatic.h"
+#include "tgbot/types/InputStoryContent.h"
+#include "tgbot/types/InputStoryContentPhoto.h"
+#include "tgbot/types/InputStoryContentVideo.h"
+#include "tgbot/types/LocationAddress.h"
+#include "tgbot/types/OwnedGift.h"
+#include "tgbot/types/OwnedGiftRegular.h"
+#include "tgbot/types/OwnedGifts.h"
+#include "tgbot/types/OwnedGiftUnique.h"
+#include "tgbot/types/PaidMedia.h"
+#include "tgbot/types/PaidMediaInfo.h"
+#include "tgbot/types/PaidMediaPhoto.h"
+#include "tgbot/types/PaidMediaPreview.h"
+#include "tgbot/types/PaidMediaPurchased.h"
+#include "tgbot/types/PaidMediaVideo.h"
+#include "tgbot/types/PaidMessagePriceChanged.h"
+#include "tgbot/types/PreparedInlineMessage.h"
+#include "tgbot/types/ReactionTypePaid.h"
+#include "tgbot/types/RefundedPayment.h"
+#include "tgbot/types/RevenueWithdrawalStateFailed.h"
+#include "tgbot/types/RevenueWithdrawalStatePending.h"
+#include "tgbot/types/RevenueWithdrawalStateSucceeded.h"
+#include "tgbot/types/StarAmount.h"
+#include "tgbot/types/StarTransactions.h"
+#include "tgbot/types/StoryArea.h"
+#include "tgbot/types/StoryAreaPosition.h"
+#include "tgbot/types/StoryAreaType.h"
+#include "tgbot/types/StoryAreaTypeLink.h"
+#include "tgbot/types/StoryAreaTypeLocation.h"
+#include "tgbot/types/StoryAreaTypeSuggestedReaction.h"
+#include "tgbot/types/StoryAreaTypeUniqueGift.h"
+#include "tgbot/types/StoryAreaTypeWeather.h"
+#include "tgbot/types/SuggestedPostApprovalFailed.h"
+#include "tgbot/types/SuggestedPostApproved.h"
+#include "tgbot/types/SuggestedPostDeclined.h"
+#include "tgbot/types/SuggestedPostInfo.h"
+#include "tgbot/types/SuggestedPostPaid.h"
+#include "tgbot/types/SuggestedPostParameters.h"
+#include "tgbot/types/SuggestedPostPrice.h"
+#include "tgbot/types/SuggestedPostRefunded.h"
+#include "tgbot/types/TransactionPartnerAffiliateProgram.h"
+#include "tgbot/types/TransactionPartnerChat.h"
+#include "tgbot/types/TransactionPartnerFragment.h"
+#include "tgbot/types/TransactionPartnerOther.h"
+#include "tgbot/types/TransactionPartnerTelegramAds.h"
+#include "tgbot/types/TransactionPartnerTelegramApi.h"
+#include "tgbot/types/TransactionPartnerUser.h"
+#include "tgbot/types/UniqueGift.h"
+#include "tgbot/types/UniqueGiftBackdrop.h"
+#include "tgbot/types/UniqueGiftBackdropColors.h"
+#include "tgbot/types/UniqueGiftColors.h"
+#include "tgbot/types/UniqueGiftInfo.h"
+#include "tgbot/types/UniqueGiftModel.h"
+#include "tgbot/types/UniqueGiftSymbol.h"
+#include "tgbot/types/UserProfileAudios.h"
+#include "tgbot/types/UserRating.h"
+#include "tgbot/types/VideoQuality.h"
+
 
 namespace TgBot {
 
@@ -274,10 +363,19 @@ std::vector<std::shared_ptr<T>> parseArray(const nlohmann::json &data) {
 
 // Parse array from a key.
 template <typename T>
-std::vector<std::shared_ptr<T>> parseArray(const nlohmann::json &data,
+std::vector<std::shared_ptr<T>> parseRequiredArray(const nlohmann::json &data,
                                            const std::string &key) {
     if (!data.contains(key)) {
         return {};
+    }
+    return parseArray<T>(data[key]);
+}
+
+template <typename T>
+std::optional<std::vector<std::shared_ptr<T>>> parseArray(const nlohmann::json& data,
+    const std::string& key) {
+    if (!data.contains(key)) {
+        return std::nullopt;
     }
     return parseArray<T>(data[key]);
 }
@@ -303,13 +401,26 @@ Matrix<std::shared_ptr<T>> parseMatrix(const nlohmann::json &data,
 
 // Parse an array of primitive types.
 template <typename T>
-std::vector<T> parsePrimitiveArray(const nlohmann::json &data,
+std::optional<std::vector<T>> parsePrimitiveArray(const nlohmann::json &data,
                                    const std::string &key) {
+    if (!data.contains(key)) {
+        return std::nullopt;
+    }
+    std::vector<T> result;
+    for (const auto &item : data[key]) {
+        result.emplace_back(item.get<T>());
+    }
+    return result;
+}
+
+template <typename T>
+std::vector<T> parsePrimitiveRequiredArray(const nlohmann::json& data,
+    const std::string& key) {
     if (!data.contains(key)) {
         return {};
     }
     std::vector<T> result;
-    for (const auto &item : data[key]) {
+    for (const auto& item : data[key]) {
         result.emplace_back(item.get<T>());
     }
     return result;
@@ -535,6 +646,8 @@ IMPLEMENT_PARSERS(SharedUser);
 IMPLEMENT_PARSERS(ShippingAddress);
 IMPLEMENT_PARSERS(ShippingOption);
 IMPLEMENT_PARSERS(ShippingQuery);
+IMPLEMENT_PARSERS(StarTransaction);
+IMPLEMENT_PARSERS(StarTransactions);
 IMPLEMENT_PARSERS(Sticker);
 IMPLEMENT_PARSERS(StickerSet);
 IMPLEMENT_PARSERS(Story);
@@ -558,6 +671,99 @@ IMPLEMENT_PARSERS(WebAppData);
 IMPLEMENT_PARSERS(WebAppInfo);
 IMPLEMENT_PARSERS(WebhookInfo);
 IMPLEMENT_PARSERS(WriteAccessAllowed);
+IMPLEMENT_PARSERS(AffiliateInfo);
+IMPLEMENT_PARSERS(AcceptedGiftTypes);
+IMPLEMENT_PARSERS(BackgroundFill);
+IMPLEMENT_PARSERS(BackgroundFillFreeformGradient);
+IMPLEMENT_PARSERS(BackgroundFillGradient);
+IMPLEMENT_PARSERS(BackgroundFillSolid);
+IMPLEMENT_PARSERS(BackgroundType);
+IMPLEMENT_PARSERS(BackgroundTypeChatTheme);
+IMPLEMENT_PARSERS(BackgroundTypeFill);
+IMPLEMENT_PARSERS(BackgroundTypePattern);
+IMPLEMENT_PARSERS(BackgroundTypeWallpaper);
+IMPLEMENT_PARSERS(BusinessBotRights);
+IMPLEMENT_PARSERS(ChatBackground);
+IMPLEMENT_PARSERS(ChatFullInfo);
+IMPLEMENT_PARSERS(ChatOwnerChanged);
+IMPLEMENT_PARSERS(ChatOwnerLeft);
+IMPLEMENT_PARSERS(Checklist);
+IMPLEMENT_PARSERS(ChecklistTask);
+IMPLEMENT_PARSERS(ChecklistTasksAdded);
+IMPLEMENT_PARSERS(ChecklistTasksDone);
+IMPLEMENT_PARSERS(CopyTextButton);
+IMPLEMENT_PARSERS(DirectMessagePriceChanged);
+IMPLEMENT_PARSERS(DirectMessagesTopic);
+IMPLEMENT_PARSERS(Gift);
+IMPLEMENT_PARSERS(GiftBackground);
+IMPLEMENT_PARSERS(GiftInfo);
+IMPLEMENT_PARSERS(Gifts);
+IMPLEMENT_PARSERS(InputChecklist);
+IMPLEMENT_PARSERS(InputChecklistTask);
+IMPLEMENT_PARSERS(InputPaidMediaPhoto);
+IMPLEMENT_PARSERS(InputPaidMediaVideo);
+IMPLEMENT_PARSERS(InputPollOption);
+IMPLEMENT_PARSERS(InputProfilePhoto);
+IMPLEMENT_PARSERS(InputProfilePhotoAnimated);
+IMPLEMENT_PARSERS(InputProfilePhotoStatic);
+IMPLEMENT_PARSERS(InputStoryContent);
+IMPLEMENT_PARSERS(InputStoryContentPhoto);
+IMPLEMENT_PARSERS(InputStoryContentVideo);
+IMPLEMENT_PARSERS(LocationAddress);
+IMPLEMENT_PARSERS(OwnedGift);
+IMPLEMENT_PARSERS(OwnedGiftRegular);
+IMPLEMENT_PARSERS(OwnedGifts);
+IMPLEMENT_PARSERS(OwnedGiftUnique);
+IMPLEMENT_PARSERS(PaidMedia);
+IMPLEMENT_PARSERS(PaidMediaInfo);
+IMPLEMENT_PARSERS(PaidMediaPhoto);
+IMPLEMENT_PARSERS(PaidMediaPreview);
+IMPLEMENT_PARSERS(PaidMediaPurchased);
+IMPLEMENT_PARSERS(PaidMediaVideo);
+IMPLEMENT_PARSERS(PaidMessagePriceChanged);
+IMPLEMENT_PARSERS(PreparedInlineMessage);
+IMPLEMENT_PARSERS(ReactionTypePaid);
+IMPLEMENT_PARSERS(RefundedPayment);
+IMPLEMENT_PARSERS(RevenueWithdrawalState);
+IMPLEMENT_PARSERS(RevenueWithdrawalStateFailed);
+IMPLEMENT_PARSERS(RevenueWithdrawalStatePending);
+IMPLEMENT_PARSERS(RevenueWithdrawalStateSucceeded);
+IMPLEMENT_PARSERS(StarAmount);
+IMPLEMENT_PARSERS(StarTransactions);
+IMPLEMENT_PARSERS(StoryArea);
+IMPLEMENT_PARSERS(StoryAreaPosition);
+IMPLEMENT_PARSERS(StoryAreaType);
+IMPLEMENT_PARSERS(StoryAreaTypeLink);
+IMPLEMENT_PARSERS(StoryAreaTypeLocation);
+IMPLEMENT_PARSERS(StoryAreaTypeSuggestedReaction);
+IMPLEMENT_PARSERS(StoryAreaTypeUniqueGift);
+IMPLEMENT_PARSERS(StoryAreaTypeWeather);
+IMPLEMENT_PARSERS(SuggestedPostApprovalFailed);
+IMPLEMENT_PARSERS(SuggestedPostApproved);
+IMPLEMENT_PARSERS(SuggestedPostDeclined);
+IMPLEMENT_PARSERS(SuggestedPostInfo);
+IMPLEMENT_PARSERS(SuggestedPostPaid);
+IMPLEMENT_PARSERS(SuggestedPostParameters);
+IMPLEMENT_PARSERS(SuggestedPostPrice);
+IMPLEMENT_PARSERS(SuggestedPostRefunded);
+IMPLEMENT_PARSERS(TransactionPartnerAffiliateProgram);
+IMPLEMENT_PARSERS(TransactionPartnerChat);
+IMPLEMENT_PARSERS(TransactionPartnerFragment);
+IMPLEMENT_PARSERS(TransactionPartnerOther);
+IMPLEMENT_PARSERS(TransactionPartnerTelegramAds);
+IMPLEMENT_PARSERS(TransactionPartnerTelegramApi);
+IMPLEMENT_PARSERS(TransactionPartnerUser);
+IMPLEMENT_PARSERS(UniqueGift);
+IMPLEMENT_PARSERS(UniqueGiftBackdrop);
+IMPLEMENT_PARSERS(UniqueGiftBackdropColors);
+IMPLEMENT_PARSERS(UniqueGiftColors);
+IMPLEMENT_PARSERS(UniqueGiftInfo);
+IMPLEMENT_PARSERS(UniqueGiftModel);
+IMPLEMENT_PARSERS(UniqueGiftSymbol);
+IMPLEMENT_PARSERS(UserProfileAudios);
+IMPLEMENT_PARSERS(UserRating);
+IMPLEMENT_PARSERS(VideoQuality);
+
 
 }  // namespace TgBot
 
