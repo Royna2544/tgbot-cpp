@@ -4,71 +4,71 @@
 namespace TgBot {
 
 void EventHandler::handleUpdate(const Update::Ptr& update) const {
-    if (update->message != nullptr) {
-        handleMessage(update->message);
+    if (update->message) {
+        handleMessage(*update->message);
     }
-    if (update->editedMessage != nullptr) {
-        _broadcaster->broadcastEditedMessage(update->editedMessage);
+    if (update->editedMessage) {
+        _broadcaster->broadcastEditedMessage(*update->editedMessage);
     }
-    if (update->channelPost != nullptr) {
-        handleMessage(update->channelPost);
+    if (update->channelPost) {
+        handleMessage(*update->channelPost);
     }
-    if (update->editedChannelPost != nullptr) {
-        _broadcaster->broadcastEditedMessage(update->editedChannelPost);
+    if (update->editedChannelPost) {
+        _broadcaster->broadcastEditedMessage(*update->editedChannelPost);
     }
-    if (update->businessConnection != nullptr) {
-        _broadcaster->broadcastBusinessConnection(update->businessConnection);
+    if (update->businessConnection) {
+        _broadcaster->broadcastBusinessConnection(*update->businessConnection);
     }
-    if (update->businessMessage != nullptr) {
-        _broadcaster->broadcastBusinessMessage(update->businessMessage);
+    if (update->businessMessage) {
+        _broadcaster->broadcastBusinessMessage(*update->businessMessage);
     }
-    if (update->editedBusinessMessage != nullptr) {
-        _broadcaster->broadcastEditedBusinessMessage(update->editedBusinessMessage);
+    if (update->editedBusinessMessage) {
+        _broadcaster->broadcastEditedBusinessMessage(*update->editedBusinessMessage);
     }
-    if (update->deletedBusinessMessages != nullptr) {
-        _broadcaster->broadcastDeletedBusinessMessages(update->deletedBusinessMessages);
+    if (update->deletedBusinessMessages) {
+        _broadcaster->broadcastDeletedBusinessMessages(*update->deletedBusinessMessages);
     }
-    if (update->messageReaction != nullptr) {
-        _broadcaster->broadcastMessageReactionUpdated(update->messageReaction);
+    if (update->messageReaction) {
+        _broadcaster->broadcastMessageReactionUpdated(*update->messageReaction);
     }
-    if (update->messageReactionCount != nullptr) {
-        _broadcaster->broadcastMessageReactionCountUpdated(update->messageReactionCount);
+    if (update->messageReactionCount) {
+        _broadcaster->broadcastMessageReactionCountUpdated(*update->messageReactionCount);
     }
-    if (update->inlineQuery != nullptr) {
-        _broadcaster->broadcastInlineQuery(update->inlineQuery);
+    if (update->inlineQuery) {
+        _broadcaster->broadcastInlineQuery(*update->inlineQuery);
     }
-    if (update->chosenInlineResult != nullptr) {
-        _broadcaster->broadcastChosenInlineResult(update->chosenInlineResult);
+    if (update->chosenInlineResult) {
+        _broadcaster->broadcastChosenInlineResult(*update->chosenInlineResult);
     }
-    if (update->callbackQuery != nullptr) {
-        _broadcaster->broadcastCallbackQuery(update->callbackQuery);
+    if (update->callbackQuery) {
+        _broadcaster->broadcastCallbackQuery(*update->callbackQuery);
     }
-    if (update->shippingQuery != nullptr) {
-        _broadcaster->broadcastShippingQuery(update->shippingQuery);
+    if (update->shippingQuery) {
+        _broadcaster->broadcastShippingQuery(*update->shippingQuery);
     }
-    if (update->preCheckoutQuery != nullptr) {
-        _broadcaster->broadcastPreCheckoutQuery(update->preCheckoutQuery);
+    if (update->preCheckoutQuery) {
+        _broadcaster->broadcastPreCheckoutQuery(*update->preCheckoutQuery);
     }
-    if (update->poll != nullptr) {
-        _broadcaster->broadcastPoll(update->poll);
+    if (update->poll) {
+        _broadcaster->broadcastPoll(*update->poll);
     }
-    if (update->pollAnswer != nullptr) {
-        _broadcaster->broadcastPollAnswer(update->pollAnswer);
+    if (update->pollAnswer) {
+        _broadcaster->broadcastPollAnswer(*update->pollAnswer);
     }
-    if (update->myChatMember != nullptr) {
-        _broadcaster->broadcastMyChatMember(update->myChatMember);
+    if (update->myChatMember) {
+        _broadcaster->broadcastMyChatMember(*update->myChatMember);
     }
-    if (update->chatMember != nullptr) {
-        _broadcaster->broadcastChatMember(update->chatMember);
+    if (update->chatMember) {
+        _broadcaster->broadcastChatMember(*update->chatMember);
     }
-    if (update->chatJoinRequest != nullptr) {
-        _broadcaster->broadcastChatJoinRequest(update->chatJoinRequest);
+    if (update->chatJoinRequest) {
+        _broadcaster->broadcastChatJoinRequest(*update->chatJoinRequest);
     }
-    if (update->chatBoost != nullptr) {
-        _broadcaster->broadcastChatBoostUpdated(update->chatBoost);
+    if (update->chatBoost) {
+        _broadcaster->broadcastChatBoostUpdated(*update->chatBoost);
     }
-    if (update->removedChatBoost != nullptr) {
-        _broadcaster->broadcastRemovedChatBoost(update->removedChatBoost);
+    if (update->removedChatBoost) {
+        _broadcaster->broadcastRemovedChatBoost(*update->removedChatBoost);
     }
 }
 

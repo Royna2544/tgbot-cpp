@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -42,12 +43,12 @@ public:
     /**
      * @brief Optional. List of special entities that appear in message text, which can be specified instead of parseMode
      */
-    std::vector<MessageEntity::Ptr> entities;
+    std::optional<std::vector<MessageEntity::Ptr>> entities;
 
     /**
      * @brief Optional. Link preview generation options for the message
      */
-    LinkPreviewOptions::Ptr linkPreviewOptions;
+    std::optional<LinkPreviewOptions::Ptr> linkPreviewOptions;
 };
 }
 

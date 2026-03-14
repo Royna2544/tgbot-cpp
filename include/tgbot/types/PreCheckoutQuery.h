@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -63,7 +64,7 @@ public:
     /**
      * @brief Optional. Order info provided by the user.
      */
-    OrderInfo::Ptr orderInfo;
+    std::optional<OrderInfo::Ptr> orderInfo;
 };
 }
 

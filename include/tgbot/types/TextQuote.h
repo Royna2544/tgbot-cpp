@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -30,7 +31,7 @@ public:
      *
      * Currently, only bold, italic, underline, strikethrough, spoiler, and customEmoji entities are kept in quotes.
      */
-    std::vector<MessageEntity::Ptr> entities;
+    std::optional<std::vector<MessageEntity::Ptr>> entities;
 
     /**
      * @brief Approximate quote position in the original message in UTF-16 code units as specified by the sender

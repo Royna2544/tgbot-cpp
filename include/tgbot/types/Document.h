@@ -34,7 +34,7 @@ public:
     /**
      * @brief Optional. Document thumbnail as defined by sender
      */
-    PhotoSize::Ptr thumbnail;
+    std::optional<PhotoSize::Ptr> thumbnail;
 
     /**
      * @brief Optional. Original filename as defined by sender

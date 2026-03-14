@@ -49,7 +49,7 @@ public:
     /**
      * @brief Optional. Video thumbnail
      */
-    PhotoSize::Ptr thumbnail;
+    std::optional<PhotoSize::Ptr> thumbnail;
 
     /**
      * @brief Optional. Original filename as defined by sender

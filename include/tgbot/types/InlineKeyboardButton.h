@@ -47,14 +47,14 @@ public:
      * The Web App will be able to send an arbitrary message on behalf of the user using the method Api::answerWebAppQuery.
      * Available only in private chats between a user and the bot.
      */
-    WebAppInfo::Ptr webApp;
+    std::optional<WebAppInfo::Ptr> webApp;
 
     /**
      * @brief Optional. An HTTPS URL used to automatically authorize the user.
      *
      * Can be used as a replacement for the [Telegram Login Widget](https://core.telegram.org/widgets/login).
      */
-    LoginUrl::Ptr loginUrl;
+    std::optional<LoginUrl::Ptr> loginUrl;
 
     /**
      * @brief Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field.
@@ -74,14 +74,14 @@ public:
     /**
      * @brief Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field
      */
-    SwitchInlineQueryChosenChat::Ptr switchInlineQueryChosenChat;
+    std::optional<SwitchInlineQueryChosenChat::Ptr> switchInlineQueryChosenChat;
 
     /**
      * @brief Optional. Description of the game that will be launched when the user presses the button.
      *
      * NOTE: This type of button must always be the first button in the first row.
      */
-    CallbackGame::Ptr callbackGame;
+    std::optional<CallbackGame::Ptr> callbackGame;
 
     /**
      * @brief Optional. Specify True, to send a [Pay button](https://core.telegram.org/bots/api#payments).

@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -71,7 +72,7 @@ public:
     /**
      * @brief Optional. Content of the message to be sent instead of the location
      */
-    InputMessageContent::Ptr inputMessageContent;
+    std::optional<InputMessageContent::Ptr> inputMessageContent;
 
     /**
      * @brief Optional. Url of the thumbnail for the result

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -53,7 +54,7 @@ public:
     /**
     * @brief URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
     */
-    std::string thumbnailUrl;
+    std::optional<std::string> thumbnailUrl;
 
     /**
     * @brief Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or “video/mp4”.
@@ -80,12 +81,12 @@ public:
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode
      */
-    std::vector<MessageEntity::Ptr> captionEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> captionEntities;
 
     /**
      * @brief Optional. Content of the message to be sent instead of the video animation
      */
-    InputMessageContent::Ptr inputMessageContent;
+    std::optional<InputMessageContent::Ptr> inputMessageContent;
 };
 }
 

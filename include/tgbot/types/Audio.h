@@ -67,7 +67,7 @@ public:
     /**
      * @brief Optional. Thumbnail of the album cover to which the music file belongs
      */
-    PhotoSize::Ptr thumbnail;
+    std::optional<PhotoSize::Ptr> thumbnail;
 };
 }
 

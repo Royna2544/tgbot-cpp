@@ -30,7 +30,7 @@ public:
     /**
      * @brief Optional. Sticker of the business intro
      */
-    Sticker::Ptr sticker;
+    std::optional<Sticker::Ptr> sticker;
 };
 }
 

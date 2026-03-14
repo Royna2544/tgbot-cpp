@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -65,7 +66,7 @@ public:
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode
      */
-    std::vector<MessageEntity::Ptr> captionEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> captionEntities;
 
     /**
      * @brief Optional. Video width
@@ -91,7 +92,7 @@ public:
      * @brief Optional. Content of the message to be sent instead of the video.
      * This field is required if InlineQueryResultVideo is used to send an HTML-page as a result (e.g., a YouTube video).
      */
-    InputMessageContent::Ptr inputMessageContent;
+    std::optional<InputMessageContent::Ptr> inputMessageContent;
 };
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -50,7 +51,7 @@ public:
     /**
      * @brief Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format
      */
-    PhotoSize::Ptr thumbnail;
+    std::optional<PhotoSize::Ptr> thumbnail;
 };
 }
 

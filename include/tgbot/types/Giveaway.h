@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -56,7 +57,7 @@ public:
      * If empty, then all users can participate in the giveaway.
      * Users with a phone number that was bought on Fragment can always participate in giveaways.
      */
-    std::vector<std::string> countryCodes;
+    std::optional<std::vector<std::string>> countryCodes;
 
     /**
      * @brief Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for

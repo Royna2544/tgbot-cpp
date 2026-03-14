@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -52,7 +53,7 @@ public:
     /**
      * @brief Optional. Content of the message to be sent instead of the contact
      */
-    InputMessageContent::Ptr inputMessageContent;
+    std::optional<InputMessageContent::Ptr> inputMessageContent;
 
     /**
      * @brief Optional. Url of the thumbnail for the result

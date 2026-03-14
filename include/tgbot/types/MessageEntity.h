@@ -6,6 +6,7 @@
 #include <string>
 
 #include "tgbot/types/User.h"
+#include <optional>
 
 namespace TgBot {
 
@@ -83,7 +84,7 @@ class MessageEntity {
     /**
      * @brief Optional. For Type::TextMention only, the mentioned user
      */
-    User::Ptr user;
+    std::optional<User::Ptr> user;
 
     /**
      * @brief Optional. For Type::Pre only, the programming language of the

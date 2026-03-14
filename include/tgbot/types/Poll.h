@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -75,7 +76,7 @@ public:
     /**
      * @brief Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the explanation
      */
-    std::vector<MessageEntity::Ptr> explanationEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> explanationEntities;
 
     /**
      * @brief Optional. Amount of time in seconds the poll will be active after creation

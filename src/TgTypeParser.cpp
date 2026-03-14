@@ -12,12 +12,21 @@ namespace TgBot {
 
 // T should be instance of std::shared_ptr.
 template <typename T>
-std::shared_ptr<T> parse(const nlohmann::json& data, const std::string& key) {
+std::optional<std::shared_ptr<T>> parse(const nlohmann::json& data, const std::string& key) {
+    if (!data.contains(key)) {
+        return std::nullopt;
+    }
+    return parse<T>(data[key]);
+}
+
+template <typename T>
+std::shared_ptr<T> parseRequired(const nlohmann::json& data, const std::string& key) {
     if (!data.contains(key)) {
         return nullptr;
     }
     return parse<T>(data[key]);
 }
+
 
 TgException invalidType(const std::string_view name,
                         const std::string_view type) {
@@ -29,16 +38,26 @@ TgException invalidType(const std::string_view name,
 struct JsonWrapper {
     JsonWrapper() : data_(nlohmann::json::object()) {}
 
-    template <typename T>
+    // Overload for primitive types
+    template <typename T,
+              std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
     void put(const std::string_view key, T value) {
         data_[std::string(key)] = std::move(value);
     }
-    void put(const std::string_view key, nlohmann::json value) {
-        if (value.is_null() || value.size() == 0) {
-            return;
-        }
-        data_[std::string(key)] = std::move(value);
+    // Required objects
+    template <typename T,
+        std::enable_if_t<!detail::is_primitive_v<T>, bool> = true>
+    void put(const std::string_view key, std::shared_ptr<T> value) {
+        data_[std::string(key)] = TgBot::put(value);
     }
+
+    // Support for vector of primitives and objects
+    template <typename T>
+    void put(const std::string_view key, std::vector<T> value) {
+        data_[std::string(key)] = TgBot::put(value);
+    }
+
+    // Overload for optional types
     template <typename T,
               std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
     void put(const std::string_view key, std::optional<T> value) {
@@ -47,7 +66,8 @@ struct JsonWrapper {
         }
         data_[std::string(key)] = *value;
     }
-    template <typename T, std::enable_if_t<detail::is_vector_v<T>, bool> = true>
+    template <typename T,
+        std::enable_if_t<!detail::is_primitive_v<T>, bool> = true>
     void put(const std::string_view key, std::optional<T> value) {
         if (!value) {
             return;  // Skip empty optional
@@ -109,7 +129,7 @@ DECLARE_PARSER_FROM_JSON(Message) {
     result->senderBusinessBot = parse<User>(data, "sender_business_bot");
     parse(data, "date", &result->date);
     parse(data, "business_connection_id", &result->businessConnectionId);
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     result->forwardOrigin = parse<MessageOrigin>(data, "forward_origin");
     parse(data, "is_topic_message", &result->isTopicMessage);
     parse(data, "is_automatic_forward", &result->isAutomaticForward);
@@ -208,89 +228,84 @@ DECLARE_PARSER_TO_JSON(Message) {
         // Simple fields
         json.put("message_id", object->messageId);
         json.put("message_thread_id", object->messageThreadId);
-        json.put("from", put(object->from));
-        json.put("sender_chat", put(object->senderChat));
+        json.put("from", object->from);
+        json.put("sender_chat", object->senderChat);
         json.put("sender_boost_count", object->senderBoostCount);
-        json.put("sender_business_bot", put(object->senderBusinessBot));
+        json.put("sender_business_bot", object->senderBusinessBot);
         json.put("date", object->date);
         json.put("business_connection_id", object->businessConnectionId);
-        json.put("chat", put(object->chat));
-        json.put("forward_origin", put(object->forwardOrigin));
+        json.put("chat", object->chat);
+        json.put("forward_origin", object->forwardOrigin);
         json.put("is_topic_message", object->isTopicMessage);
         json.put("is_automatic_forward", object->isAutomaticForward);
-        json.put("reply_to_message", put(object->replyToMessage));
-        json.put("external_reply", put(object->externalReply));
-        json.put("quote", put(object->quote));
-        json.put("reply_to_story", put(object->replyToStory));
-        json.put("via_bot", put(object->viaBot));
+        json.put("reply_to_message", object->replyToMessage);
+        json.put("external_reply", object->externalReply);
+        json.put("quote", object->quote);
+        json.put("reply_to_story", object->replyToStory);
+        json.put("via_bot", object->viaBot);
         json.put("edit_date", object->editDate);
         json.put("has_protected_content", object->hasProtectedContent);
         json.put("is_from_offline", object->isFromOffline);
         json.put("media_group_id", object->mediaGroupId);
         json.put("author_signature", object->authorSignature);
         json.put("text", object->text);
-        json.put("entities", put(object->entities));
-        json.put("link_preview_options", put(object->linkPreviewOptions));
-        json.put("animation", put(object->animation));
-        json.put("audio", put(object->audio));
-        json.put("document", put(object->document));
-        json.put("photo", put(object->photo));
-        json.put("sticker", put(object->sticker));
-        json.put("story", put(object->story));
-        json.put("video", put(object->video));
-        json.put("video_note", put(object->videoNote));
-        json.put("voice", put(object->voice));
+        json.put("entities", object->entities);
+        json.put("link_preview_options", object->linkPreviewOptions);
+        json.put("animation", object->animation);
+        json.put("audio", object->audio);
+        json.put("document", object->document);
+        json.put("photo", object->photo);
+        json.put("sticker", object->sticker);
+        json.put("story", object->story);
+        json.put("video", object->video);
+        json.put("video_note", object->videoNote);
+        json.put("voice", object->voice);
         json.put("caption", object->caption);
-        json.put("caption_entities", put(object->captionEntities));
+        json.put("caption_entities", object->captionEntities);
         json.put("has_media_spoiler", object->hasMediaSpoiler);
-        json.put("contact", put(object->contact));
-        json.put("dice", put(object->dice));
-        json.put("game", put(object->game));
-        json.put("poll", put(object->poll));
-        json.put("venue", put(object->venue));
-        json.put("location", put(object->location));
-        json.put("new_chat_members", put(object->newChatMembers));
-        json.put("left_chat_member", put(object->leftChatMember));
+        json.put("contact", object->contact);
+        json.put("dice", object->dice);
+        json.put("game", object->game);
+        json.put("poll", object->poll);
+        json.put("venue", object->venue);
+        json.put("location", object->location);
+        json.put("new_chat_members", object->newChatMembers);
+        json.put("left_chat_member", object->leftChatMember);
         json.put("new_chat_title", object->newChatTitle);
-        json.put("new_chat_photo", put(object->newChatPhoto));
+        json.put("new_chat_photo", object->newChatPhoto);
         json.put("delete_chat_photo", object->deleteChatPhoto);
         json.put("group_chat_created", object->groupChatCreated);
         json.put("supergroup_chat_created", object->supergroupChatCreated);
         json.put("channel_chat_created", object->channelChatCreated);
-        json.put("message_auto_delete_timer_changed",
-                 put(object->messageAutoDeleteTimerChanged));
+        json.put("message_auto_delete_timer_changed", object->messageAutoDeleteTimerChanged);
         json.put("migrate_to_chat_id", object->migrateToChatId);
         json.put("migrate_from_chat_id", object->migrateFromChatId);
-        json.put("pinned_message", put(object->pinnedMessage));
-        json.put("invoice", put(object->invoice));
-        json.put("successful_payment", put(object->successfulPayment));
-        json.put("users_shared", put(object->usersShared));
-        json.put("chat_shared", put(object->chatShared));
+        json.put("pinned_message", object->pinnedMessage);
+        json.put("invoice", object->invoice);
+        json.put("successful_payment", object->successfulPayment);
+        json.put("users_shared", object->usersShared);
+        json.put("chat_shared", object->chatShared);
         json.put("connected_website", object->connectedWebsite);
-        json.put("write_access_allowed", put(object->writeAccessAllowed));
-        json.put("passport_data", put(object->passportData));
-        json.put("proximity_alert_triggered",
-                 put(object->proximityAlertTriggered));
-        json.put("boost_added", put(object->boostAdded));
-        json.put("forum_topic_created", put(object->forumTopicCreated));
-        json.put("forum_topic_edited", put(object->forumTopicEdited));
-        json.put("forum_topic_closed", put(object->forumTopicClosed));
-        json.put("forum_topic_reopened", put(object->forumTopicReopened));
-        json.put("general_forum_topic_hidden",
-                 put(object->generalForumTopicHidden));
-        json.put("general_forum_topic_unhidden",
-                 put(object->generalForumTopicUnhidden));
-        json.put("giveaway_created", put(object->giveawayCreated));
-        json.put("giveaway", put(object->giveaway));
-        json.put("giveaway_winners", put(object->giveawayWinners));
-        json.put("giveaway_completed", put(object->giveawayCompleted));
-        json.put("video_chat_scheduled", put(object->videoChatScheduled));
-        json.put("video_chat_started", put(object->videoChatStarted));
-        json.put("video_chat_ended", put(object->videoChatEnded));
-        json.put("video_chat_participants_invited",
-                 put(object->videoChatParticipantsInvited));
-        json.put("web_app_data", put(object->webAppData));
-        json.put("reply_markup", put(object->replyMarkup));
+        json.put("write_access_allowed", object->writeAccessAllowed);
+        json.put("passport_data", object->passportData);
+        json.put("proximity_alert_triggered", object->proximityAlertTriggered);
+        json.put("boost_added", object->boostAdded);
+        json.put("forum_topic_created", object->forumTopicCreated);
+        json.put("forum_topic_edited", object->forumTopicEdited);
+        json.put("forum_topic_closed", object->forumTopicClosed);
+        json.put("forum_topic_reopened", object->forumTopicReopened);
+        json.put("general_forum_topic_hidden", object->generalForumTopicHidden);
+        json.put("general_forum_topic_unhidden", object->generalForumTopicUnhidden);
+        json.put("giveaway_created", object->giveawayCreated);
+        json.put("giveaway", object->giveaway);
+        json.put("giveaway_winners", object->giveawayWinners);
+        json.put("giveaway_completed", object->giveawayCompleted);
+        json.put("video_chat_scheduled", object->videoChatScheduled);
+        json.put("video_chat_started", object->videoChatStarted);
+        json.put("video_chat_ended", object->videoChatEnded);
+        json.put("video_chat_participants_invited", object->videoChatParticipantsInvited);
+        json.put("web_app_data", object->webAppData);
+        json.put("reply_markup", object->replyMarkup);
     }
     return json;
 }
@@ -335,29 +350,28 @@ DECLARE_PARSER_TO_JSON(Update) {
     JsonWrapper json;
     if (object) {
         json.put("update_id", object->updateId);
-        json.put("message", put(object->message));
-        json.put("edited_message", put(object->editedMessage));
-        json.put("channel_post", put(object->channelPost));
-        json.put("edited_channel_post", put(object->editedChannelPost));
-        json.put("business_connection", put(object->businessConnection));
-        json.put("business_message", put(object->businessMessage));
-        json.put("edited_business_message", put(object->editedBusinessMessage));
-        json.put("deleted_business_messages",
-                 put(object->deletedBusinessMessages));
-        json.put("message_reaction", put(object->messageReaction));
-        json.put("message_reaction_count", put(object->messageReactionCount));
-        json.put("inline_query", put(object->inlineQuery));
-        json.put("chosen_inline_result", put(object->chosenInlineResult));
-        json.put("callback_query", put(object->callbackQuery));
-        json.put("shipping_query", put(object->shippingQuery));
-        json.put("pre_checkout_query", put(object->preCheckoutQuery));
-        json.put("poll", put(object->poll));
-        json.put("poll_answer", put(object->pollAnswer));
-        json.put("my_chat_member", put(object->myChatMember));
-        json.put("chat_member", put(object->chatMember));
-        json.put("chat_join_request", put(object->chatJoinRequest));
-        json.put("chat_boost", put(object->chatBoost));
-        json.put("removed_chat_boost", put(object->removedChatBoost));
+        json.put("message", object->message);
+        json.put("edited_message", object->editedMessage);
+        json.put("channel_post", object->channelPost);
+        json.put("edited_channel_post", object->editedChannelPost);
+        json.put("business_connection", object->businessConnection);
+        json.put("business_message", object->businessMessage);
+        json.put("edited_business_message", object->editedBusinessMessage);
+        json.put("deleted_business_messages", object->deletedBusinessMessages);
+        json.put("message_reaction", object->messageReaction);
+        json.put("message_reaction_count", object->messageReactionCount);
+        json.put("inline_query", object->inlineQuery);
+        json.put("chosen_inline_result", object->chosenInlineResult);
+        json.put("callback_query", object->callbackQuery);
+        json.put("shipping_query", object->shippingQuery);
+        json.put("pre_checkout_query", object->preCheckoutQuery);
+        json.put("poll", object->poll);
+        json.put("poll_answer", object->pollAnswer);
+        json.put("my_chat_member", object->myChatMember);
+        json.put("chat_member", object->chatMember);
+        json.put("chat_join_request", object->chatJoinRequest);
+        json.put("chat_boost", object->chatBoost);
+        json.put("removed_chat_boost", object->removedChatBoost);
     }
 
     return json;
@@ -531,15 +545,15 @@ DECLARE_PARSER_TO_JSON(Chat) {
         json.put("first_name", object->firstName);
         json.put("last_name", object->lastName);
         json.put("is_forum", object->isForum);
-        json.put("photo", put(object->photo));
-        json.put("active_usernames", put(object->activeUsernames));
-        json.put("birthdate", put(object->birthdate));
-        json.put("business_intro", put(object->businessIntro));
-        json.put("business_location", put(object->businessLocation));
-        json.put("business_opening_hours", put(object->businessOpeningHours));
-        json.put("personal_chat", put(object->personalChat));
+        json.put("photo", object->photo);
+        json.put("active_usernames", object->activeUsernames);
+        json.put("birthdate", object->birthdate);
+        json.put("business_intro", object->businessIntro);
+        json.put("business_location", object->businessLocation);
+        json.put("business_opening_hours", object->businessOpeningHours);
+        json.put("personal_chat", object->personalChat);
 
-        json.put("available_reactions", put(object->availableReactions));
+        json.put("available_reactions", object->availableReactions);
 
         json.put("accent_color_id", object->accentColorId);
         json.put("background_custom_emoji_id", object->backgroundCustomEmojiId);
@@ -558,8 +572,8 @@ DECLARE_PARSER_TO_JSON(Chat) {
         json.put("join_by_request", object->joinByRequest);
         json.put("description", object->description);
         json.put("invite_link", object->inviteLink);
-        json.put("pinned_message", put(object->pinnedMessage));
-        json.put("permissions", put(object->permissions));
+        json.put("pinned_message", object->pinnedMessage);
+        json.put("permissions", object->permissions);
         json.put("slow_mode_delay", object->slowModeDelay);
         json.put("unrestrict_boost_count", object->unrestrictBoostCount);
         json.put("message_auto_delete_time", object->messageAutoDeleteTime);
@@ -573,7 +587,7 @@ DECLARE_PARSER_TO_JSON(Chat) {
         json.put("custom_emoji_sticker_set_name",
                  object->customEmojiStickerSetName);
         json.put("linked_chat_id", object->linkedChatId);
-        json.put("location", put(object->location));
+        json.put("location", object->location);
     }
 
     return json;
@@ -597,7 +611,7 @@ DECLARE_PARSER_TO_JSON(MessageId) {
 
 DECLARE_PARSER_FROM_JSON(InaccessibleMessage) {
     auto result(std::make_shared<InaccessibleMessage>());
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
     // Always 0, omit this.
     // parse(data, "date", &result->date);
@@ -610,7 +624,7 @@ DECLARE_PARSER_TO_JSON(InaccessibleMessage) {
     if (object) {
         json.put("message_id", object->messageId);
         json.put("date", object->date);
-        json.put("chat", put(object->chat));
+        json.put("chat", object->chat);
     }
 
     return json;
@@ -730,7 +744,7 @@ DECLARE_PARSER_TO_JSON(MessageEntity) {
         json.put("offset", object->offset);
         json.put("length", object->length);
         json.put("url", object->url);
-        json.put("user", put(object->user));
+        json.put("user", object->user);
         json.put("language", object->language);
         json.put("custom_emoji_id", object->customEmojiId);
     }
@@ -751,7 +765,7 @@ DECLARE_PARSER_TO_JSON(TextQuote) {
 
     if (object) {
         json.put("text", object->text);
-        json.put("entities", put(object->entities));
+        json.put("entities", object->entities);
         json.put("position", object->position);
         json.put("is_manual", object->isManual);
     }
@@ -761,7 +775,7 @@ DECLARE_PARSER_TO_JSON(TextQuote) {
 
 DECLARE_PARSER_FROM_JSON(ExternalReplyInfo) {
     auto result(std::make_shared<ExternalReplyInfo>());
-    result->origin = parse<MessageOrigin>(data, "origin");
+    result->origin = parseRequired<MessageOrigin>(data, "origin");
     result->chat = parse<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
     result->linkPreviewOptions =
@@ -792,29 +806,29 @@ DECLARE_PARSER_TO_JSON(ExternalReplyInfo) {
     JsonWrapper json;
 
     if (object) {
-        json.put("origin", put(object->origin));
-        json.put("chat", put(object->chat));
+        json.put("origin", object->origin);
+        json.put("chat", object->chat);
         json.put("message_id", object->messageId);
-        json.put("link_preview_options", put(object->linkPreviewOptions));
-        json.put("animation", put(object->animation));
-        json.put("audio", put(object->audio));
-        json.put("document", put(object->document));
-        json.put("photo", put(object->photo));
-        json.put("sticker", put(object->sticker));
-        json.put("story", put(object->story));
-        json.put("video", put(object->video));
-        json.put("video_note", put(object->videoNote));
-        json.put("voice", put(object->voice));
+        json.put("link_preview_options", object->linkPreviewOptions);
+        json.put("animation", object->animation);
+        json.put("audio", object->audio);
+        json.put("document", object->document);
+        json.put("photo", object->photo);
+        json.put("sticker", object->sticker);
+        json.put("story", object->story);
+        json.put("video", object->video);
+        json.put("video_note", object->videoNote);
+        json.put("voice", object->voice);
         json.put("has_media_spoiler", object->hasMediaSpoiler);
-        json.put("contact", put(object->contact));
-        json.put("dice", put(object->dice));
-        json.put("game", put(object->game));
-        json.put("giveaway", put(object->giveaway));
-        json.put("giveaway_winners", put(object->giveawayWinners));
-        json.put("invoice", put(object->invoice));
-        json.put("location", put(object->location));
-        json.put("poll", put(object->poll));
-        json.put("venue", put(object->venue));
+        json.put("contact", object->contact);
+        json.put("dice", object->dice);
+        json.put("game", object->game);
+        json.put("giveaway", object->giveaway);
+        json.put("giveaway_winners", object->giveawayWinners);
+        json.put("invoice", object->invoice);
+        json.put("location", object->location);
+        json.put("poll", object->poll);
+        json.put("venue", object->venue);
     }
 
     return json;
@@ -901,7 +915,7 @@ DECLARE_PARSER_TO_JSON(MessageOrigin) {
 
 DECLARE_PARSER_FROM_JSON(MessageOriginUser) {
     auto result(std::make_shared<MessageOriginUser>());
-    result->senderUser = parse<User>(data, "sender_user");
+    result->senderUser = parseRequired<User>(data, "sender_user");
     return result;
 }
 
@@ -909,7 +923,7 @@ DECLARE_PARSER_TO_JSON(MessageOriginUser) {
     JsonWrapper json;
 
     if (object) {
-        json.put("sender_user", put(object->senderUser));
+        json.put("sender_user", object->senderUser);
     }
 
     return json;
@@ -933,7 +947,7 @@ DECLARE_PARSER_TO_JSON(MessageOriginHiddenUser) {
 DECLARE_PARSER_FROM_JSON(MessageOriginChat) {
     // NOTE: This function will be called by parseJsonAndGetMessageOrigin().
     auto result(std::make_shared<MessageOriginChat>());
-    result->senderChat = parse<Chat>(data, "sender_chat");
+    result->senderChat = parseRequired<Chat>(data, "sender_chat");
     parse(data, "author_signature", &result->authorSignature);
     return result;
 }
@@ -952,7 +966,7 @@ DECLARE_PARSER_TO_JSON(MessageOriginChat) {
 DECLARE_PARSER_FROM_JSON(MessageOriginChannel) {
     // NOTE: This function will be called by parseJsonAndGetMessageOrigin().
     auto result(std::make_shared<MessageOriginChannel>());
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
     parse(data, "author_signature", &result->authorSignature);
     return result;
@@ -1017,7 +1031,7 @@ DECLARE_PARSER_TO_JSON(Animation) {
         json.put("width", object->width);
         json.put("height", object->height);
         json.put("duration", object->duration);
-        json.put("thumbnail", put(object->thumbnail));
+        json.put("thumbnail", object->thumbnail);
         json.put("file_name", object->fileName);
         json.put("mime_type", object->mimeType);
         json.put("file_size", object->fileSize);
@@ -1052,7 +1066,7 @@ DECLARE_PARSER_TO_JSON(Audio) {
         json.put("file_name", object->fileName);
         json.put("mime_type", object->mimeType);
         json.put("file_size", object->fileSize);
-        json.put("thumbnail", put(object->thumbnail));
+        json.put("thumbnail", object->thumbnail);
     }
 
     return json;
@@ -1075,7 +1089,7 @@ DECLARE_PARSER_TO_JSON(Document) {
     if (object) {
         json.put("file_id", object->fileId);
         json.put("file_unique_id", object->fileUniqueId);
-        json.put("thumbnail", put(object->thumbnail));
+        json.put("thumbnail", object->thumbnail);
         json.put("file_name", object->fileName);
         json.put("mime_type", object->mimeType);
         json.put("file_size", object->fileSize);
@@ -1086,7 +1100,7 @@ DECLARE_PARSER_TO_JSON(Document) {
 
 DECLARE_PARSER_FROM_JSON(Story) {
     auto result(std::make_shared<Story>());
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "id", &result->id);
     return result;
 }
@@ -1095,7 +1109,7 @@ DECLARE_PARSER_TO_JSON(Story) {
     JsonWrapper json;
 
     if (object) {
-        json.put("chat", put(object->chat));
+        json.put("chat", object->chat);
         json.put("id", object->id);
     }
     return json;
@@ -1124,7 +1138,7 @@ DECLARE_PARSER_TO_JSON(Video) {
         json.put("width", object->width);
         json.put("height", object->height);
         json.put("duration", object->duration);
-        json.put("thumbnail", put(object->thumbnail));
+        json.put("thumbnail", object->thumbnail);
         json.put("file_name", object->fileName);
         json.put("mime_type", object->mimeType);
         json.put("file_size", object->fileSize);
@@ -1152,7 +1166,7 @@ DECLARE_PARSER_TO_JSON(VideoNote) {
         json.put("file_unique_id", object->fileUniqueId);
         json.put("length", object->length);
         json.put("duration", object->duration);
-        json.put("thumbnail", put(object->thumbnail));
+        json.put("thumbnail", object->thumbnail);
         json.put("file_size", object->fileSize);
     }
 
@@ -1255,9 +1269,9 @@ DECLARE_PARSER_TO_JSON(PollAnswer) {
     JsonWrapper json;
     if (object) {
         json.put("poll_id", object->pollId);
-        json.put("voter_chat", put(object->voterChat));
-        json.put("user", put(object->user));
-        json.put("option_ids", put(object->optionIds));
+        json.put("voter_chat", object->voterChat);
+        json.put("user", object->user);
+        json.put("option_ids", object->optionIds);
     }
     return json;
 }
@@ -1286,7 +1300,7 @@ DECLARE_PARSER_TO_JSON(Poll) {
     if (object) {
         json.put("id", object->id);
         json.put("question", object->question);
-        json.put("options", put(object->options));
+        json.put("options", object->options);
         json.put("total_voter_count", object->totalVoterCount);
         json.put("is_closed", object->isClosed);
         json.put("is_anonymous", object->isAnonymous);
@@ -1294,7 +1308,7 @@ DECLARE_PARSER_TO_JSON(Poll) {
         json.put("allows_multiple_answers", object->allowsMultipleAnswers);
         json.put("correct_option_id", object->correctOptionId);
         json.put("explanation", object->explanation);
-        json.put("explanation_entities", put(object->explanationEntities));
+        json.put("explanation_entities", object->explanationEntities);
         json.put("open_period", object->openPeriod);
         json.put("close_date", object->closeDate);
     }
@@ -1326,7 +1340,7 @@ DECLARE_PARSER_TO_JSON(Location) {
 }
 DECLARE_PARSER_FROM_JSON(Venue) {
     auto result = std::make_shared<Venue>();
-    result->location = parse<Location>(data, "location");
+    result->location = parseRequired<Location>(data, "location");
     parse(data, "title", &result->title);
     parse(data, "address", &result->address);
     parse(data, "foursquare_id", &result->foursquareId);
@@ -1339,7 +1353,7 @@ DECLARE_PARSER_FROM_JSON(Venue) {
 DECLARE_PARSER_TO_JSON(Venue) {
     JsonWrapper json;
     if (object) {
-        json.put("location", put(object->location));
+        json.put("location", object->location);
         json.put("title", object->title);
         json.put("address", object->address);
         json.put("foursquare_id", object->foursquareId);
@@ -1368,8 +1382,8 @@ DECLARE_PARSER_TO_JSON(WebAppData) {
 
 DECLARE_PARSER_FROM_JSON(ProximityAlertTriggered) {
     auto result = std::make_shared<ProximityAlertTriggered>();
-    result->traveler = parse<User>(data, "traveler");
-    result->watcher = parse<User>(data, "watcher");
+    result->traveler = parseRequired<User>(data, "traveler");
+    result->watcher = parseRequired<User>(data, "watcher");
     parse(data, "distance", &result->distance);
     return result;
 }
@@ -1377,8 +1391,8 @@ DECLARE_PARSER_FROM_JSON(ProximityAlertTriggered) {
 DECLARE_PARSER_TO_JSON(ProximityAlertTriggered) {
     JsonWrapper json;
     if (object) {
-        json.put("traveler", put(object->traveler));
-        json.put("watcher", put(object->watcher));
+        json.put("traveler", object->traveler);
+        json.put("watcher", object->watcher);
         json.put("distance", object->distance);
     }
     return json;
@@ -1494,7 +1508,7 @@ DECLARE_PARSER_TO_JSON(SharedUser) {
         json.put("first_name", object->firstName);
         json.put("last_name", object->lastName);
         json.put("username", object->username);
-        json.put("photo", put(object->photo));
+        json.put("photo", object->photo);
     }
     return json;
 }
@@ -1510,7 +1524,7 @@ DECLARE_PARSER_TO_JSON(UsersShared) {
     JsonWrapper json;
     if (object) {
         json.put("request_id", object->requestId);
-        json.put("users", put(object->users));
+        json.put("users", object->users);
     }
     return json;
 }
@@ -1532,7 +1546,7 @@ DECLARE_PARSER_TO_JSON(ChatShared) {
         json.put("chat_id", object->chatId);
         json.put("title", object->title);
         json.put("username", object->username);
-        json.put("photo", put(object->photo));
+        json.put("photo", object->photo);
     }
     return json;
 }
@@ -1599,7 +1613,7 @@ DECLARE_PARSER_FROM_JSON(VideoChatParticipantsInvited) {
 DECLARE_PARSER_TO_JSON(VideoChatParticipantsInvited) {
     JsonWrapper json;
     if (object) {
-        json.put("users", put(object->users));
+        json.put("users", object->users);
     }
     return json;
 }
@@ -1632,13 +1646,13 @@ DECLARE_PARSER_FROM_JSON(Giveaway) {
 DECLARE_PARSER_TO_JSON(Giveaway) {
     JsonWrapper json;
     if (object) {
-        json.put("chats", put(object->chats));
+        json.put("chats", object->chats);
         json.put("winners_selection_date", object->winnersSelectionDate);
         json.put("winner_count", object->winnerCount);
         json.put("only_new_members", object->onlyNewMembers);
         json.put("has_public_winners", object->hasPublicWinners);
         json.put("prize_description", object->prizeDescription);
-        json.put("country_codes", put(object->countryCodes));
+        json.put("country_codes", object->countryCodes);
         json.put("premium_subscription_month_count",
                  object->premiumSubscriptionMonthCount);
     }
@@ -1648,7 +1662,7 @@ DECLARE_PARSER_TO_JSON(Giveaway) {
 // GiveawayWinners Parser
 DECLARE_PARSER_FROM_JSON(GiveawayWinners) {
     auto result = std::make_shared<GiveawayWinners>();
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "giveaway_message_id", &result->giveawayMessageId);
     parse(data, "winners_selection_date", &result->winnersSelectionDate);
     parse(data, "winner_count", &result->winnerCount);
@@ -1669,7 +1683,7 @@ DECLARE_PARSER_TO_JSON(GiveawayWinners) {
         json.put("giveaway_message_id", object->giveawayMessageId);
         json.put("winners_selection_date", object->winnersSelectionDate);
         json.put("winner_count", object->winnerCount);
-        json.put("winners", put(object->winners));
+        json.put("winners", object->winners);
         json.put("additional_chat_count", object->additionalChatCount);
         json.put("premium_subscription_month_count",
                  object->premiumSubscriptionMonthCount);
@@ -1694,7 +1708,7 @@ DECLARE_PARSER_TO_JSON(GiveawayCompleted) {
     if (object) {
         json.put("winner_count", object->winnerCount);
         json.put("unclaimed_prize_count", object->unclaimedPrizeCount);
-        json.put("giveaway_message", put(object->giveawayMessage));
+        json.put("giveaway_message", object->giveawayMessage);
     }
     return json;
 }
@@ -1734,7 +1748,7 @@ DECLARE_PARSER_TO_JSON(UserProfilePhotos) {
     JsonWrapper json;
     if (object) {
         json.put("total_count", object->totalCount);
-        json.put("photos", put(object->photos));
+        json.put("photos", object->photos);
     }
     return json;
 }
@@ -1790,7 +1804,7 @@ DECLARE_PARSER_FROM_JSON(ReplyKeyboardMarkup) {
 DECLARE_PARSER_TO_JSON(ReplyKeyboardMarkup) {
     JsonWrapper json;
     if (object) {
-        json.put("keyboard", put(object->keyboard));
+        json.put("keyboard", object->keyboard);
         json.put("is_persistent", object->isPersistent);
         json.put("resize_keyboard", object->resizeKeyboard);
         json.put("one_time_keyboard", object->oneTimeKeyboard);
@@ -1819,12 +1833,12 @@ DECLARE_PARSER_TO_JSON(KeyboardButton) {
     JsonWrapper json;
     if (object) {
         json.put("text", object->text);
-        json.put("request_users", put(object->requestUsers));
-        json.put("request_chat", put(object->requestChat));
+        json.put("request_users", object->requestUsers);
+        json.put("request_chat", object->requestChat);
         json.put("request_contact", object->requestContact);
         json.put("request_location", object->requestLocation);
-        json.put("request_poll", put(object->requestPoll));
-        json.put("web_app", put(object->webApp));
+        json.put("request_poll", object->requestPoll);
+        json.put("web_app", object->webApp);
     }
     return json;
 }
@@ -1885,8 +1899,8 @@ DECLARE_PARSER_TO_JSON(KeyboardButtonRequestChat) {
     json.put("chat_is_forum", object->chatIsForum);
     json.put("chat_has_username", object->chatHasUsername);
     json.put("chat_is_created", object->chatIsCreated);
-    json.put("user_administrator_rights", put(object->userAdministratorRights));
-    json.put("bot_administrator_rights", put(object->botAdministratorRights));
+    json.put("user_administrator_rights", object->userAdministratorRights);
+    json.put("bot_administrator_rights", object->botAdministratorRights);
     json.put("bot_is_member", object->botIsMember);
     json.put("request_title", object->requestTitle);
     json.put("request_username", object->requestUsername);
@@ -1941,7 +1955,7 @@ DECLARE_PARSER_TO_JSON(InlineKeyboardMarkup) {
     if (!object) {
         return json;
     }
-    json.put("inline_keyboard", put(object->inlineKeyboard));
+    json.put("inline_keyboard", object->inlineKeyboard);
     return json;
 }
 DECLARE_PARSER_FROM_JSON(ForceReply) {
@@ -1987,7 +2001,7 @@ DECLARE_PARSER_TO_JSON(ChatPhoto) {
 DECLARE_PARSER_FROM_JSON(ChatInviteLink) {
     auto result = std::make_shared<ChatInviteLink>();
     parse(data, "invite_link", &result->inviteLink);
-    result->creator = parse<User>(data, "creator");
+    result->creator = parseRequired<User>(data, "creator");
     parse(data, "creates_join_request", &result->createsJoinRequest);
     parse(data, "is_primary", &result->isPrimary);
     parse(data, "is_revoked", &result->isRevoked);
@@ -2004,7 +2018,7 @@ DECLARE_PARSER_TO_JSON(ChatInviteLink) {
         return json;
     }
     json.put("invite_link", object->inviteLink);
-    json.put("creator", put(object->creator));
+    json.put("creator", object->creator);
     json.put("creates_join_request", object->createsJoinRequest);
     json.put("is_primary", object->isPrimary);
     json.put("is_revoked", object->isRevoked);
@@ -2059,11 +2073,11 @@ DECLARE_PARSER_TO_JSON(ChatAdministratorRights) {
 }
 DECLARE_PARSER_FROM_JSON(ChatMemberUpdated) {
     auto result = std::make_shared<ChatMemberUpdated>();
-    result->chat = parse<Chat>(data, "chat");
-    result->from = parse<User>(data, "from");
+    result->chat = parseRequired<Chat>(data, "chat");
+    result->from = parseRequired<User>(data, "from");
     parse(data, "date", &result->date);
-    result->oldChatMember = parse<ChatMember>(data, "old_chat_member");
-    result->newChatMember = parse<ChatMember>(data, "new_chat_member");
+    result->oldChatMember = parseRequired<ChatMember>(data, "old_chat_member");
+    result->newChatMember = parseRequired<ChatMember>(data, "new_chat_member");
     result->inviteLink = parse<ChatInviteLink>(data, "invite_link");
     parse(data, "via_chat_folder_invite_link",
           &result->viaChatFolderInviteLink);
@@ -2075,12 +2089,12 @@ DECLARE_PARSER_TO_JSON(ChatMemberUpdated) {
     if (!object) {
         return json;
     }
-    json.put("chat", put(object->chat));
-    json.put("from", put(object->from));
+    json.put("chat", object->chat);
+    json.put("from", object->from);
     json.put("date", object->date);
-    json.put("old_chat_member", put(object->oldChatMember));
-    json.put("new_chat_member", put(object->newChatMember));
-    json.put("invite_link", put(object->inviteLink));
+    json.put("old_chat_member", object->oldChatMember);
+    json.put("new_chat_member", object->newChatMember);
+    json.put("invite_link", object->inviteLink);
     json.put("via_chat_folder_invite_link", object->viaChatFolderInviteLink);
     return json;
 }
@@ -2103,7 +2117,7 @@ DECLARE_PARSER_FROM_JSON(ChatMember) {
         result = parse<ChatMemberBanned>(data);
     }
     result->status = status;
-    result->user = parse<User>(data, "user");
+    result->user = parseRequired<User>(data, "user");
     return result;
 }
 
@@ -2113,7 +2127,7 @@ DECLARE_PARSER_TO_JSON(ChatMember) {
         return json;
     }
     json.put("status", object->status);
-    json.put("user", put(object->user));
+    json.put("user", object->user);
 
     if (object->status == ChatMemberOwner::STATUS) {
         json.put("extra", put<ChatMemberOwner>(object));
@@ -2269,8 +2283,8 @@ DECLARE_PARSER_TO_JSON(ChatMemberBanned) {
 
 DECLARE_PARSER_FROM_JSON(ChatJoinRequest) {
     auto result = std::make_shared<ChatJoinRequest>();
-    result->chat = parse<Chat>(data, "chat");
-    result->from = parse<User>(data, "from");
+    result->chat = parseRequired<Chat>(data, "chat");
+    result->from = parseRequired<User>(data, "from");
     parse(data, "user_chat_id", &result->userChatId);
     parse(data, "date", &result->date);
     parse(data, "bio", &result->bio);
@@ -2283,12 +2297,12 @@ DECLARE_PARSER_TO_JSON(ChatJoinRequest) {
     if (!object) {
         return json;
     }
-    json.put("chat", put(object->chat));
-    json.put("from", put(object->from));
+    json.put("chat", object->chat);
+    json.put("from", object->from);
     json.put("user_chat_id", object->userChatId);
     json.put("date", object->date);
     json.put("bio", object->bio);
-    json.put("invite_link", put(object->inviteLink));
+    json.put("invite_link", object->inviteLink);
     return json;
 }
 
@@ -2366,7 +2380,7 @@ DECLARE_PARSER_TO_JSON(BusinessIntro) {
     }
     json.put("title", object->title);
     json.put("message", object->message);
-    json.put("sticker", put(object->sticker));
+    json.put("sticker", object->sticker);
     return json;
 }
 
@@ -2383,7 +2397,7 @@ DECLARE_PARSER_TO_JSON(BusinessLocation) {
         return json;
     }
     json.put("address", object->address);
-    json.put("location", put(object->location));
+    json.put("location", object->location);
     return json;
 }
 
@@ -2418,13 +2432,13 @@ DECLARE_PARSER_TO_JSON(BusinessOpeningHours) {
         return json;
     }
     json.put("time_zone_name", object->timeZoneName);
-    json.put("opening_hours", put(object->openingHours));
+    json.put("opening_hours", object->openingHours);
     return json;
 }
 
 DECLARE_PARSER_FROM_JSON(ChatLocation) {
     auto result = std::make_shared<ChatLocation>();
-    result->location = parse<Location>(data, "location");
+    result->location = parseRequired<Location>(data, "location");
     parse(data, "address", &result->address);
     return result;
 }
@@ -2434,7 +2448,7 @@ DECLARE_PARSER_TO_JSON(ChatLocation) {
     if (!object) {
         return json;
     }
-    json.put("location", put(object->location));
+    json.put("location", object->location);
     json.put("address", object->address);
     return json;
 }
@@ -2506,7 +2520,7 @@ DECLARE_PARSER_TO_JSON(ReactionTypeCustomEmoji) {
 
 DECLARE_PARSER_FROM_JSON(ReactionCount) {
     auto result = std::make_shared<ReactionCount>();
-    result->type = parse<ReactionType>(data, "type");
+    result->type = parseRequired<ReactionType>(data, "type");
     parse(data, "total_count", &result->totalCount);
     return result;
 }
@@ -2516,14 +2530,14 @@ DECLARE_PARSER_TO_JSON(ReactionCount) {
     if (!object) {
         return json;
     }
-    json.put("type", put(object->type));
+    json.put("type", object->type);
     json.put("total_count", object->totalCount);
     return json;
 }
 
 DECLARE_PARSER_FROM_JSON(MessageReactionUpdated) {
     auto result = std::make_shared<MessageReactionUpdated>();
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
     result->user = parse<User>(data, "user");
     result->actorChat = parse<Chat>(data, "actor_chat");
@@ -2538,19 +2552,19 @@ DECLARE_PARSER_TO_JSON(MessageReactionUpdated) {
     if (!object) {
         return json;
     }
-    json.put("chat", put(object->chat));
+    json.put("chat", object->chat);
     json.put("message_id", object->messageId);
-    json.put("user", put(object->user));
-    json.put("actor_chat", put(object->actorChat));
+    json.put("user", object->user);
+    json.put("actor_chat", object->actorChat);
     json.put("date", object->date);
-    json.put("old_reaction", put(object->oldReaction));
-    json.put("new_reaction", put(object->newReaction));
+    json.put("old_reaction", object->oldReaction);
+    json.put("new_reaction", object->newReaction);
     return json;
 }
 
 DECLARE_PARSER_FROM_JSON(MessageReactionCountUpdated) {
     auto result = std::make_shared<MessageReactionCountUpdated>();
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
     parse(data, "date", &result->date);
     result->reactions = parseArray<ReactionCount>(data, "reactions");
@@ -2562,10 +2576,10 @@ DECLARE_PARSER_TO_JSON(MessageReactionCountUpdated) {
     if (!object) {
         return json;
     }
-    json.put("chat", put(object->chat));
+    json.put("chat", object->chat);
     json.put("message_id", object->messageId);
     json.put("date", object->date);
-    json.put("reactions", put(object->reactions));
+    json.put("reactions", object->reactions);
     return json;
 }
 
@@ -2752,7 +2766,7 @@ DECLARE_PARSER_TO_JSON(ChatBoostSource) {
     JsonWrapper ptree;
     if (!object) return ptree;
     ptree.put("source", object->source);
-    ptree.put("user", put(object->user));
+    ptree.put("user", object->user);
 
     if (object->source == ChatBoostSourcePremium::SOURCE) {
         ptree += put<ChatBoostSourcePremium>(object);
@@ -2780,7 +2794,7 @@ DECLARE_PARSER_FROM_JSON(ChatBoostSource) {
     }
 
     result->source = source;
-    result->user = parse<User>(data, "user");
+    result->user = parseRequired<User>(data, "user");
     return result;
 }
 
@@ -2830,7 +2844,7 @@ DECLARE_PARSER_TO_JSON(ChatBoost) {
     ptree.put("boost_id", object->boostId);
     ptree.put("add_date", object->addDate);
     ptree.put("expiration_date", object->expirationDate);
-    ptree.put("source", put(object->source));
+    ptree.put("source", object->source);
     return ptree;
 }
 
@@ -2839,7 +2853,7 @@ DECLARE_PARSER_FROM_JSON(ChatBoost) {
     parse(data, "boost_id", &result->boostId);
     parse(data, "add_date", &result->addDate);
     parse(data, "expiration_date", &result->expirationDate);
-    result->source = parse<ChatBoostSource>(data, "source");
+    result->source = parseRequired<ChatBoostSource>(data, "source");
     return result;
 }
 
@@ -2847,15 +2861,15 @@ DECLARE_PARSER_FROM_JSON(ChatBoost) {
 DECLARE_PARSER_TO_JSON(ChatBoostUpdated) {
     JsonWrapper ptree;
     if (!object) return ptree;
-    ptree.put("chat", put(object->chat));
-    ptree.put("boost", put(object->boost));
+    ptree.put("chat", object->chat);
+    ptree.put("boost", object->boost);
     return ptree;
 }
 
 DECLARE_PARSER_FROM_JSON(ChatBoostUpdated) {
     auto result = std::make_shared<ChatBoostUpdated>();
-    result->chat = parse<Chat>(data, "chat");
-    result->boost = parse<ChatBoost>(data, "boost");
+    result->chat = parseRequired<Chat>(data, "chat");
+    result->boost = parseRequired<ChatBoost>(data, "boost");
     return result;
 }
 
@@ -2863,19 +2877,19 @@ DECLARE_PARSER_FROM_JSON(ChatBoostUpdated) {
 DECLARE_PARSER_TO_JSON(ChatBoostRemoved) {
     JsonWrapper ptree;
     if (!object) return ptree;
-    ptree.put("chat", put(object->chat));
+    ptree.put("chat", object->chat);
     ptree.put("boost_id", object->boostId);
     ptree.put("remove_date", object->removeDate);
-    ptree.put("source", put(object->source));
+    ptree.put("source", object->source);
     return ptree;
 }
 
 DECLARE_PARSER_FROM_JSON(ChatBoostRemoved) {
     auto result = std::make_shared<ChatBoostRemoved>();
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "boost_id", &result->boostId);
     parse(data, "remove_date", &result->removeDate);
-    result->source = parse<ChatBoostSource>(data, "source");
+    result->source = parseRequired<ChatBoostSource>(data, "source");
     return result;
 }
 
@@ -2883,7 +2897,7 @@ DECLARE_PARSER_FROM_JSON(ChatBoostRemoved) {
 DECLARE_PARSER_TO_JSON(UserChatBoosts) {
     JsonWrapper ptree;
     if (!object) return ptree;
-    ptree.put("boosts", put(object->boosts));
+    ptree.put("boosts", object->boosts);
     return ptree;
 }
 
@@ -2910,14 +2924,14 @@ DECLARE_PARSER_TO_JSON(MenuButtonWebApp) {
     JsonWrapper ptree;
     if (!object) return ptree;
     ptree.put("text", object->text);
-    ptree.put("web_app", put(object->webApp));
+    ptree.put("web_app", object->webApp);
     return ptree;
 }
 
 DECLARE_PARSER_FROM_JSON(MenuButtonWebApp) {
     auto result = std::make_shared<MenuButtonWebApp>();
     parse(data, "text", &result->text);
-    result->webApp = parse<WebAppInfo>(data, "web_app");
+    result->webApp = parseRequired<WebAppInfo>(data, "web_app");
     return result;
 }
 
@@ -2978,7 +2992,7 @@ DECLARE_PARSER_TO_JSON(BusinessConnection) {
     JsonWrapper ptree;
     if (!object) return ptree;
     ptree.put("id", object->id);
-    ptree.put("user", put(object->user));
+    ptree.put("user", object->user);
     ptree.put("user_chat_id", object->userChatId);
     ptree.put("date", object->date);
     ptree.put("can_reply", object->canReply);
@@ -2989,7 +3003,7 @@ DECLARE_PARSER_TO_JSON(BusinessConnection) {
 DECLARE_PARSER_FROM_JSON(BusinessConnection) {
     auto result = std::make_shared<BusinessConnection>();
     parse(data, "id", &result->id);
-    result->user = parse<User>(data, "user");
+    result->user = parseRequired<User>(data, "user");
     parse(data, "user_chat_id", &result->userChatId);
     parse(data, "date", &result->date);
     parse(data, "can_reply", &result->canReply);
@@ -3002,15 +3016,15 @@ DECLARE_PARSER_TO_JSON(BusinessMessagesDeleted) {
     JsonWrapper ptree;
     if (!object) return ptree;
     ptree.put("business_connection_id", object->businessConnectionId);
-    ptree.put("chat", put(object->chat));
-    ptree.put("message_ids", put(object->messageIds));
+    ptree.put("chat", object->chat);
+    ptree.put("message_ids", object->messageIds);
     return ptree;
 }
 
 DECLARE_PARSER_FROM_JSON(BusinessMessagesDeleted) {
     auto result = std::make_shared<BusinessMessagesDeleted>();
     parse(data, "business_connection_id", &result->businessConnectionId);
-    result->chat = parse<Chat>(data, "chat");
+    result->chat = parseRequired<Chat>(data, "chat");
     result->messageIds = parsePrimitiveArray<std::int32_t>(data, "message_ids");
     return result;
 }
@@ -3039,7 +3053,7 @@ DECLARE_PARSER_TO_JSON(InputMedia) {
     ptree.put("media", object->media);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
+    ptree.put("caption_entities", object->captionEntities);
 
     if (object->type == InputMediaPhoto::TYPE) {
         ptree += put<InputMediaPhoto>(object);
@@ -3234,11 +3248,11 @@ DECLARE_PARSER_TO_JSON(Sticker) {
     ptree.put("height", object->height);
     ptree.put("is_animated", object->isAnimated);
     ptree.put("is_video", object->isVideo);
-    ptree.put("thumbnail", put(object->thumbnail));
+    ptree.put("thumbnail", object->thumbnail);
     ptree.put("emoji", object->emoji);
     ptree.put("set_name", object->setName);
-    ptree.put("premium_animation", put(object->premiumAnimation));
-    ptree.put("mask_position", put(object->maskPosition));
+    ptree.put("premium_animation", object->premiumAnimation);
+    ptree.put("mask_position", object->maskPosition);
     ptree.put("custom_emoji_id", object->customEmojiId);
     ptree.put("needs_repainting", object->needsRepainting);
     ptree.put("file_size", object->fileSize);
@@ -3308,8 +3322,8 @@ DECLARE_PARSER_TO_JSON(StickerSet) {
     } else if (object->stickerType == StickerSet::Type::CustomEmoji) {
         ptree.put("sticker_type", "custom_emoji");
     }
-    ptree.put("stickers", put(object->stickers));
-    ptree.put("thumbnail", put(object->thumbnail));
+    ptree.put("stickers", object->stickers);
+    ptree.put("thumbnail", object->thumbnail);
     return ptree;
 }
 
@@ -3317,7 +3331,7 @@ DECLARE_PARSER_TO_JSON(StickerSet) {
 DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     auto result = std::make_shared<CallbackQuery>();
     parse(data, "id", &result->id);
-    result->from = parse<User>(data, "from");
+    result->from = parseRequired<User>(data, "from");
     result->message = parse<Message>(data, "message");
     parse(data, "inline_message_id", &result->inlineMessageId);
     parse(data, "chat_instance", &result->chatInstance);
@@ -3332,8 +3346,8 @@ DECLARE_PARSER_TO_JSON(CallbackQuery) {
         return ptree;
     }
     ptree.put("id", object->id);
-    ptree.put("from", put(object->from));
-    ptree.put("message", put(object->message));
+    ptree.put("from", object->from);
+    ptree.put("message", object->message);
     ptree.put("inline_message_id", object->inlineMessageId);
     ptree.put("chat_instance", object->chatInstance);
     ptree.put("data", object->data);
@@ -3366,7 +3380,7 @@ DECLARE_PARSER_TO_JSON(MaskPosition) {
 DECLARE_PARSER_FROM_JSON(InlineQuery) {
     auto result = std::make_shared<InlineQuery>();
     parse(data, "id", &result->id);
-    result->from = parse<User>(data, "from");
+    result->from = parseRequired<User>(data, "from");
     parse(data, "query", &result->query);
     parse(data, "offset", &result->offset);
     parse(data, "chat_type", &result->chatType);
@@ -3381,11 +3395,11 @@ DECLARE_PARSER_TO_JSON(InlineQuery) {
         return ptree;
     }
     ptree.put("id", object->id);
-    ptree.put("from", put(object->from));
+    ptree.put("from", object->from);
     ptree.put("query", object->query);
     ptree.put("offset", object->offset);
     ptree.put("chat_type", object->chatType);
-    ptree.put("location", put(object->location));
+    ptree.put("location", object->location);
 
     return ptree;
 }
@@ -3417,14 +3431,13 @@ DECLARE_PARSER_TO_JSON(InlineKeyboardButton) {
     ptree.put("text", object->text);
     ptree.put("url", object->url);
     ptree.put("callback_data", object->callbackData);
-    ptree.put("web_app", put(object->webApp));
-    ptree.put("login_url", put(object->loginUrl));
+    ptree.put("web_app", object->webApp);
+    ptree.put("login_url", object->loginUrl);
     ptree.put("switch_inline_query", object->switchInlineQuery);
     ptree.put("switch_inline_query_current_chat",
               object->switchInlineQueryCurrentChat);
-    ptree.put("switch_inline_query_chosen_chat",
-              put(object->switchInlineQueryChosenChat));
-    ptree.put("callback_game", put(object->callbackGame));
+    ptree.put("switch_inline_query_chosen_chat", object->switchInlineQueryChosenChat);
+    ptree.put("callback_game", object->callbackGame);
     ptree.put("pay", object->pay);
 
     return ptree;
@@ -3446,7 +3459,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResult) {
     }
     ptree.put("type", object->type);
     ptree.put("id", object->id);
-    ptree.put("reply_markup", put(object->replyMarkup));
+    ptree.put("reply_markup", object->replyMarkup);
 
     if (object->type == InlineQueryResultArticle::TYPE) {
         ptree += put<InlineQueryResultArticle>(object);
@@ -3506,8 +3519,8 @@ DECLARE_PARSER_TO_JSON(InputSticker) {
     }
     ptree.put("sticker", object->sticker);
     ptree.put("format", object->format);
-    ptree.put("emoji_list", put(object->emojiList));
-    ptree.put("mask_position", put(object->maskPosition));
+    ptree.put("emoji_list", object->emojiList);
+    ptree.put("mask_position", object->maskPosition);
     ptree.put("keywords", object->keywords);
 
     return ptree;
@@ -3576,7 +3589,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultsButton) {
         return ptree;
     }
     ptree.put("text", object->text);
-    ptree.put("web_app", put(object->webApp));
+    ptree.put("web_app", object->webApp);
     ptree.put("start_parameter", object->startParameter);
 
     return ptree;
@@ -3586,7 +3599,7 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultArticle) {
     auto result = std::make_shared<InlineQueryResultArticle>();
     parse(data, "title", &result->title);
     result->inputMessageContent =
-        parse<InputMessageContent>(data, "input_message_content");
+        parseRequired<InputMessageContent>(data, "input_message_content");
     parse(data, "url", &result->url);
     parse(data, "hide_url", &result->hideUrl);
     parse(data, "description", &result->description);
@@ -3602,7 +3615,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultArticle) {
         return ptree;
     }
     ptree.put("title", object->title);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     ptree.put("url", object->url);
     ptree.put("hide_url", object->hideUrl);
     ptree.put("description", object->description);
@@ -3643,8 +3656,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultPhoto) {
     ptree.put("description", object->description);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -3680,8 +3693,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultGif) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -3717,8 +3730,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultMpeg4Gif) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -3752,12 +3765,12 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultVideo) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
+    ptree.put("caption_entities", object->captionEntities);
     ptree.put("video_width", object->videoWidth);
     ptree.put("video_height", object->videoHeight);
     ptree.put("video_duration", object->videoDuration);
     ptree.put("description", object->description);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -3785,10 +3798,10 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultAudio) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
+    ptree.put("caption_entities", object->captionEntities);
     ptree.put("performer", object->performer);
     ptree.put("audio_duration", object->audioDuration);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -3815,9 +3828,9 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultVoice) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
+    ptree.put("caption_entities", object->captionEntities);
     ptree.put("voice_duration", object->voiceDuration);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -3847,11 +3860,11 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultDocument) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
+    ptree.put("caption_entities", object->captionEntities);
     ptree.put("document_url", object->documentUrl);
     ptree.put("mime_type", object->mimeType);
     ptree.put("description", object->description);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     ptree.put("thumbnail_url", object->thumbnailUrl);
     ptree.put("thumbnail_width", object->thumbnailWidth);
     ptree.put("thumbnail_height", object->thumbnailHeight);
@@ -3887,7 +3900,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultLocation) {
     ptree.put("live_period", object->livePeriod);
     ptree.put("heading", object->heading);
     ptree.put("proximity_alert_radius", object->proximityAlertRadius);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     ptree.put("thumbnail_url", object->thumbnailUrl);
     ptree.put("thumbnail_width", object->thumbnailWidth);
     ptree.put("thumbnail_height", object->thumbnailHeight);
@@ -3925,7 +3938,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultVenue) {
     ptree.put("foursquare_type", object->foursquareType);
     ptree.put("google_place_id", object->googlePlaceId);
     ptree.put("google_place_type", object->googlePlaceType);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     ptree.put("thumbnail_url", object->thumbnailUrl);
     ptree.put("thumbnail_width", object->thumbnailWidth);
     ptree.put("thumbnail_height", object->thumbnailHeight);
@@ -3955,7 +3968,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultContact) {
     ptree.put("first_name", object->firstName);
     ptree.put("last_name", object->lastName);
     ptree.put("vcard", object->vcard);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     ptree.put("thumbnail_url", object->thumbnailUrl);
     ptree.put("thumbnail_width", object->thumbnailWidth);
     ptree.put("thumbnail_height", object->thumbnailHeight);
@@ -4001,8 +4014,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedPhoto) {
     ptree.put("description", object->description);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4028,8 +4041,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedGif) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4055,8 +4068,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedMpeg4Gif) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedSticker) {
@@ -4073,7 +4086,7 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedSticker) {
         return ptree;
     }
     ptree.put("sticker_file_id", object->stickerFileId);
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4101,8 +4114,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedDocument) {
     ptree.put("description", object->description);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4130,8 +4143,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedVideo) {
     ptree.put("description", object->description);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4157,8 +4170,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedVoice) {
     ptree.put("title", object->title);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4182,8 +4195,8 @@ DECLARE_PARSER_TO_JSON(InlineQueryResultCachedAudio) {
     ptree.put("audio_file_id", object->audioFileId);
     ptree.put("caption", object->caption);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("caption_entities", put(object->captionEntities));
-    ptree.put("input_message_content", put(object->inputMessageContent));
+    ptree.put("caption_entities", object->captionEntities);
+    ptree.put("input_message_content", object->inputMessageContent);
     return ptree;
 }
 
@@ -4259,8 +4272,8 @@ DECLARE_PARSER_TO_JSON(InputTextMessageContent) {
     }
     ptree.put("message_text", object->messageText);
     ptree.put("parse_mode", object->parseMode);
-    ptree.put("entities", put(object->entities));
-    ptree.put("link_preview_options", put(object->linkPreviewOptions));
+    ptree.put("entities", object->entities);
+    ptree.put("link_preview_options", object->linkPreviewOptions);
     return ptree;
 }
 
@@ -4379,7 +4392,7 @@ DECLARE_PARSER_TO_JSON(InputInvoiceMessageContent) {
     ptree.put("payload", object->payload);
     ptree.put("provider_token", object->providerToken);
     ptree.put("currency", object->currency);
-    ptree.put("prices", put(object->prices));
+    ptree.put("prices", object->prices);
     ptree.put("max_tip_amount", object->maxTipAmount);
     ptree.put("suggested_tip_amounts", object->suggestedTipAmounts);
     ptree.put("provider_data", object->providerData);
@@ -4401,7 +4414,7 @@ DECLARE_PARSER_TO_JSON(InputInvoiceMessageContent) {
 DECLARE_PARSER_FROM_JSON(ChosenInlineResult) {
     auto result = std::make_shared<ChosenInlineResult>();
     parse(data, "result_id", &result->resultId);
-    result->from = parse<User>(data, "from");
+    result->from = parseRequired<User>(data, "from");
     result->location = parse<Location>(data, "location");
     parse(data, "inline_message_id", &result->inlineMessageId);
     parse(data, "query", &result->query);
@@ -4414,8 +4427,8 @@ DECLARE_PARSER_TO_JSON(ChosenInlineResult) {
         return ptree;
     }
     ptree.put("result_id", object->resultId);
-    ptree.put("from", put(object->from));
-    ptree.put("location", put(object->location));
+    ptree.put("from", object->from);
+    ptree.put("location", object->location);
     ptree.put("inline_message_id", object->inlineMessageId);
     ptree.put("query", object->query);
     return ptree;
@@ -4518,7 +4531,7 @@ DECLARE_PARSER_TO_JSON(OrderInfo) {
     ptree.put("name", object->name);
     ptree.put("phone_number", object->phoneNumber);
     ptree.put("email", object->email);
-    ptree.put("shipping_address", put(object->shippingAddress));
+    ptree.put("shipping_address", object->shippingAddress);
     return ptree;
 }
 
@@ -4538,7 +4551,7 @@ DECLARE_PARSER_TO_JSON(ShippingOption) {
     }
     ptree.put("id", object->id);
     ptree.put("title", object->title);
-    ptree.put("prices", put(object->prices));
+    ptree.put("prices", object->prices);
     return ptree;
 }
 
@@ -4564,7 +4577,7 @@ DECLARE_PARSER_TO_JSON(SuccessfulPayment) {
     ptree.put("total_amount", object->totalAmount);
     ptree.put("invoice_payload", object->invoicePayload);
     ptree.put("shipping_option_id", object->shippingOptionId);
-    ptree.put("order_info", put(object->orderInfo));
+    ptree.put("order_info", object->orderInfo);
     ptree.put("telegram_payment_charge_id", object->telegramPaymentChargeId);
     ptree.put("provider_payment_charge_id", object->providerPaymentChargeId);
     return ptree;
@@ -4574,9 +4587,9 @@ DECLARE_PARSER_TO_JSON(SuccessfulPayment) {
 DECLARE_PARSER_FROM_JSON(ShippingQuery) {
     auto result = std::make_shared<ShippingQuery>();
     parse(data, "id", &result->id);
-    result->from = parse<User>(data, "from");
+    result->from = parseRequired<User>(data, "from");
     parse(data, "invoice_payload", &result->invoicePayload);
-    result->shippingAddress = parse<ShippingAddress>(data, "shipping_address");
+    result->shippingAddress = parseRequired<ShippingAddress>(data, "shipping_address");
     return result;
 }
 
@@ -4586,9 +4599,9 @@ DECLARE_PARSER_TO_JSON(ShippingQuery) {
         return ptree;
     }
     ptree.put("id", object->id);
-    ptree.put("from", put(object->from));
+    ptree.put("from", object->from);
     ptree.put("invoice_payload", object->invoicePayload);
-    ptree.put("shipping_address", put(object->shippingAddress));
+    ptree.put("shipping_address", object->shippingAddress);
     return ptree;
 }
 
@@ -4596,7 +4609,7 @@ DECLARE_PARSER_TO_JSON(ShippingQuery) {
 DECLARE_PARSER_FROM_JSON(PreCheckoutQuery) {
     auto result = std::make_shared<PreCheckoutQuery>();
     parse(data, "id", &result->id);
-    result->from = parse<User>(data, "from");
+    result->from = parseRequired<User>(data, "from");
     parse(data, "currency", &result->currency);
     parse(data, "total_amount", &result->totalAmount);
     parse(data, "invoice_payload", &result->invoicePayload);
@@ -4611,12 +4624,12 @@ DECLARE_PARSER_TO_JSON(PreCheckoutQuery) {
         return ptree;
     }
     ptree.put("id", object->id);
-    ptree.put("from", put(object->from));
+    ptree.put("from", object->from);
     ptree.put("currency", object->currency);
     ptree.put("total_amount", object->totalAmount);
     ptree.put("invoice_payload", object->invoicePayload);
     ptree.put("shipping_option_id", object->shippingOptionId);
-    ptree.put("order_info", put(object->orderInfo));
+    ptree.put("order_info", object->orderInfo);
     return ptree;
 }
 
@@ -4624,7 +4637,7 @@ DECLARE_PARSER_TO_JSON(PreCheckoutQuery) {
 DECLARE_PARSER_FROM_JSON(PassportData) {
     auto result = std::make_shared<PassportData>();
     result->data = parseArray<EncryptedPassportElement>(data, "data");
-    result->credentials = parse<EncryptedCredentials>(data, "credentials");
+    result->credentials = parseRequired<EncryptedCredentials>(data, "credentials");
     return result;
 }
 
@@ -4633,8 +4646,8 @@ DECLARE_PARSER_TO_JSON(PassportData) {
     if (!object) {
         return ptree;
     }
-    ptree.put("data", put(object->data));
-    ptree.put("credentials", put(object->credentials));
+    ptree.put("data", object->data);
+    ptree.put("credentials", object->credentials);
     return ptree;
 }
 
@@ -4685,11 +4698,11 @@ DECLARE_PARSER_TO_JSON(EncryptedPassportElement) {
     ptree.put("data", object->data);
     ptree.put("phone_number", object->phoneNumber);
     ptree.put("email", object->email);
-    ptree.put("files", put(object->files));
-    ptree.put("front_side", put(object->frontSide));
-    ptree.put("reverse_side", put(object->reverseSide));
-    ptree.put("selfie", put(object->selfie));
-    ptree.put("translation", put(object->translation));
+    ptree.put("files", object->files);
+    ptree.put("front_side", object->frontSide);
+    ptree.put("reverse_side", object->reverseSide);
+    ptree.put("selfie", object->selfie);
+    ptree.put("translation", object->translation);
     ptree.put("hash", object->hash);
     return ptree;
 }
@@ -4842,7 +4855,7 @@ DECLARE_PARSER_TO_JSON(PassportElementErrorFiles) {
     if (!object) {
         return ptree;
     }
-    ptree.put("file_hashes", put(object->fileHashes));
+    ptree.put("file_hashes", object->fileHashes);
     return ptree;
 }
 
@@ -4874,7 +4887,7 @@ DECLARE_PARSER_TO_JSON(PassportElementErrorTranslationFiles) {
     if (!object) {
         return ptree;
     }
-    ptree.put("file_hashes", put(object->fileHashes));
+    ptree.put("file_hashes", object->fileHashes);
     return ptree;
 }
 
@@ -4913,10 +4926,10 @@ DECLARE_PARSER_TO_JSON(Game) {
     }
     ptree.put("title", object->title);
     ptree.put("description", object->description);
-    ptree.put("photo", put(object->photo));
+    ptree.put("photo", object->photo);
     ptree.put("text", object->text);
-    ptree.put("text_entities", put(object->textEntities));
-    ptree.put("animation", put(object->animation));
+    ptree.put("text_entities", object->textEntities);
+    ptree.put("animation", object->animation);
     return ptree;
 }
 
@@ -4938,7 +4951,7 @@ DECLARE_PARSER_TO_JSON(CallbackGame) {
 DECLARE_PARSER_FROM_JSON(GameHighScore) {
     auto result = std::make_shared<GameHighScore>();
     parse(data, "position", &result->position);
-    result->user = parse<User>(data, "user");
+    result->user = parseRequired<User>(data, "user");
     parse(data, "score", &result->score);
     return result;
 }
@@ -4949,7 +4962,7 @@ DECLARE_PARSER_TO_JSON(GameHighScore) {
         return ptree;
     }
     ptree.put("position", object->position);
-    ptree.put("user", put(object->user));
+    ptree.put("user", object->user);
     ptree.put("score", object->score);
     return ptree;
 }

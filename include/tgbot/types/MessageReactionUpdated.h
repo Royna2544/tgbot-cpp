@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -34,12 +35,12 @@ public:
     /**
      * @brief Optional. The user that changed the reaction, if the user isn't anonymous
      */
-    User::Ptr user;
+    std::optional<User::Ptr> user;
 
     /**
      * @brief Optional. The chat on behalf of which the reaction was changed, if the user is anonymous
      */
-    Chat::Ptr actorChat;
+    std::optional<Chat::Ptr> actorChat;
 
     /**
      * @brief Date of the change in Unix time

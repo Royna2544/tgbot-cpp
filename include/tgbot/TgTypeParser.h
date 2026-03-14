@@ -239,7 +239,7 @@ constexpr bool is_optional_v = is_optional<T>::value;
 // primitive
 template <typename T>
 constexpr bool is_primitive_v =
-    std::is_same_v<T, bool> || std::is_same_v<T, std::string> ||
+    std::is_same_v<T, bool> || std::is_convertible_v<T, std::string> ||
     std::is_integral_v<T> || std::is_floating_point_v<T>;
 
 // Matrix

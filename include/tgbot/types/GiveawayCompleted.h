@@ -32,7 +32,7 @@ public:
     /**
      * @brief Optional. Message with the giveaway that was completed, if it wasn't deleted
      */
-    std::shared_ptr<Message> giveawayMessage;
+    std::optional<std::shared_ptr<Message>> giveawayMessage;
 };
 }
 

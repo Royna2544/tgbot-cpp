@@ -4,6 +4,7 @@
 #include "tgbot/types/InputMedia.h"
 
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 

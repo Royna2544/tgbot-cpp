@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -53,7 +54,7 @@ public:
     /**
      * @brief Optional. Chat invite link that was used by the user to send the join request
      */
-    ChatInviteLink::Ptr inviteLink;
+    std::optional<ChatInviteLink::Ptr> inviteLink;
 };
 }
 

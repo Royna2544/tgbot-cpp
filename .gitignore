@@ -15,6 +15,7 @@ TgBot_test
 .idea/
 docs/
 cmake-build-*
+CMakeUserPresets.json
 
 # Visual Studio
 .vs/

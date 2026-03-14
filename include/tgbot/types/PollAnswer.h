@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -29,12 +30,12 @@ public:
     /**
      * @brief Optional. The chat that changed the answer to the poll, if the voter is anonymous
      */
-    Chat::Ptr voterChat;
+    std::optional<Chat::Ptr> voterChat;
 
     /**
      * @brief Optional. The user that changed the answer to the poll, if the voter isn't anonymous
      */
-    User::Ptr user;
+    std::optional<User::Ptr> user;
 
     /**
      * @brief 0-based identifiers of chosen answer options.

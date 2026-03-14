@@ -53,6 +53,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -81,7 +82,7 @@ public:
      *
      * For backward compatibility, the field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
      */
-    User::Ptr from;
+    std::optional<User::Ptr> from;
 
     /**
      * @brief Optional. Sender of the message, sent on behalf of a chat.
@@ -89,7 +90,7 @@ public:
      * For example, the channel itself for channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for messages automatically forwarded to the discussion group.
      * For backward compatibility, the field from contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
      */
-    Chat::Ptr senderChat;
+    std::optional<Chat::Ptr> senderChat;
 
     /**
      * @brief Optional. If the sender of the message boosted the chat, the number of boosts added by the user
@@ -101,7 +102,7 @@ public:
      *
      * Available only for outgoing messages sent on behalf of the connected business account.
      */
-    User::Ptr senderBusinessBot;
+    std::optional<User::Ptr> senderBusinessBot;
 
     /**
      * @brief Date the message was sent in Unix time.
@@ -125,7 +126,7 @@ public:
     /**
      * @brief Optional. Information about the original message for forwarded messages
      */
-    MessageOrigin::Ptr forwardOrigin;
+    std::optional<MessageOrigin::Ptr> forwardOrigin;
 
     /**
      * @brief Optional. True, if the message is sent to a forum topic
@@ -142,27 +143,27 @@ public:
      *
      * Note that the Message object in this field will not contain further replyToMessage fields even if it itself is a reply.
      */
-    Message::Ptr replyToMessage;
+    std::optional<Message::Ptr> replyToMessage;
 
     /**
      * @brief Optional. Information about the message that is being replied to, which may come from another chat or forum topic
      */
-    ExternalReplyInfo::Ptr externalReply;
+    std::optional<ExternalReplyInfo::Ptr> externalReply;
 
     /**
      * @brief Optional. For replies that quote part of the original message, the quoted part of the message
      */
-    TextQuote::Ptr quote;
+    std::optional<TextQuote::Ptr> quote;
 
     /**
      * @brief Optional. For replies to a story, the original story
      */
-    Story::Ptr replyToStory;
+    std::optional<Story::Ptr> replyToStory;
 
     /**
      * @brief Optional. Bot through which the message was sent
      */
-    User::Ptr viaBot;
+    std::optional<User::Ptr> viaBot;
 
     /**
      * @brief Optional. Date the message was last edited in Unix time
@@ -197,59 +198,59 @@ public:
     /**
      * @brief Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
      */
-    std::vector<MessageEntity::Ptr> entities;
+    std::optional<std::vector<MessageEntity::Ptr>> entities;
 
     /**
      * @brief Optional. Options used for link preview generation for the message, if it is a text message and link preview options were changed
      */
-    LinkPreviewOptions::Ptr linkPreviewOptions;
+    std::optional<LinkPreviewOptions::Ptr> linkPreviewOptions;
 
     /**
      * @brief Optional. Message is an animation, information about the animation.
      *
      * For backward compatibility, when this field is set, the document field will also be set
      */
-    Animation::Ptr animation;
+    std::optional<Animation::Ptr> animation;
 
     /**
      * @brief Optional. Message is an audio file, information about the file
      */
-    Audio::Ptr audio;
+    std::optional<Audio::Ptr> audio;
 
     /**
      * @brief Optional. Message is a general file, information about the file
      */
-    Document::Ptr document;
+    std::optional<Document::Ptr> document;
 
     /**
      * @brief Optional. Message is a photo, available sizes of the photo
      */
-    std::vector<PhotoSize::Ptr> photo;
+    std::optional<std::vector<PhotoSize::Ptr>> photo;
 
     /**
      * @brief Optional. Message is a sticker, information about the sticker
      */
-    Sticker::Ptr sticker;
+    std::optional<Sticker::Ptr> sticker;
 
     /**
      * @brief Optional. Message is a forwarded story
      */
-    Story::Ptr story;
+    std::optional<Story::Ptr> story;
 
     /**
      * @brief Optional. Message is a video, information about the video
      */
-    Video::Ptr video;
+    std::optional<Video::Ptr> video;
 
     /**
      * @brief Optional. Message is a [video note](https://telegram.org/blog/video-messages-and-telescope), information about the video message
      */
-    VideoNote::Ptr videoNote;
+    std::optional<VideoNote::Ptr> videoNote;
 
     /**
      * @brief Optional. Message is a voice message, information about the file
      */
-    Voice::Ptr voice;
+    std::optional<Voice::Ptr> voice;
 
     /**
      * @brief Optional. Caption for the animation, audio, document, photo, video or voice
@@ -259,7 +260,7 @@ public:
     /**
      * @brief Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
      */
-    std::vector<MessageEntity::Ptr> captionEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> captionEntities;
 
     /**
      * @brief Optional. True, if the message media is covered by a spoiler animation
@@ -269,46 +270,46 @@ public:
     /**
      * @brief Optional. Message is a shared contact, information about the contact
      */
-    Contact::Ptr contact;
+    std::optional<Contact::Ptr> contact;
 
     /**
      * @brief Optional. Message is a dice with random value
      */
-    Dice::Ptr dice;
+    std::optional<Dice::Ptr> dice;
 
     /**
      * @brief Optional. Message is a game, information about the game.
      *
      * [More about games »](https://core.telegram.org/bots/api#games)
      */
-    Game::Ptr game;
+    std::optional<Game::Ptr> game;
 
     /**
      * @brief Optional. Message is a native poll, information about the poll
      */
-    Poll::Ptr poll;
+    std::optional<Poll::Ptr> poll;
 
     /**
      * @brief Optional. Message is a venue, information about the venue.
      *
      * For backward compatibility, when this field is set, the location field will also be set
      */
-    Venue::Ptr venue;
+    std::optional<Venue::Ptr> venue;
 
     /**
      * @brief Optional. Message is a shared location, information about the location
      */
-    Location::Ptr location;
+    std::optional<Location::Ptr> location;
 
     /**
      * @brief Optional. New members that were added to the group or supergroup and information about them (the bot itself may be one of these members)
      */
-    std::vector<User::Ptr> newChatMembers;
+    std::optional<std::vector<User::Ptr>> newChatMembers;
 
     /**
      * @brief Optional. A member was removed from the group, information about them (this member may be the bot itself)
      */
-    User::Ptr leftChatMember;
+    std::optional<User::Ptr> leftChatMember;
 
     /**
      * @brief Optional. A chat title was changed to this value
@@ -318,7 +319,7 @@ public:
     /**
      * @brief Optional. A chat photo was change to this value
      */
-    std::vector<PhotoSize::Ptr> newChatPhoto;
+    std::optional<std::vector<PhotoSize::Ptr>> newChatPhoto;
 
     /**
      * @brief Optional. Service message: the chat photo was deleted
@@ -349,7 +350,7 @@ public:
     /**
      * @brief Optional. Service message: auto-delete timer settings changed in the chat
      */
-    MessageAutoDeleteTimerChanged::Ptr messageAutoDeleteTimerChanged;
+    std::optional<MessageAutoDeleteTimerChanged::Ptr> messageAutoDeleteTimerChanged;
 
     /**
      * @brief Optional. The group has been migrated to a supergroup with the specified identifier.
@@ -372,31 +373,31 @@ public:
      *
      * Note that the Message object in this field will not contain further replyToMessage fields even if it itself is a reply.
      */
-    Message::Ptr pinnedMessage;
+    std::optional<Message::Ptr> pinnedMessage;
 
     /**
      * @brief Optional. Message is an invoice for a [payment](https://core.telegram.org/bots/api#payments), information about the invoice.
      *
      * [More about payments »](https://core.telegram.org/bots/api#payments)
      */
-    Invoice::Ptr invoice;
+    std::optional<Invoice::Ptr> invoice;
 
     /**
      * @brief Optional. Message is a service message about a successful payment, information about the payment.
      *
      * [More about payments »](https://core.telegram.org/bots/api#payments)
      */
-    SuccessfulPayment::Ptr successfulPayment;
+    std::optional<SuccessfulPayment::Ptr> successfulPayment;
 
     /**
      * @brief Optional. Service message: users were shared with the bot
      */
-    UsersShared::Ptr usersShared;
+    std::optional<UsersShared::Ptr> usersShared;
 
     /**
      * @brief Optional. Service message: a chat was shared with the bot
      */
-    ChatShared::Ptr chatShared;
+    std::optional<ChatShared::Ptr> chatShared;
 
     /**
      * @brief Optional. The domain name of the website on which the user has logged in.
@@ -408,106 +409,106 @@ public:
     /**
      * @brief Optional. Service message: the user allowed the bot to write messages after adding it to the attachment or side menu, launching a Web App from a link, or accepting an explicit request from a Web App sent by the method [requestWriteAccess](https://core.telegram.org/bots/webapps#initializing-mini-apps)
      */
-    WriteAccessAllowed::Ptr writeAccessAllowed;
+    std::optional<WriteAccessAllowed::Ptr> writeAccessAllowed;
 
     /**
      * @brief Optional. Telegram Passport data
      */
-    PassportData::Ptr passportData;
+    std::optional<PassportData::Ptr> passportData;
 
     /**
      * @brief Optional. Service message.
      *
      * A user in the chat triggered another user's proximity alert while sharing Live Location.
      */
-    ProximityAlertTriggered::Ptr proximityAlertTriggered;
+    std::optional<ProximityAlertTriggered::Ptr> proximityAlertTriggered;
 
     /**
      * @brief Optional. Service message: user boosted the chat
      */
-    ChatBoostAdded::Ptr boostAdded;
+    std::optional<ChatBoostAdded::Ptr> boostAdded;
 
     /**
      * @brief Optional. Service message: forum topic created
      */
-    ForumTopicCreated::Ptr forumTopicCreated;
+    std::optional<ForumTopicCreated::Ptr> forumTopicCreated;
 
     /**
      * @brief Optional. Service message: forum topic edited
      */
-    ForumTopicEdited::Ptr forumTopicEdited;
+    std::optional<ForumTopicEdited::Ptr> forumTopicEdited;
 
     /**
      * @brief Optional. Service message: forum topic closed
      */
-    ForumTopicClosed::Ptr forumTopicClosed;
+    std::optional<ForumTopicClosed::Ptr> forumTopicClosed;
 
     /**
      * @brief Optional. Service message: forum topic reopened
      */
-    ForumTopicReopened::Ptr forumTopicReopened;
+    std::optional<ForumTopicReopened::Ptr> forumTopicReopened;
 
     /**
      * @brief Optional. Service message: the 'General' forum topic hidden
      */
-    GeneralForumTopicHidden::Ptr generalForumTopicHidden;
+    std::optional<GeneralForumTopicHidden::Ptr> generalForumTopicHidden;
 
     /**
      * @brief Optional. Service message: the 'General' forum topic unhidden
      */
-    GeneralForumTopicUnhidden::Ptr generalForumTopicUnhidden;
+    std::optional<GeneralForumTopicUnhidden::Ptr> generalForumTopicUnhidden;
 
     /**
      * @brief Optional. Service message: a scheduled giveaway was created
      */
-    GiveawayCreated::Ptr giveawayCreated;
+    std::optional<GiveawayCreated::Ptr> giveawayCreated;
 
     /**
      * @brief Optional. The message is a scheduled giveaway message
      */
-    Giveaway::Ptr giveaway;
+    std::optional<Giveaway::Ptr> giveaway;
 
     /**
      * @brief Optional. A giveaway with public winners was completed
      */
-    GiveawayWinners::Ptr giveawayWinners;
+    std::optional<GiveawayWinners::Ptr> giveawayWinners;
 
     /**
      * @brief Optional. Service message: a giveaway without public winners was completed
      */
-    GiveawayCompleted::Ptr giveawayCompleted;
+    std::optional<GiveawayCompleted::Ptr> giveawayCompleted;
 
     /**
      * @brief Optional. Service message: video chat scheduled
      */
-    VideoChatScheduled::Ptr videoChatScheduled;
+    std::optional<VideoChatScheduled::Ptr> videoChatScheduled;
 
     /**
      * @brief Optional. Service message: video chat started
      */
-    VideoChatStarted::Ptr videoChatStarted;
+    std::optional<VideoChatStarted::Ptr> videoChatStarted;
 
     /**
      * @brief Optional. Service message: video chat ended
      */
-    VideoChatEnded::Ptr videoChatEnded;
+    std::optional<VideoChatEnded::Ptr> videoChatEnded;
 
     /**
      * @brief Optional. Service message: new participants invited to a video chat
      */
-    VideoChatParticipantsInvited::Ptr videoChatParticipantsInvited;
+    std::optional<VideoChatParticipantsInvited::Ptr> videoChatParticipantsInvited;
 
     /**
      * @brief Optional. Service message: data sent by a Web App
      */
-    WebAppData::Ptr webAppData;
+    std::optional<WebAppData::Ptr> webAppData;
 
     /**
      * @brief Optional. Inline keyboard attached to the message.
      *
      * loginUrl buttons are represented as ordinary url buttons.
      */
-    InlineKeyboardMarkup::Ptr replyMarkup;
+    std::optional<InlineKeyboardMarkup::Ptr> replyMarkup;
 };
 }
 

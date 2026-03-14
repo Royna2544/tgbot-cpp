@@ -8,6 +8,7 @@
 #include "tgbot/types/File.h"
 #include "tgbot/types/MaskPosition.h"
 #include "tgbot/types/PhotoSize.h"
+#include <optional>
 
 namespace TgBot {
 
@@ -68,7 +69,7 @@ class Sticker {
     /**
      * @brief Optional. Sticker thumbnail in the .WEBP or .JPG format
      */
-    PhotoSize::Ptr thumbnail;
+    std::optional<PhotoSize::Ptr> thumbnail;
 
     /**
      * @brief Optional. Emoji associated with the sticker
@@ -84,13 +85,13 @@ class Sticker {
      * @brief Optional. For premium regular stickers, premium animation for the
      * sticker
      */
-    File::Ptr premiumAnimation;
+    std::optional<File::Ptr> premiumAnimation;
 
     /**
      * @brief Optional. For mask stickers, the position where the mask should be
      * placed
      */
-    MaskPosition::Ptr maskPosition;
+    std::optional<MaskPosition::Ptr> maskPosition;
 
     /**
      * @brief Optional. For custom emoji stickers, unique identifier of the

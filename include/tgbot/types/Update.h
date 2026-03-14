@@ -20,6 +20,7 @@
 #include "tgbot/types/PollAnswer.h"
 #include "tgbot/types/PreCheckoutQuery.h"
 #include "tgbot/types/ShippingQuery.h"
+#include <optional>
 
 namespace TgBot {
 
@@ -52,7 +53,7 @@ class Update {
      * @brief Optional. New incoming message of any kind - text, photo, sticker,
      * etc.
      */
-    Message::Ptr message;
+    std::optional<Message::Ptr> message;
 
     /**
      * @brief Optional. New version of a message that is known to the bot and
@@ -61,13 +62,13 @@ class Update {
      * This update may at times be triggered by changes to message fields that
      * are either unavailable or not actively used by your bot.
      */
-    Message::Ptr editedMessage;
+    std::optional<Message::Ptr> editedMessage;
 
     /**
      * @brief Optional. New incoming channel post of any kind - text, photo,
      * sticker, etc.
      */
-    Message::Ptr channelPost;
+    std::optional<Message::Ptr> channelPost;
 
     /**
      * @brief Optional. New version of a channel post that is known to the bot
@@ -76,30 +77,30 @@ class Update {
      * This update may at times be triggered by changes to message fields that
      * are either unavailable or not actively used by your bot.
      */
-    Message::Ptr editedChannelPost;
+    std::optional<Message::Ptr> editedChannelPost;
 
     /**
      * @brief Optional. The bot was connected to or disconnected from a business
      * account, or a user edited an existing connection with the bot
      */
-    BusinessConnection::Ptr businessConnection;
+    std::optional<BusinessConnection::Ptr> businessConnection;
 
     /**
      * @brief Optional. New non-service message from a connected business
      * account
      */
-    Message::Ptr businessMessage;
+    std::optional<Message::Ptr> businessMessage;
 
     /**
      * @brief Optional. New version of a message from a connected business
      * account
      */
-    Message::Ptr editedBusinessMessage;
+    std::optional<Message::Ptr> editedBusinessMessage;
 
     /**
      * @brief Optional. Messages were deleted from a connected business account
      */
-    BusinessMessagesDeleted::Ptr deletedBusinessMessages;
+    std::optional<BusinessMessagesDeleted::Ptr> deletedBusinessMessages;
 
     /**
      * @brief Optional. A reaction to a message was changed by a user.
@@ -108,7 +109,7 @@ class Update {
      * "message_reaction" in the list of allowedUpdates to receive these
      * updates. The update isn't received for reactions set by bots.
      */
-    MessageReactionUpdated::Ptr messageReaction;
+    std::optional<MessageReactionUpdated::Ptr> messageReaction;
 
     /**
      * @brief Optional. Reactions to a message with anonymous reactions were
@@ -119,13 +120,13 @@ class Update {
      * updates. The updates are grouped and can be sent with delay up to a few
      * minutes.
      */
-    MessageReactionCountUpdated::Ptr messageReactionCount;
+    std::optional<MessageReactionCountUpdated::Ptr> messageReactionCount;
 
     /**
      * @brief Optional. New incoming
      * [inline](https://core.telegram.org/bots/api#inline-mode) query
      */
-    InlineQuery::Ptr inlineQuery;
+    std::optional<InlineQuery::Ptr> inlineQuery;
 
     /**
      * @brief Optional. The result of an
@@ -136,26 +137,26 @@ class Update {
      * collecting](https://core.telegram.org/bots/inline#collecting-feedback)
      * for details on how to enable these updates for your bot.
      */
-    ChosenInlineResult::Ptr chosenInlineResult;
+    std::optional<ChosenInlineResult::Ptr> chosenInlineResult;
 
     /**
      * @brief Optional. New incoming callback query
      */
-    CallbackQuery::Ptr callbackQuery;
+    std::optional<CallbackQuery::Ptr> callbackQuery;
 
     /**
      * @brief Optional. New incoming shipping query.
      *
      * Only for invoices with flexible price
      */
-    ShippingQuery::Ptr shippingQuery;
+    std::optional<ShippingQuery::Ptr> shippingQuery;
 
     /**
      * @brief Optional. New incoming pre-checkout query.
      *
      * Contains full information about checkout
      */
-    PreCheckoutQuery::Ptr preCheckoutQuery;
+    std::optional<PreCheckoutQuery::Ptr> preCheckoutQuery;
 
     /**
      * @brief Optional. New poll state.
@@ -163,14 +164,14 @@ class Update {
      * Bots receive only updates about manually stopped polls and polls, which
      * are sent by the bot
      */
-    Poll::Ptr poll;
+    std::optional<Poll::Ptr> poll;
 
     /**
      * @brief Optional. A user changed their answer in a non-anonymous poll.
      *
      * Bots receive new votes only in polls that were sent by the bot itself.
      */
-    PollAnswer::Ptr pollAnswer;
+    std::optional<PollAnswer::Ptr> pollAnswer;
 
     /**
      * @brief Optional. The bot's chat member status was updated in a chat.
@@ -178,7 +179,7 @@ class Update {
      * For private chats, this update is received only when the bot is blocked
      * or unblocked by the user.
      */
-    ChatMemberUpdated::Ptr myChatMember;
+    std::optional<ChatMemberUpdated::Ptr> myChatMember;
 
     /**
      * @brief Optional. A chat member's status was updated in a chat.
@@ -186,7 +187,7 @@ class Update {
      * The bot must be an administrator in the chat and must explicitly specify
      * "chat_member" in the list of allowedUpdates to receive these updates.
      */
-    ChatMemberUpdated::Ptr chatMember;
+    std::optional<ChatMemberUpdated::Ptr> chatMember;
 
     /**
      * @brief Optional. A request to join the chat has been sent.
@@ -194,21 +195,21 @@ class Update {
      * The bot must have the canInviteUsers administrator right in the chat to
      * receive these updates.
      */
-    ChatJoinRequest::Ptr chatJoinRequest;
+    std::optional<ChatJoinRequest::Ptr> chatJoinRequest;
 
     /**
      * @brief Optional. A chat boost was added or changed.
      *
      * The bot must be an administrator in the chat to receive these updates.
      */
-    ChatBoostUpdated::Ptr chatBoost;
+    std::optional<ChatBoostUpdated::Ptr> chatBoost;
 
     /**
      * @brief Optional. A boost was removed from a chat.
      *
      * The bot must be an administrator in the chat to receive these updates.
      */
-    ChatBoostRemoved::Ptr removedChatBoost;
+    std::optional<ChatBoostRemoved::Ptr> removedChatBoost;
 
     enum class Types {
         message = 1,

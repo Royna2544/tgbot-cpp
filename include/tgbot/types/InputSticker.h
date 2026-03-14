@@ -44,7 +44,7 @@ public:
      *
      * For “mask” stickers only.
      */
-    MaskPosition::Ptr maskPosition;
+    std::optional<MaskPosition::Ptr> maskPosition;
 
     /**
      * @brief Optional. List of 0-20 search keywords for the sticker with total length of up to 64 characters.

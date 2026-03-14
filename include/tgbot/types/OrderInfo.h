@@ -38,7 +38,7 @@ public:
     /**
      * @brief Optional. User shipping address.
      */
-    ShippingAddress::Ptr shippingAddress;
+    std::optional<ShippingAddress::Ptr> shippingAddress;
 };
 
 }

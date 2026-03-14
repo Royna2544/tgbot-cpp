@@ -30,7 +30,7 @@ public:
      * 
      * The Web App will be able to switch back to the inline mode using the method switchInlineQuery (https://core.telegram.org/bots/webapps#initializing-mini-apps) inside the Web App.
      */
-    WebAppInfo::Ptr webApp;
+    std::optional<WebAppInfo::Ptr> webApp;
 
     /**
      * @brief Optional. Deep-linking (https://core.telegram.org/bots/features#deep-linking) parameter for the /start message sent to the bot when a user presses the button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.

@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <string_view>
+#include <optional>
 
 namespace TgBot {
 

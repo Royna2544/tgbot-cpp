@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -26,7 +27,7 @@ public:
 
     InlineQueryResultCachedSticker() {
         this->type = TYPE;
-	isCached = true;
+	    isCached = true;
     }
 
     /**
@@ -37,7 +38,7 @@ public:
     /**
      * @brief Optional. Content of the message to be sent instead of the sticker
      */
-    InputMessageContent::Ptr inputMessageContent;
+    std::optional<InputMessageContent::Ptr> inputMessageContent;
 };
 }
 

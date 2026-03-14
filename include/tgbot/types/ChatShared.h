@@ -49,7 +49,7 @@ public:
     /**
      * @brief Optional. Available sizes of the chat photo, if the photo was requested by the bot
      */
-    std::vector<PhotoSize::Ptr> photo;
+    std::optional<std::vector<PhotoSize::Ptr>> photo;
 };
 }
 

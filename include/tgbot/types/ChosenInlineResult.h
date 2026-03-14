@@ -32,7 +32,7 @@ public:
     /**
     * @brief Optional. Sender location, only for bots that require user location
     */
-    Location::Ptr location;
+    std::optional<Location::Ptr> location;
 
     /**
      * @brief Optional. Identifier of the sent inline message.

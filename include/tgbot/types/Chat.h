@@ -83,7 +83,7 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    ChatPhoto::Ptr photo;
+    std::optional<ChatPhoto::Ptr> photo;
 
     /**
      * @brief Optional. If non-empty, the list of all [active chat
@@ -92,14 +92,14 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    std::vector<std::string> activeUsernames;
+    std::optional<std::vector<std::string>> activeUsernames;
 
     /**
      * @brief Optional. For private chats, the date of birth of the user.
      *
      * Returned only in Api::getChat.
      */
-    Birthdate::Ptr birthdate;
+    std::optional<Birthdate::Ptr> birthdate;
 
     /**
      * @brief Optional. For private chats with business accounts, the intro of
@@ -107,7 +107,7 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    BusinessIntro::Ptr businessIntro;
+    std::optional<BusinessIntro::Ptr> businessIntro;
 
     /**
      * @brief Optional. For private chats with business accounts, the location
@@ -115,7 +115,7 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    BusinessLocation::Ptr businessLocation;
+    std::optional<BusinessLocation::Ptr> businessLocation;
 
     /**
      * @brief Optional. For private chats with business accounts, the opening
@@ -123,14 +123,14 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    BusinessOpeningHours::Ptr businessOpeningHours;
+    std::optional<BusinessOpeningHours::Ptr> businessOpeningHours;
 
     /**
      * @brief Optional. For private chats, the personal channel of the user.
      *
      * Returned only in Api::getChat.
      */
-    Chat::Ptr personalChat;
+    std::optional<Chat::Ptr> personalChat;
 
     /**
      * @brief Optional. List of available reactions allowed in the chat.
@@ -139,7 +139,7 @@ class Chat {
      * reactions](https://core.telegram.org/bots/api#reactiontypeemoji) are
      * allowed. Returned only in Api::getChat.
      */
-    std::vector<ReactionType::Ptr> availableReactions;
+    std::optional<std::vector<ReactionType::Ptr>> availableReactions;
 
     /**
      * @brief Optional. Identifier of the accent color for the chat name and
@@ -253,7 +253,7 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    std::shared_ptr<Message> pinnedMessage;
+    std::optional<std::shared_ptr<Message>> pinnedMessage;
 
     /**
      * @brief Optional. Default chat member permissions, for groups and
@@ -261,7 +261,7 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    ChatPermissions::Ptr permissions;
+    std::optional<ChatPermissions::Ptr> permissions;
 
     /**
      * @brief Optional. For supergroups, the minimum allowed delay between
@@ -363,7 +363,7 @@ class Chat {
      *
      * Returned only in Api::getChat.
      */
-    ChatLocation::Ptr location;
+    std::optional<ChatLocation::Ptr> location;
 };
 }  // namespace TgBot
 

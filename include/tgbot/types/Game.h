@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -47,12 +48,12 @@ public:
     /**
      * @brief Optional. Special entities that appear in text, such as usernames, URLs, bot commands, etc.
      */
-    std::vector<MessageEntity::Ptr> textEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> textEntities;
 
     /**
      * @brief Optional. Animation that will be displayed in the game message in chats. Upload via BotFather.
      */
-    Animation::Ptr animation;
+    std::optional<Animation::Ptr> animation;
 };
 }
 

@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -63,7 +64,7 @@ public:
     /**
      * @brief Optional. [Inline keyboard](https://core.telegram.org/bots/features#inline-keyboards) attached to the message
      */
-    InlineKeyboardMarkup::Ptr replyMarkup;
+    std::optional<InlineKeyboardMarkup::Ptr> replyMarkup;
 };
 }
 

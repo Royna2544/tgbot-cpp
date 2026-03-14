@@ -26,12 +26,12 @@ public:
     /**
      * @brief Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
      */
-    std::int64_t chatId{};
+    std::int64_t chatId;
 
     /**
      * @brief Unique identifier of the target user
      */
-    std::int64_t userId{};
+    std::int64_t userId;
 };
 }
 

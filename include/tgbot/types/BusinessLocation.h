@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -24,7 +25,7 @@ public:
     /**
      * @brief Optional. Location of the business
      */
-    Location::Ptr location;
+    std::optional<Location::Ptr> location;
 };
 }
 

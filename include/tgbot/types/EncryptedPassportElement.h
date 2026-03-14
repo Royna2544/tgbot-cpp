@@ -47,35 +47,35 @@ public:
      *
      * Files can be decrypted and verified using the accompanying EncryptedCredentials.
      */
-    std::vector<PassportFile::Ptr> files;
+    std::optional<std::vector<PassportFile::Ptr>> files;
 
     /**
      * @brief Optional. Encrypted file with the front side of the document, provided by the user; available only for “passport”, “driver_license”, “identity_card” and “internal_passport”.
      *
      * The file can be decrypted and verified using the accompanying EncryptedCredentials.
      */
-    PassportFile::Ptr frontSide;
+    std::optional<PassportFile::Ptr> frontSide;
 
     /**
      * @brief Optional. Encrypted file with the reverse side of the document, provided by the user; available only for “driver_license” and “identity_card”.
      *
      * The file can be decrypted and verified using the accompanying EncryptedCredentials.
      */
-    PassportFile::Ptr reverseSide;
+    std::optional<PassportFile::Ptr> reverseSide;
 
     /**
      * @brief Optional. Encrypted file with the selfie of the user holding a document, provided by the user; available if requested for “passport”, “driver_license”, “identity_card” and “internal_passport”.
      *
      * The file can be decrypted and verified using the accompanying EncryptedCredentials.
      */
-    PassportFile::Ptr selfie;
+    std::optional<PassportFile::Ptr> selfie;
 
     /**
      * @brief Optional. Array of encrypted files with translated versions of documents provided by the user; available if requested for “passport”, “driver_license”, “identity_card”, “internal_passport”, “utility_bill”, “bank_statement”, “rental_agreement”, “passport_registration” and “temporary_registration” types.
      *
      * Files can be decrypted and verified using the accompanying EncryptedCredentials.
      */
-    std::vector<PassportFile::Ptr> translation;
+    std::optional<std::vector<PassportFile::Ptr>> translation;
 
     /**
      * @brief Base64-encoded element hash for using in PassportElementErrorUnspecified

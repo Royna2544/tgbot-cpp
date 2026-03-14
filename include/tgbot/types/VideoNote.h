@@ -44,7 +44,7 @@ public:
     /**
      * @brief Optional. Video thumbnail
      */
-    PhotoSize::Ptr thumbnail;
+    std::optional<PhotoSize::Ptr> thumbnail;
 
     /**
      * @brief Optional. File size

@@ -50,7 +50,7 @@ public:
     /**
      * @brief Optional. Sender location, only for bots that request user location
      */
-    Location::Ptr location;
+    std::optional<Location::Ptr> location;
 };
 }
 

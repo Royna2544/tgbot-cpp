@@ -10,17 +10,36 @@ option(ENABLE_TESTS "Set to ON to enable building of tests" OFF)
 option(BUILD_SHARED_LIBS "Build tgbot-cpp shared/static library." OFF)
 option(BUILD_DOCUMENTATION "Build doxygen API documentation." OFF)
 
+# libs
+## threads
+find_package(Threads REQUIRED)
+
+## zlib
+find_package(ZLIB REQUIRED)
+
+## openssl
+find_package(OpenSSL REQUIRED)
+
+## curl
+find_package(CURL 7.58.0)
+
+## nlohmann_json
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 set(SRC_LIST
     src/Api.cpp
     src/Bot.cpp
     src/EventHandler.cpp
     src/TgTypeParser.cpp
     src/net/BoostSslClient.cpp
-    src/net/CurlHttpClient.cpp
     src/net/HttpParser.cpp
     src/net/TgLongPoll.cpp
     src/net/Url.cpp
     src/tools/StringTools.cpp)
+
+if (CURL_FOUND)
+    list(APPEND SRC_LIST src/net/CurlHttpClient.cpp)
+endif()
 
 # building project
 add_library(${PROJECT_NAME} ${SRC_LIST})
@@ -42,24 +61,10 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(${PROJECT_NAME} PRIVATE TGBOT_LP64)
 endif()
 
-# libs
-## threads
-find_package(Threads REQUIRED)
-
-## zlib
-find_package(ZLIB REQUIRED)
-
-## openssl
-find_package(OpenSSL REQUIRED)
-
-## curl
-find_package(CURL 7.58.0)
+## CURL
 if (CURL_FOUND)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC -DHAVE_CURL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_CURL)
 endif()
-
-## nlohmann_json
-find_package(nlohmann_json 3.2.0 REQUIRED)
 
 ## boost
 set(Boost_USE_MULTITHREADED ON)

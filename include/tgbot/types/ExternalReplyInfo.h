@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -49,7 +50,7 @@ public:
      *
      * Available only if the chat is a supergroup or a channel.
      */
-    Chat::Ptr chat;
+    std::optional<Chat::Ptr> chat;
 
     /**
      * @brief Optional. Unique message identifier inside the original chat.
@@ -61,52 +62,52 @@ public:
     /**
      * @brief Optional. Options used for link preview generation for the original message, if it is a text message
      */
-    LinkPreviewOptions::Ptr linkPreviewOptions;
+    std::optional<LinkPreviewOptions::Ptr> linkPreviewOptions;
 
     /**
      * @brief Optional. Message is an animation, information about the animation
      */
-    Animation::Ptr animation;
+    std::optional<Animation::Ptr> animation;
 
     /**
      * @brief Optional. Message is an audio file, information about the file
      */
-    Audio::Ptr audio;
+    std::optional<Audio::Ptr> audio;
 
     /**
      * @brief Optional. Message is a general file, information about the file
      */
-    Document::Ptr document;
+    std::optional<Document::Ptr> document;
 
     /**
      * @brief Optional. Message is a photo, available sizes of the photo
      */
-    std::vector<PhotoSize::Ptr> photo;
+    std::optional<std::vector<PhotoSize::Ptr>> photo;
 
     /**
      * @brief Optional. Message is a sticker, information about the sticker
      */
-    Sticker::Ptr sticker;
+    std::optional<Sticker::Ptr> sticker;
 
     /**
      * @brief Optional. Message is a forwarded story
      */
-    Story::Ptr story;
+    std::optional<Story::Ptr> story;
 
     /**
      * @brief Optional. Message is a video, information about the video
      */
-    Video::Ptr video;
+    std::optional<Video::Ptr> video;
 
     /**
      * @brief Optional. Message is a [video note](https://telegram.org/blog/video-messages-and-telescope), information about the video message
      */
-    VideoNote::Ptr videoNote;
+    std::optional<VideoNote::Ptr> videoNote;
 
     /**
      * @brief Optional. Message is a voice message, information about the file
      */
-    Voice::Ptr voice;
+    std::optional<Voice::Ptr> voice;
 
     /**
      * @brief Optional. True, if the message media is covered by a spoiler animation
@@ -116,51 +117,51 @@ public:
     /**
      * @brief Optional. Message is a shared contact, information about the contact
      */
-    Contact::Ptr contact;
+    std::optional<Contact::Ptr> contact;
 
     /**
      * @brief Optional. Message is a dice with random value
      */
-    Dice::Ptr dice;
+    std::optional<Dice::Ptr> dice;
 
     /**
      * @brief Optional. Message is a game, information about the game.
      *
      * [More about games »](https://core.telegram.org/bots/api#games)
      */
-    Game::Ptr game;
+    std::optional<Game::Ptr> game;
 
     /**
      * @brief Optional. Message is a scheduled giveaway, information about the giveaway
      */
-    Giveaway::Ptr giveaway;
+    std::optional<Giveaway::Ptr> giveaway;
 
     /**
      * @brief Optional. A giveaway with public winners was completed
      */
-    GiveawayWinners::Ptr giveawayWinners;
+    std::optional<GiveawayWinners::Ptr> giveawayWinners;
 
     /**
      * @brief Optional. Message is an invoice for a [payment](https://core.telegram.org/bots/api#payments), information about the invoice.
      *
      * [More about payments »](https://core.telegram.org/bots/api#payments)
      */
-    Invoice::Ptr invoice;
+    std::optional<Invoice::Ptr> invoice;
 
     /**
      * @brief Optional. Message is a shared location, information about the location
      */
-    Location::Ptr location;
+    std::optional<Location::Ptr> location;
 
     /**
      * @brief Optional. Message is a native poll, information about the poll
      */
-    Poll::Ptr poll;
+    std::optional<Poll::Ptr> poll;
 
     /**
      * @brief Optional. Message is a venue, information about the venue
      */
-    Venue::Ptr venue;
+    std::optional<Venue::Ptr> venue;
 };
 }
 

@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -60,7 +61,7 @@ public:
      * The rights must be a superset of botAdministratorRights.
      * If not specified, no additional restrictions are applied.
      */
-    ChatAdministratorRights::Ptr userAdministratorRights;
+    std::optional<ChatAdministratorRights::Ptr> userAdministratorRights;
 
     /**
      * @brief Optional. A JSON-serialized object listing the required administrator rights of the bot in the chat.
@@ -68,7 +69,7 @@ public:
      * The rights must be a subset of userAdministratorRights.
      * If not specified, no additional restrictions are applied.
      */
-    ChatAdministratorRights::Ptr botAdministratorRights;
+    std::optional<ChatAdministratorRights::Ptr> botAdministratorRights;
 
     /**
      * @brief Optional. Pass True to request a chat with the bot as a member.

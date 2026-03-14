@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <optional>
 
 namespace TgBot {
 
@@ -40,7 +41,7 @@ public:
      * Identifiers of selected users will be sent to the bot in a “usersShared” service message.
      * Available in private chats only.
      */
-    KeyboardButtonRequestUsers::Ptr requestUsers;
+    std::optional<KeyboardButtonRequestUsers::Ptr> requestUsers;
 
     /**
      * @brief Optional. If specified, pressing the button will open a list of suitable chats.
@@ -48,7 +49,7 @@ public:
      * Tapping on a chat will send its identifier to the bot in a “chatShared” service message.
      * Available in private chats only.
      */
-    KeyboardButtonRequestChat::Ptr requestChat;
+    std::optional<KeyboardButtonRequestChat::Ptr> requestChat;
 
     /**
      * @brief Optional. If True, the user's phone number will be sent as a contact when the button is pressed.
@@ -69,7 +70,7 @@ public:
      *
      * Available in private chats only.
      */
-    KeyboardButtonPollType::Ptr requestPoll;
+    std::optional<KeyboardButtonPollType::Ptr> requestPoll;
 
     /**
      * @brief Optional. If specified, the described [Web App](https://core.telegram.org/bots/webapps) will be launched when the button is pressed.
@@ -77,7 +78,7 @@ public:
      * The Web App will be able to send a “webAppData” service message.
      * Available in private chats only.
      */
-    WebAppInfo::Ptr webApp;
+    std::optional<WebAppInfo::Ptr> webApp;
 };
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace TgBot {
 
@@ -28,7 +29,7 @@ public:
 
     InlineQueryResultCachedAudio() {
         this->type = TYPE;
-	isCached = true;
+	    isCached = true;
     }
 
     /**
@@ -51,12 +52,12 @@ public:
     /**
      * @brief Optional. List of special entities that appear in the caption, which can be specified instead of parseMode
      */
-    std::vector<MessageEntity::Ptr> captionEntities;
+    std::optional<std::vector<MessageEntity::Ptr>> captionEntities;
 
     /**
      * @brief Optional. Content of the message to be sent instead of the audio
      */
-    InputMessageContent::Ptr inputMessageContent;
+    std::optional<InputMessageContent::Ptr> inputMessageContent;
 };
 }
 

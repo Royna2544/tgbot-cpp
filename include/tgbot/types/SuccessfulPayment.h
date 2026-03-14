@@ -53,7 +53,7 @@ public:
     /**
      * @brief Optional. Order info provided by the user.
      */
-    OrderInfo::Ptr orderInfo;
+    std::optional<OrderInfo::Ptr> orderInfo;
 
     /**
      * @brief Telegram payment identifier.
