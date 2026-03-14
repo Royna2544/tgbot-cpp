@@ -6357,6 +6357,30 @@ DECLARE_PARSER_TO_JSON(StarAmount) {
     return json;
 }
 
+DECLARE_PARSER_FROM_JSON(StarTransaction) {
+    auto result(std::make_shared<StarTransaction>());
+    parse(data, "id", &result->id);
+    parse(data, "date", &result->date);
+    parse(data, "amount", &result->amount);
+    parse(data, "nanostar_amount", &result->nanostarAmount);
+    result->source = parseRequired<TransactionPartner>(data, "source");
+    result->receiver = parseRequired<TransactionPartner>(data, "receiver");
+    return result;
+}
+
+DECLARE_PARSER_TO_JSON(StarTransaction) {
+    JsonWrapper json;
+    if (object) {
+        json.put("id", object->id);
+        json.put("date", object->date);
+        json.put("amount", object->amount);
+        json.put("nanostar_amount", object->nanostarAmount);
+        json.put("source", object->source);
+        json.put("receiver", object->receiver);
+    }
+    return json;
+}
+
 DECLARE_PARSER_FROM_JSON(StarTransactions) {
     auto result(std::make_shared<StarTransactions>());
     result->transactions = parseRequiredArray<StarTransaction>(data, "transactions");
@@ -6757,6 +6781,50 @@ DECLARE_PARSER_TO_JSON(TransactionPartnerUser) {
     return json;
 }
 
+DECLARE_PARSER_FROM_JSON(TransactionPartner) {
+    if (data["type"] == TransactionPartnerAffiliateProgram::TYPE) {
+        return parse<TransactionPartnerAffiliateProgram>(data);
+    } else if (data["type"] == TransactionPartnerChat::TYPE) {
+        return parse<TransactionPartnerChat>(data);
+    } else if (data["type"] == TransactionPartnerFragment::TYPE) {
+        return parse<TransactionPartnerFragment>(data);
+    } else if (data["type"] == TransactionPartnerOther::TYPE) {
+        return parse<TransactionPartnerOther>(data);
+    } else if (data["type"] == TransactionPartnerTelegramAds::TYPE) {
+        return parse<TransactionPartnerTelegramAds>(data);
+    } else if (data["type"] == TransactionPartnerTelegramApi::TYPE) {
+        return parse<TransactionPartnerTelegramApi>(data);
+    } else if (data["type"] == TransactionPartnerUser::TYPE) {
+        return parse<TransactionPartnerUser>(data);
+    } else {
+        throw invalidType("json", data.dump());
+    }
+}
+
+DECLARE_PARSER_TO_JSON(TransactionPartner) {
+    JsonWrapper json;
+    if (object) {
+        if (object->type == TransactionPartnerAffiliateProgram::TYPE) {
+            json = put<TransactionPartnerAffiliateProgram>(object);
+        } else if (object->type == TransactionPartnerChat::TYPE) {
+            json = put<TransactionPartnerChat>(object);
+        } else if (object->type == TransactionPartnerFragment::TYPE) {
+            json = put<TransactionPartnerFragment>(object);
+        } else if (object->type == TransactionPartnerOther::TYPE) {
+            json = put<TransactionPartnerOther>(object);
+        } else if (object->type == TransactionPartnerTelegramAds::TYPE) {
+            json = put<TransactionPartnerTelegramAds>(object);
+        } else if (object->type == TransactionPartnerTelegramApi::TYPE) {
+            json = put<TransactionPartnerTelegramApi>(object);
+        } else if (object->type == TransactionPartnerUser::TYPE) {
+            json = put<TransactionPartnerUser>(object);
+        } else {
+            throw invalidType("type", object->type);
+        }
+    }
+    return json;
+}
+
 DECLARE_PARSER_FROM_JSON(UniqueGift) {
     auto result(std::make_shared<UniqueGift>());
     parse(data, "gift_id", &result->giftId);
@@ -6975,6 +7043,28 @@ DECLARE_PARSER_TO_JSON(VideoQuality) {
         json.put("height", object->height);
         json.put("codec", object->codec);
         json.put("file_size", object->fileSize);
+    }
+    return json;
+}
+
+DECLARE_PARSER_FROM_JSON(AffiliateInfo) {
+    auto result(std::make_shared<AffiliateInfo>());
+    result->affiliateUser = parseRequired<User>(data, "affiliate_user");
+    result->affiliateChat = parseRequired<Chat>(data, "affiliate_chat");
+    parse(data, "commission_per_mille", &result->commissionPerMille);
+    parse(data, "amount", &result->amount);
+    parse(data, "nanostar_amount", &result->nanostarAmount);
+    return result;
+}
+
+DECLARE_PARSER_TO_JSON(AffiliateInfo) {
+    JsonWrapper json;
+    if (object) {
+        json.put("affiliate_user", object->affiliateUser);
+        json.put("affiliate_chat", object->affiliateChat);
+        json.put("commission_per_mille", object->commissionPerMille);
+        json.put("amount", object->amount);
+        json.put("nanostar_amount", object->nanostarAmount);
     }
     return json;
 }

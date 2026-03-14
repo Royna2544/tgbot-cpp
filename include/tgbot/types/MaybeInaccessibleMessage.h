@@ -19,4 +19,6 @@ class InaccessibleMessage;
  */
 using MaybeInaccessibleMessage = std::variant<std::shared_ptr<Message>, std::shared_ptr<InaccessibleMessage>>;
 
+}
+
 #endif //TGBOT_MAYBEINACCESSIBLEMESSAGE_H
