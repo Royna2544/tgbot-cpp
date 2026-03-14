@@ -111,6 +111,16 @@ public:
      * @brief Optional. Custom title for this user
      */
     std::optional<std::string> customTitle;
+
+    /**
+     * @brief Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
+     */
+    std::optional<bool> canManageDirectMessages;
+
+    /**
+     * @brief Optional. True, if the administrator can edit the tags of regular members; for groups and supergroups only. If omitted defaults to the value of can_pin_messages.
+     */
+    std::optional<bool> canManageTags;
 };
 }
 

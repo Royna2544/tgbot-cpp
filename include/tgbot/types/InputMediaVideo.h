@@ -60,6 +60,21 @@ public:
      * @brief Optional. Pass True if the video needs to be covered with a spoiler animation
      */
     std::optional<bool> hasSpoiler;
+
+    /**
+     * @brief Optional. Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass "attach://" to upload a new one using multipart/form-data under  name. More information on Sending Files: https://core.telegram.org/bots/api#sending-files
+     */
+    std::optional<std::string> cover;
+
+    /**
+     * @brief Optional. Start timestamp for the video in the message
+     */
+    std::optional<std::int32_t> startTimestamp;
+
+    /**
+     * @brief Optional. Pass True, if the caption must be shown above the message media
+     */
+    std::optional<bool> showCaptionAboveMedia;
 };
 }
 

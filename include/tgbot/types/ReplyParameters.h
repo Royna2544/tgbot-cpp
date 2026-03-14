@@ -67,6 +67,11 @@ public:
      * @brief Optional. Position of the quote in the original message in UTF-16 code units
      */
     std::optional<std::int32_t> quotePosition;
+
+    /**
+     * @brief Optional. Identifier of the specific checklist task to be replied to
+     */
+    std::optional<std::int32_t> checklistTaskId;
 };
 }
 

@@ -60,6 +60,11 @@ public:
      * @brief Optional. Content of the message to be sent instead of the video animation
      */
     std::optional<InputMessageContent::Ptr> inputMessageContent;
+
+    /**
+     * @brief Optional. Pass True, if the caption must be shown above the message media
+     */
+    std::optional<bool> showCaptionAboveMedia;
 };
 }
 

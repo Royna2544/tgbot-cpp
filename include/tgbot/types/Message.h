@@ -1,6 +1,26 @@
 #ifndef TGBOT_MESSAGE_H
 #define TGBOT_MESSAGE_H
 
+#include "tgbot/types/DirectMessagesTopic.h"
+#include "tgbot/types/ChatOwnerLeft.h"
+#include "tgbot/types/SuggestedPostApproved.h"
+#include "tgbot/types/SuggestedPostApprovalFailed.h"
+#include "tgbot/types/ChecklistTasksAdded.h"
+#include "tgbot/types/RefundedPayment.h"
+#include "tgbot/types/DirectMessagePriceChanged.h"
+#include "tgbot/types/SuggestedPostInfo.h"
+#include "tgbot/types/PaidMessagePriceChanged.h"
+#include "tgbot/types/ChatBackground.h"
+#include "tgbot/types/UniqueGiftInfo.h"
+#include "tgbot/types/Checklist.h"
+#include "tgbot/types/SuggestedPostPaid.h"
+#include "tgbot/types/PaidMediaInfo.h"
+#include "tgbot/types/SuggestedPostRefunded.h"
+#include "tgbot/types/ChecklistTasksDone.h"
+#include "tgbot/types/ChatOwnerChanged.h"
+#include "tgbot/types/SuggestedPostDeclined.h"
+#include "tgbot/types/GiftInfo.h"
+
 #include "tgbot/types/User.h"
 #include "tgbot/types/Chat.h"
 #include "tgbot/types/MessageOrigin.h"
@@ -509,6 +529,136 @@ public:
      * loginUrl buttons are represented as ordinary url buttons.
      */
     std::optional<InlineKeyboardMarkup::Ptr> replyMarkup;
+
+    /**
+     * @brief Optional. Information about the direct messages chat topic that contains the message
+     */
+    std::optional<DirectMessagesTopic::Ptr> directMessagesTopic;
+
+    /**
+     * @brief Optional. Tag or custom title of the sender of the message; for supergroups only
+     */
+    std::optional<std::string> senderTag;
+
+    /**
+     * @brief Optional. Identifier of the specific checklist task that is being replied to
+     */
+    std::optional<std::int32_t> replyToChecklistTaskId;
+
+    /**
+     * @brief Optional. True, if the message is a paid post. Note that such posts must not be deleted for 24 hours to receive the payment and can't be edited.
+     */
+    std::optional<bool> isPaidPost;
+
+    /**
+     * @brief Optional. The number of Telegram Stars that were paid by the sender of the message to send it
+     */
+    std::optional<std::int32_t> paidStarCount;
+
+    /**
+     * @brief Optional. Information about suggested post parameters if the message is a suggested post in a channel direct messages chat. If the message is an approved or declined suggested post, then it can't be edited.
+     */
+    std::optional<SuggestedPostInfo::Ptr> suggestedPostInfo;
+
+    /**
+     * @brief Optional. Unique identifier of the message effect added to the message
+     */
+    std::optional<std::string> effectId;
+
+    /**
+     * @brief Optional. Message contains paid media; information about the paid media
+     */
+    std::optional<PaidMediaInfo::Ptr> paidMedia;
+
+    /**
+     * @brief Optional. True, if the caption must be shown above the message media
+     */
+    std::optional<bool> showCaptionAboveMedia;
+
+    /**
+     * @brief Optional. Message is a checklist
+     */
+    std::optional<Checklist::Ptr> checklist;
+
+    /**
+     * @brief Optional. Service message: chat owner has left
+     */
+    std::optional<ChatOwnerLeft::Ptr> chatOwnerLeft;
+
+    /**
+     * @brief Optional. Service message: chat owner has changed
+     */
+    std::optional<ChatOwnerChanged::Ptr> chatOwnerChanged;
+
+    /**
+     * @brief Optional. Message is a service message about a refunded payment, information about the payment. More about payments: https://core.telegram.org/bots/api#payments
+     */
+    std::optional<RefundedPayment::Ptr> refundedPayment;
+
+    /**
+     * @brief Optional. Service message: a regular gift was sent or received
+     */
+    std::optional<GiftInfo::Ptr> gift;
+
+    /**
+     * @brief Optional. Service message: a unique gift was sent or received
+     */
+    std::optional<UniqueGiftInfo::Ptr> uniqueGift;
+
+    /**
+     * @brief Optional. Service message: upgrade of a gift was purchased after the gift was sent
+     */
+    std::optional<GiftInfo::Ptr> giftUpgradeSent;
+
+    /**
+     * @brief Optional. Service message: chat background set
+     */
+    std::optional<ChatBackground::Ptr> chatBackgroundSet;
+
+    /**
+     * @brief Optional. Service message: some tasks in a checklist were marked as done or not done
+     */
+    std::optional<ChecklistTasksDone::Ptr> checklistTasksDone;
+
+    /**
+     * @brief Optional. Service message: tasks were added to a checklist
+     */
+    std::optional<ChecklistTasksAdded::Ptr> checklistTasksAdded;
+
+    /**
+     * @brief Optional. Service message: the price for paid messages in the corresponding direct messages chat of a channel has changed
+     */
+    std::optional<DirectMessagePriceChanged::Ptr> directMessagePriceChanged;
+
+    /**
+     * @brief Optional. Service message: the price for paid messages has changed in the chat
+     */
+    std::optional<PaidMessagePriceChanged::Ptr> paidMessagePriceChanged;
+
+    /**
+     * @brief Optional. Service message: a suggested post was approved
+     */
+    std::optional<SuggestedPostApproved::Ptr> suggestedPostApproved;
+
+    /**
+     * @brief Optional. Service message: approval of a suggested post has failed
+     */
+    std::optional<SuggestedPostApprovalFailed::Ptr> suggestedPostApprovalFailed;
+
+    /**
+     * @brief Optional. Service message: a suggested post was declined
+     */
+    std::optional<SuggestedPostDeclined::Ptr> suggestedPostDeclined;
+
+    /**
+     * @brief Optional. Service message: payment for a suggested post was received
+     */
+    std::optional<SuggestedPostPaid::Ptr> suggestedPostPaid;
+
+    /**
+     * @brief Optional. Service message: payment for a suggested post was refunded
+     */
+    std::optional<SuggestedPostRefunded::Ptr> suggestedPostRefunded;
 };
 }
 

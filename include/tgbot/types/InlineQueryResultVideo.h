@@ -93,6 +93,11 @@ public:
      * This field is required if InlineQueryResultVideo is used to send an HTML-page as a result (e.g., a YouTube video).
      */
     std::optional<InputMessageContent::Ptr> inputMessageContent;
+
+    /**
+     * @brief Optional. Pass True, if the caption must be shown above the message media
+     */
+    std::optional<bool> showCaptionAboveMedia;
 };
 }
 

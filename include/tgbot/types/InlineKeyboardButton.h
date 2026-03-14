@@ -1,6 +1,8 @@
 #ifndef TGBOT_INLINEKEYBOARDBUTTON_H
 #define TGBOT_INLINEKEYBOARDBUTTON_H
 
+#include "tgbot/types/CopyTextButton.h"
+
 #include "tgbot/types/WebAppInfo.h"
 #include "tgbot/types/LoginUrl.h"
 #include "tgbot/types/SwitchInlineQueryChosenChat.h"
@@ -89,6 +91,21 @@ public:
      * NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
      */
     std::optional<bool> pay;
+
+    /**
+     * @brief Optional. Unique identifier of the custom emoji shown before the text of the button. Can only be used by bots that purchased additional usernames on Fragment or in the messages directly sent by the bot to private, group and supergroup chats if the owner of the bot has a Telegram Premium subscription.
+     */
+    std::optional<std::string> iconCustomEmojiId;
+
+    /**
+     * @brief Optional. Style of the button. Must be one of "danger" (red), "success" (green) or "primary" (blue). If omitted, then an app-specific style is used.
+     */
+    std::optional<std::string> style;
+
+    /**
+     * @brief Optional. Description of the button that copies the specified text to the clipboard.
+     */
+    std::optional<CopyTextButton::Ptr> copyText;
 };
 }
 

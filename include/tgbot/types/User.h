@@ -88,6 +88,21 @@ public:
      * Returned only in Api::getMe.
      */
     std::optional<bool> canConnectToBusiness;
+
+    /**
+     * @brief Optional. True, if the bot has a main Web App. Returned only in getMe.
+     */
+    std::optional<bool> hasMainWebApp;
+
+    /**
+     * @brief Optional. True, if the bot has forum topic mode enabled in private chats. Returned only in getMe.
+     */
+    std::optional<bool> hasTopicsEnabled;
+
+    /**
+     * @brief Optional. True, if the bot allows users to create and delete topics in private chats. Returned only in getMe.
+     */
+    std::optional<bool> allowsUsersToCreateTopics;
 };
 }
 

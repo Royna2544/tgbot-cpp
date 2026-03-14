@@ -21,6 +21,16 @@ public:
     ChatMemberMember() {
         this->status = STATUS;
     }
+
+    /**
+     * @brief Optional. Tag of the member
+     */
+    std::optional<std::string> tag;
+
+    /**
+     * @brief Optional. Date when the user's subscription will expire; Unix time
+     */
+    std::optional<std::int32_t> untilDate;
 };
 }
 

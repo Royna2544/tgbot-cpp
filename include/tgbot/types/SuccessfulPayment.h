@@ -64,6 +64,21 @@ public:
      * @brief Provider payment identifier.
      */
     std::string providerPaymentChargeId;
+
+    /**
+     * @brief Optional. Expiration date of the subscription, in Unix time; for recurring payments only
+     */
+    std::optional<std::int32_t> subscriptionExpirationDate;
+
+    /**
+     * @brief Optional. True, if the payment is a recurring payment for a subscription
+     */
+    std::optional<bool> isRecurring;
+
+    /**
+     * @brief Optional. True, if the payment is the first payment for a subscription
+     */
+    std::optional<bool> isFirstRecurring;
 };
 }
 

@@ -107,6 +107,16 @@ public:
      * If 0, then the user is restricted forever
      */
     std::uint32_t untilDate{};
+
+    /**
+     * @brief Optional. Tag of the member
+     */
+    std::optional<std::string> tag;
+
+    /**
+     * @brief True, if the user is allowed to edit their own tag
+     */
+    bool canEditTag;
 };
 }
 

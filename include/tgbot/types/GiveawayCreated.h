@@ -16,6 +16,11 @@ class GiveawayCreated {
 
 public:
     using Ptr = std::shared_ptr<GiveawayCreated>;
+
+    /**
+     * @brief Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+     */
+    std::optional<std::int32_t> prizeStarCount;
 };
 }
 

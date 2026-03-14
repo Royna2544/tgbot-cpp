@@ -87,6 +87,11 @@ public:
      * @brief Optional. Point in time (Unix timestamp) when the poll will be automatically closed
      */
     std::optional<std::int64_t> closeDate;
+
+    /**
+     * @brief Optional. Special entities that appear in the question. Currently, only custom emoji entities are allowed in poll questions
+     */
+    std::optional<std::vector<MessageEntity::Ptr>> questionEntities;
 };
 }
 

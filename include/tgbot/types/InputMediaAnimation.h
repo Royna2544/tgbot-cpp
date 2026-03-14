@@ -55,6 +55,11 @@ public:
      * @brief Optional. Pass True if the animation needs to be covered with a spoiler animation
      */
     std::optional<bool> hasSpoiler;
+
+    /**
+     * @brief Optional. Pass True, if the caption must be shown above the message media
+     */
+    std::optional<bool> showCaptionAboveMedia;
 };
 }
 

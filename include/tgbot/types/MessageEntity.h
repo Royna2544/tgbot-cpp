@@ -99,6 +99,16 @@ class MessageEntity {
      * Use Api::getCustomEmojiStickers to get full information about the sticker
      */
     std::optional<std::string> customEmojiId;
+
+    /**
+     * @brief Optional. For "date_time" only, the Unix time associated with the entity
+     */
+    std::optional<std::int32_t> unixTime;
+
+    /**
+     * @brief Optional. For "date_time" only, the string that defines the formatting of the date and time. See date-time entity formatting for more details.
+     */
+    std::optional<std::string> dateTimeFormat;
 };
 }  // namespace TgBot
 

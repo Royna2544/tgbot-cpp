@@ -63,6 +63,11 @@ public:
      * @brief Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
      */
     std::optional<std::int32_t> premiumSubscriptionMonthCount;
+
+    /**
+     * @brief Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+     */
+    std::optional<std::int32_t> prizeStarCount;
 };
 }
 

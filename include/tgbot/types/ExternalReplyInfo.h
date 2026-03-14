@@ -1,6 +1,9 @@
 #ifndef TGBOT_EXTERNALREPLYINFO_H
 #define TGBOT_EXTERNALREPLYINFO_H
 
+#include "tgbot/types/PaidMediaInfo.h"
+#include "tgbot/types/Checklist.h"
+
 #include "tgbot/types/MessageOrigin.h"
 #include "tgbot/types/Chat.h"
 #include "tgbot/types/LinkPreviewOptions.h"
@@ -162,6 +165,16 @@ public:
      * @brief Optional. Message is a venue, information about the venue
      */
     std::optional<Venue::Ptr> venue;
+
+    /**
+     * @brief Optional. Message contains paid media; information about the paid media
+     */
+    std::optional<PaidMediaInfo::Ptr> paidMedia;
+
+    /**
+     * @brief Optional. Message is a checklist
+     */
+    std::optional<Checklist::Ptr> checklist;
 };
 }
 

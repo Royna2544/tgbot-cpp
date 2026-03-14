@@ -36,6 +36,11 @@ public:
      * @brief Optional. Unique identifier of the custom emoji shown as the topic icon
      */
     std::optional<std::string> iconCustomEmojiId;
+
+    /**
+     * @brief Optional. True, if the name of the topic wasn't specified explicitly by its creator and likely needs to be changed by the bot
+     */
+    std::optional<bool> isNameImplicit;
 };
 }
 

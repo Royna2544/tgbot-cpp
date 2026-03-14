@@ -1,6 +1,8 @@
 #ifndef TGBOT_VIDEO_H
 #define TGBOT_VIDEO_H
 
+#include "tgbot/types/VideoQuality.h"
+
 #include "tgbot/types/PhotoSize.h"
 
 #include <cstdint>
@@ -68,6 +70,21 @@ public:
      * But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
      */
     std::optional<std::int64_t> fileSize;
+
+    /**
+     * @brief Optional. Available sizes of the cover of the video in the message
+     */
+    std::optional<std::vector<PhotoSize::Ptr>> cover;
+
+    /**
+     * @brief Optional. Timestamp in seconds from which the video will play in the message
+     */
+    std::optional<std::int32_t> startTimestamp;
+
+    /**
+     * @brief Optional. List of available qualities of the video
+     */
+    std::optional<std::vector<VideoQuality::Ptr>> qualities;
 };
 }
 

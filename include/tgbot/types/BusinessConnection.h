@@ -1,6 +1,8 @@
 #ifndef TGBOT_BUSINESSCONNECTION_H
 #define TGBOT_BUSINESSCONNECTION_H
 
+#include "tgbot/types/BusinessBotRights.h"
+
 #include "tgbot/types/User.h"
 
 #include <cstdint>
@@ -51,6 +53,11 @@ public:
      * @brief True, if the connection is active
      */
     bool isEnabled;
+
+    /**
+     * @brief Optional. Rights of the business bot
+     */
+    std::optional<BusinessBotRights::Ptr> rights;
 };
 }
 

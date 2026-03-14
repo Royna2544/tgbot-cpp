@@ -1,0 +1,71 @@
+#ifndef TGBOT_INPUTPAIDMEDIAVIDEO_H
+#define TGBOT_INPUTPAIDMEDIAVIDEO_H
+
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+#include <optional>
+
+#include "tgbot/types/InputPaidMedia.h"
+
+namespace TgBot {
+
+/**
+ * @brief The paid media to send is a video.
+ *
+ * @ingroup types
+ */
+class InputPaidMediaVideo : public InputPaidMedia {
+public:
+    using Ptr = std::shared_ptr<InputPaidMediaVideo>;
+    static constexpr const char* TYPE = "video";
+
+    InputPaidMediaVideo() {
+        type = TYPE;
+    }
+
+    /**
+     * @brief File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass "attach://<file_attach_name>" to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files: https://core.telegram.org/bots/api#sending-files
+     */
+    std::string media;
+
+    /**
+     * @brief Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass "attach://<file_attach_name>" if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files: https://core.telegram.org/bots/api#sending-files
+     */
+    std::optional<std::string> thumbnail;
+
+    /**
+     * @brief Optional. Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass "attach://<file_attach_name>" to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files: https://core.telegram.org/bots/api#sending-files
+     */
+    std::optional<std::string> cover;
+
+    /**
+     * @brief Optional. Start timestamp for the video in the message
+     */
+    std::optional<std::int64_t> startTimestamp;
+
+    /**
+     * @brief Optional. Video width
+     */
+    std::optional<std::int64_t> width;
+
+    /**
+     * @brief Optional. Video height
+     */
+    std::optional<std::int64_t> height;
+
+    /**
+     * @brief Optional. Video duration in seconds
+     */
+    std::optional<std::int64_t> duration;
+
+    /**
+     * @brief Optional. Pass True if the uploaded video is suitable for streaming
+     */
+    std::optional<bool> supportsStreaming;
+
+};
+}
+
+#endif //TGBOT_INPUTPAIDMEDIAVIDEO_H

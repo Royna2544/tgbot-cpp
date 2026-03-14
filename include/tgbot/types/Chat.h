@@ -364,6 +364,11 @@ class Chat {
      * Returned only in Api::getChat.
      */
     std::optional<ChatLocation::Ptr> location;
+
+    /**
+     * @brief Optional. True, if the chat is the direct messages chat of a channel
+     */
+    std::optional<bool> isDirectMessages;
 };
 }  // namespace TgBot
 

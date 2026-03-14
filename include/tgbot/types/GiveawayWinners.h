@@ -76,6 +76,11 @@ public:
      * @brief Optional. Description of additional giveaway prize
      */
     std::optional<std::string> prizeDescription;
+
+    /**
+     * @brief Optional. The number of Telegram Stars that were split between giveaway winners; for Telegram Star giveaways only
+     */
+    std::optional<std::int32_t> prizeStarCount;
 };
 }
 

@@ -1,6 +1,8 @@
 #ifndef TGBOT_UPDATE_H
 #define TGBOT_UPDATE_H
 
+#include "tgbot/types/PaidMediaPurchased.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -236,6 +238,11 @@ class Update {
         chat_boost = 1 << 21,
         removed_chat_boost = 1 << 22,
     };
+
+    /**
+     * @brief Optional. A user purchased paid media with a non-empty payload sent by the bot in a non-channel chat
+     */
+    std::optional<PaidMediaPurchased::Ptr> purchasedPaidMedia;
 };
 }  // namespace TgBot
 

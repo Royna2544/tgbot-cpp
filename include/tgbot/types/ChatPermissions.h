@@ -91,6 +91,11 @@ public:
      * If omitted defaults to the value of canPinMessages
      */
     std::optional<bool> canManageTopics;
+
+    /**
+     * @brief Optional. True, if the user is allowed to edit their own tag
+     */
+    std::optional<bool> canEditTag;
 };
 }
 

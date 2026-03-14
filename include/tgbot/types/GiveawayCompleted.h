@@ -33,6 +33,11 @@ public:
      * @brief Optional. Message with the giveaway that was completed, if it wasn't deleted
      */
     std::optional<std::shared_ptr<Message>> giveawayMessage;
+
+    /**
+     * @brief Optional. True, if the giveaway is a Telegram Star giveaway. Otherwise, currently, the giveaway is a Telegram Premium giveaway.
+     */
+    std::optional<bool> isStarGiveaway;
 };
 }
 
