@@ -32,7 +32,7 @@ public:
      *
      * May be 0 if the message isn't sent yet.
      */
-    std::int32_t giveawayMessageId{};
+    std::int32_t giveawayMessageId;
 
     /**
      * @brief Optional. True, if the giveaway was completed, but there was no user to win the prize

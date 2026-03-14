@@ -35,7 +35,7 @@ public:
     /**
      * @brief Unique message identifier inside the chat
      */
-    std::int32_t messageId{};
+    std::int32_t messageId;
 
     /**
      * @brief Optional. Signature of the original post author

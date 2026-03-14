@@ -33,12 +33,12 @@ public:
     /**
      * @brief Latitude of the venue location in degrees
      */
-    float latitude{};
+    float latitude;
 
     /**
      * @brief Longitude of the venue location in degrees
      */
-    float longitude{};
+    float longitude;
 
     /**
      * @brief Title of the venue

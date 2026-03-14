@@ -28,7 +28,7 @@ public:
      * 
      * If 0, then the user is banned forever
      */
-    std::uint32_t untilDate{};
+    std::uint32_t untilDate;
 };
 }
 

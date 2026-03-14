@@ -34,14 +34,14 @@ public:
      *
      * Defaults to false, in which case the custom keyboard can be hidden and opened with a keyboard icon.
      */
-    std::optional<bool> isPersistent = false;
+    std::optional<bool> isPersistent;
 
     /**
      * @brief Optional. Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons).
      *
      * Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard.
      */
-    std::optional<bool> resizeKeyboard = false;
+    std::optional<bool> resizeKeyboard;
 
     /**
      * @brief Optional. Requests clients to hide the keyboard as soon as it's been used.
@@ -49,7 +49,7 @@ public:
      * The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat - the user can press a special button in the input field to see the custom keyboard again.
      * Defaults to false.
      */
-    std::optional<bool> oneTimeKeyboard = false;
+    std::optional<bool> oneTimeKeyboard;
 
     /**
      * @brief Optional. The placeholder to be shown in the input field when the keyboard is active; 1-64 characters

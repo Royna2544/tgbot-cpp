@@ -33,12 +33,12 @@ public:
     /**
      * @brief Location latitude in degrees
      */
-    float latitude{};
+    float latitude;
 
     /**
      * @brief Location longitude in degrees
      */
-    float longitude{};
+    float longitude;
 
     /**
      * @brief Location title

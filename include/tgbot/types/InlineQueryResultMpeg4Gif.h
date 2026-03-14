@@ -44,12 +44,12 @@ public:
     /**
      * @brief Optional. Video height
      */
-    std::optional<std::int32_t> mpeg4Height{};
+    std::optional<std::int32_t> mpeg4Height;
 
     /**
      * @brief Optional. Video duration
      */
-    std::optional<std::int32_t> mpeg4Duration{};
+    std::optional<std::int32_t> mpeg4Duration;
 
     /**
     * @brief URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result

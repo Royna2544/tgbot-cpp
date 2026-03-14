@@ -28,64 +28,64 @@ public:
     /**
      * @brief True, if the bot is allowed to edit administrator privileges of that user
      */
-    bool canBeEdited{};
+    bool canBeEdited;
 
     /**
      * @brief True, if the user's presence in the chat is hidden
      */
-    bool isAnonymous{};
+    bool isAnonymous;
 
     /**
      * @brief True, if the administrator can access the chat event log, get boost list, see hidden supergroup and channel members, report spam messages and ignore slow mode.
      *
      * Implied by any other administrator privilege.
      */
-    bool canManageChat{};
+    bool canManageChat;
 
     /**
      * @brief True, if the administrator can delete messages of other users
      */
-    bool canDeleteMessages{};
+    bool canDeleteMessages;
 
     /**
      * @brief True, if the administrator can manage video chats
      */
-    bool canManageVideoChats{};
+    bool canManageVideoChats;
 
     /**
      * @brief True, if the administrator can restrict, ban or unban chat members, or access supergroup statistics
      */
-    bool canRestrictMembers{};
+    bool canRestrictMembers;
 
     /**
      * @brief True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user)
      */
-    bool canPromoteMembers{};
+    bool canPromoteMembers;
 
     /**
      * @brief True, if the user is allowed to change the chat title, photo and other settings
      */
-    bool canChangeInfo{};
+    bool canChangeInfo;
 
     /**
      * @brief True, if the user is allowed to invite new users to the chat
      */
-    bool canInviteUsers{};
+    bool canInviteUsers;
 
     /**
      * @brief True, if the administrator can post stories to the chat
      */
-    bool canPostStories{};
+    bool canPostStories;
 
     /**
      * @brief True, if the administrator can edit stories posted by other users
      */
-    bool canEditStories{};
+    bool canEditStories;
 
     /**
      * @brief True, if the administrator can delete stories posted by other users
      */
-    bool canDeleteStories{};
+    bool canDeleteStories;
 
     /**
      * @brief Optional. True, if the administrator can post messages in the channel, or access channel statistics; for channels only

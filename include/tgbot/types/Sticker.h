@@ -104,7 +104,7 @@ class Sticker {
      * in messages, the color of the Telegram Premium badge in emoji status,
      * white color on chat photos, or another appropriate color in other places
      */
-    std::optional<bool> needsRepainting = true;
+    std::optional<bool> needsRepainting;
 
     /**
      * @brief Optional. File size in bytes

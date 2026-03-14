@@ -26,12 +26,12 @@ public:
     /**
      * @brief Latitude of the location in degrees
      */
-    float latitude{};
+    float latitude;
 
     /**
      * @brief Longitude of the location in degrees
      */
-    float longitude{};
+    float longitude;
 
     /**
      * @brief Optional. The radius of uncertainty for the location, measured in meters; 0-1500

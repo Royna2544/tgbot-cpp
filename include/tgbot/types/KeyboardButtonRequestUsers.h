@@ -25,7 +25,7 @@ public:
      *
      * Must be unique within the message
      */
-    std::int32_t requestId{};
+    std::int32_t requestId;
 
     /**
      * @brief Optional. Pass True to request bots, pass False to request regular users.
