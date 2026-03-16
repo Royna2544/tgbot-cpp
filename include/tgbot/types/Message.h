@@ -68,6 +68,7 @@
 #include "tgbot/types/VideoChatParticipantsInvited.h"
 #include "tgbot/types/WebAppData.h"
 #include "tgbot/types/InlineKeyboardMarkup.h"
+#include "tgbot/types/MaybeInaccessibleMessage.h"
 
 #include <cstdint>
 #include <memory>
@@ -393,7 +394,7 @@ public:
      *
      * Note that the Message object in this field will not contain further replyToMessage fields even if it itself is a reply.
      */
-    std::optional<Message::Ptr> pinnedMessage;
+    std::optional<MaybeInaccessibleMessage> pinnedMessage;
 
     /**
      * @brief Optional. Message is an invoice for a [payment](https://core.telegram.org/bots/api#payments), information about the invoice.

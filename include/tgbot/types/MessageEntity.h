@@ -42,7 +42,8 @@ class MessageEntity {
         Pre,
         TextLink,
         TextMention,
-        CustomEmoji
+        CustomEmoji,
+        ExpandableBlockquote,
     };
 
     /**

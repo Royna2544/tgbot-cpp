@@ -7,6 +7,8 @@
 #include <vector>
 #include <optional>
 
+#include "tgbot/types/ReactionType.h"
+
 namespace TgBot {
 
 /**
@@ -14,15 +16,14 @@ namespace TgBot {
  *
  * @ingroup types
  */
-class ReactionTypePaid {
+class ReactionTypePaid : public ReactionType {
 public:
     using Ptr = std::shared_ptr<ReactionTypePaid>;
+    constexpr static const char* TYPE = "paid";
 
-    /**
-     * @brief Type of the reaction, always "paid"
-     */
-    std::string type;
-
+    ReactionTypePaid() {
+        type = TYPE;
+    }
 };
 }
 

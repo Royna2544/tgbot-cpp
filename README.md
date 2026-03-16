@@ -9,7 +9,7 @@ Documentation is located [here](http://reo7sp.github.io/tgbot-cpp).
 
 ## State
 
-This library implements most features from **Telegram Bot API 9.4** with additional features from later versions. (WIP)
+This library implements most features from **Telegram Bot API 9.4** with additional features from later versions.
 
 ## Sample
 

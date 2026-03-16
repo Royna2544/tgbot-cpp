@@ -3,6 +3,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "tgbot/TgException.h"
+
 #include <memory>
 #include <sstream>
 #include <string>
@@ -129,6 +131,7 @@
 #include "tgbot/types/Location.h"
 #include "tgbot/types/LoginUrl.h"
 #include "tgbot/types/MaskPosition.h"
+#include "tgbot/types/MaybeInaccessibleMessage.h"
 #include "tgbot/types/MenuButton.h"
 #include "tgbot/types/MenuButtonCommands.h"
 #include "tgbot/types/MenuButtonDefault.h"
@@ -477,6 +480,120 @@ std::string putJSON(const T &object) {
     return put(object).dump();
 }
 
+
+// T should be instance of std::shared_ptr.
+template <typename T>
+std::optional<std::shared_ptr<T>> parse(const nlohmann::json& data, const std::string& key) {
+    if (!data.contains(key)) {
+        return std::nullopt;
+    }
+    return parse<T>(data[key]);
+}
+
+template <typename T>
+std::shared_ptr<T> parseRequired(const nlohmann::json& data, const std::string& key) {
+    if (!data.contains(key)) {
+        return nullptr;
+    }
+    return parse<T>(data[key]);
+}
+
+
+inline TgException invalidType(const std::string_view name,
+    const std::string_view type) {
+    std::stringstream ss;
+    ss << "Invalid type for " << name << ": " << type;
+    return TgException(ss.str(), TgException::ErrorCode::Internal);
+}
+
+struct JsonWrapper {
+    JsonWrapper() : data_(nlohmann::json::object()) {}
+
+    // Overload for primitive types
+    template <typename T,
+        std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
+    void put(const std::string_view key, T value) {
+        data_[std::string(key)] = std::move(value);
+    }
+    // Required objects
+    template <typename T,
+        std::enable_if_t<!detail::is_primitive_v<T>, bool> = true>
+    void put(const std::string_view key, std::shared_ptr<T> value) {
+        data_[std::string(key)] = TgBot::put(value);
+    }
+
+    // Support for vector of primitives and objects
+    template <typename T>
+    void put(const std::string_view key, std::vector<T> value) {
+        data_[std::string(key)] = TgBot::put(value);
+    }
+
+    // Overload for optional types
+    template <typename T,
+        std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
+    void put(const std::string_view key, std::optional<T> value) {
+        if (!value) {
+            return;  // Skip empty optional
+        }
+        data_[std::string(key)] = *value;
+    }
+    template <typename T,
+        std::enable_if_t<!detail::is_primitive_v<T>, bool> = true>
+    void put(const std::string_view key, std::optional<T> value) {
+        if (!value) {
+            return;  // Skip empty optional
+        }
+        data_[std::string(key)] = TgBot::put(*value);
+    }
+
+    static void merge(nlohmann::json& thiz, const nlohmann::json& other) {
+        if (!thiz.is_object() || !other.is_object()) {
+            return;
+        }
+
+        for (auto it = other.begin(); it != other.end(); ++it) {
+            if (thiz[it.key()].is_object()) {
+                merge(thiz[it.key()], it.value());
+            }
+            else {
+                thiz[it.key()] = it.value();
+            }
+        }
+    }
+
+    void operator+=(const nlohmann::json& other) { merge(data_, other); }
+
+    JsonWrapper& operator=(nlohmann::json&& other) {
+        data_ = std::move(other);
+        return *this;
+    }
+    operator nlohmann::json() const { return data_; }
+
+private:
+    nlohmann::json data_;
+};
+
+template <typename T>
+void parse(const nlohmann::json& data, const std::string& key, T* value) {
+    using Type = std::conditional_t<detail::is_optional_v<T>,
+        typename detail::is_optional<T>::type, T>;
+    using FixedType =
+        std::conditional_t<std::is_floating_point_v<Type>, double, Type>;
+    using MoreFixedType =
+        std::conditional_t<std::is_integral_v<Type>, int64_t, FixedType>;
+    using FinalType =
+        std::conditional_t<std::is_same_v<Type, bool>, bool, MoreFixedType>;
+    if (data.contains(key) && !data[key].is_null()) {
+        if constexpr (detail::is_primitive_v<Type>) {
+            *value = static_cast<Type>(data[key].get<FinalType>());
+        }
+        else {
+            *value = parse<typename detail::is_shared_ptr<Type>::type>(data[key]);
+        }
+    }
+}
+
+
 #define IMPLEMENT_PARSERS(type)     \
     DECLARE_PARSER_FROM_JSON(type); \
     DECLARE_PARSER_TO_JSON(type)
@@ -746,6 +863,7 @@ IMPLEMENT_PARSERS(SuggestedPostPaid);
 IMPLEMENT_PARSERS(SuggestedPostParameters);
 IMPLEMENT_PARSERS(SuggestedPostPrice);
 IMPLEMENT_PARSERS(SuggestedPostRefunded);
+IMPLEMENT_PARSERS(TransactionPartner);
 IMPLEMENT_PARSERS(TransactionPartnerAffiliateProgram);
 IMPLEMENT_PARSERS(TransactionPartnerChat);
 IMPLEMENT_PARSERS(TransactionPartnerFragment);
@@ -764,6 +882,8 @@ IMPLEMENT_PARSERS(UserProfileAudios);
 IMPLEMENT_PARSERS(UserRating);
 IMPLEMENT_PARSERS(VideoQuality);
 
+MaybeInaccessibleMessage parse(const nlohmann::json& data);
+nlohmann::json put(const MaybeInaccessibleMessage& object);
 
 }  // namespace TgBot
 
