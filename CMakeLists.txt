@@ -26,27 +26,19 @@ find_package(CURL 7.58.0)
 ## nlohmann_json
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
-set(SRC_LIST
-    src/Api.cpp
-    src/Bot.cpp
-    src/EventHandler.cpp
-    src/TgTypeParser.cpp
-    src/net/BoostSslClient.cpp
-    src/net/HttpParser.cpp
-    src/net/TgLongPoll.cpp
-    src/net/Url.cpp
-    src/tools/StringTools.cpp)
+file(GLOB SRC_LIST CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/net/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/tools/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/types/*.cpp"
+)
 
-if (CURL_FOUND)
-    list(APPEND SRC_LIST src/net/CurlHttpClient.cpp)
+if (NOT CURL_FOUND)
+    list(REMOVE_ITEM SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/net/CurlHttpClient.cpp")
 endif()
 
 # building project
 add_library(${PROJECT_NAME} ${SRC_LIST})
-
-if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /bigobj)
-endif()
 
 # sources
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)

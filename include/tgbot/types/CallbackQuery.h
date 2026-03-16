@@ -31,7 +31,7 @@ public:
     /**
      * @brief Optional. Message with the callback button that originated the query. Note that message content and message date will not be available if the message is too old.
      */
-    std::optional<Message::Ptr> message;
+    std::optional<MaybeInaccessibleMessage> message;
 
     /**
      * @brief Optional. Identifier of the message sent via the bot in inline mode, that originated the query.
