@@ -883,7 +883,8 @@ IMPLEMENT_PARSERS(UserRating);
 IMPLEMENT_PARSERS(VideoQuality);
 
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
-nlohmann::json put(const MaybeInaccessibleMessage& object);
+template <>
+nlohmann::json put(const MaybeInaccessibleMessage& value);
 
 }  // namespace TgBot
 

@@ -11,9 +11,10 @@ MaybeInaccessibleMessage parse(const nlohmann::json& data) {
     return parse<Message>(data);
 }
 
-nlohmann::json put(const MaybeInaccessibleMessage& object) {
+template <>
+nlohmann::json put(const MaybeInaccessibleMessage& value) {
     JsonWrapper json;
-    std::visit([&json](const auto& value) { json += TgBot::put(value); }, object);
+    std::visit([&json](const auto& value) { json += TgBot::put(value); }, value);
     return json;
 }
 
