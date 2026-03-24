@@ -71,7 +71,7 @@ DECLARE_PARSER_FROM_JSON(Message) {
     result->messageAutoDeleteTimerChanged = parse<MessageAutoDeleteTimerChanged>(data, "message_auto_delete_timer_changed");
     parse(data, "migrate_to_chat_id", &result->migrateToChatId);
     parse(data, "migrate_from_chat_id", &result->migrateFromChatId);
-    result->pinnedMessage = parse(data["pinned_message"]);
+    result->pinnedMessage = parse<Message>(data, "pinned_message");
     result->invoice = parse<Invoice>(data, "invoice");
     result->successfulPayment = parse<SuccessfulPayment>(data, "successful_payment");
     result->refundedPayment = parse<RefundedPayment>(data, "refunded_payment");
