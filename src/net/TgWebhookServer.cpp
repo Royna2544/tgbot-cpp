@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "tgbot/EventHandler.h"
+#include "tgbot/Logger.h"
 #include "tgbot/TgTypeParser.h"
 #include "tgbot/net/TgWebhookServer.h"
 #include "tgbot/types/Update.h"
@@ -53,9 +54,11 @@ struct TgWebhookServer::Impl {
             try {
                 nlohmann::json update = nlohmann::json::parse(req.body);
                 eventHandler->handleUpdate(parse<Update>(update));
-            } catch (const std::exception&) {
-                // Ignore malformed payloads; always answer 200 so Telegram
-                // does not keep retrying the delivery.
+            } catch (const std::exception& e) {
+                // Log but always answer 200 so Telegram does not keep retrying
+                // the delivery of a payload the handler cannot process.
+                detail::log(LogLevel::Error,
+                            std::string("Webhook handler error: ") + e.what());
             }
             res.set_content("", "text/plain");
         });

@@ -150,5 +150,41 @@ Use the [example CMakeLists.txt](samples/echobot/CMakeLists.txt) with changes:
 
 Also, you can treat this repository as a submodule of your project, for example, see [echobot-submodule](samples/echobot-submodule/CMakeLists.txt).
 
+## Logging
+
+The library emits diagnostics (network retries, rate limiting, webhook handler
+errors, request traces) through a small `TgBot::Logger` interface. By default a
+`DefaultLogger` prints warnings and errors to stderr.
+
+To route logs into your own backend, implement `TgBot::Logger` and register it
+with `TgBot::setLogger`. The library does not depend on any logging framework,
+so you are free to bridge it to whatever you use. For example, with
+[spdlog](https://github.com/gabime/spdlog):
+
+```cpp
+#include <tgbot/tgbot.h>
+#include <spdlog/spdlog.h>
+
+class SpdlogSink : public TgBot::Logger {
+public:
+    void log(TgBot::LogLevel level, const std::string& message) override {
+        switch (level) {
+            case TgBot::LogLevel::Trace:   spdlog::trace(message); break;
+            case TgBot::LogLevel::Debug:   spdlog::debug(message); break;
+            case TgBot::LogLevel::Info:    spdlog::info(message); break;
+            case TgBot::LogLevel::Warning: spdlog::warn(message); break;
+            case TgBot::LogLevel::Error:   spdlog::error(message); break;
+            case TgBot::LogLevel::Off:     break;
+        }
+    }
+};
+
+// before creating the Bot:
+TgBot::setLogger(std::make_shared<SpdlogSink>());
+```
+
+To change the verbosity of the built-in logger, register a `DefaultLogger`
+with a different minimum level, e.g. `TgBot::setLogger(std::make_shared<TgBot::DefaultLogger>(TgBot::LogLevel::Trace))`.
+
 ## Licence
 [The MIT License](https://github.com/reo7sp/tgbot-cpp/blob/master/LICENSE).

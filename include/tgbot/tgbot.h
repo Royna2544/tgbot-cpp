@@ -5,6 +5,7 @@
 #include "tgbot/Bot.h"
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/EventHandler.h"
+#include "tgbot/Logger.h"
 #include "tgbot/TgException.h"
 #include "tgbot/net/HttpClient.h"
 #include "tgbot/net/HttpReqArg.h"

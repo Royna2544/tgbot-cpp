@@ -1,4 +1,5 @@
 #include <tgbot/Api.h>
+#include <tgbot/Logger.h>
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
 #include <tgbot/net/HttpReqArg.h>
@@ -8,6 +9,7 @@
 #include <cstdint>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <sstream>
 #include <string_view>
 #include <thread>
 #include <type_traits>
@@ -100,8 +102,6 @@ auto putArg(std::string name, const T& data) {
 
 using TgBot::TgException;
 
-constexpr bool kSendRequestDebug = false;
-
 template <typename... Args>
 nlohmann::json sendRequest(const std::string_view _bot_url,
                            TgBot::HttpClient* _httpClient,
@@ -149,11 +149,14 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
         ...);
 
     int retries = 0;
-    if constexpr (kSendRequestDebug) {
-        std::cout << "tgbot-cpp: Sending request: " << method << std::endl;
+    {
+        std::ostringstream trace;
+        trace << "Sending request: " << method;
         for (const auto& arg : vec) {
-            arg->print(std::cout) << std::endl;
+            trace << "\n  ";
+            arg->print(trace);
         }
+        TgBot::detail::log(TgBot::LogLevel::Trace, trace.str());
     }
     constexpr int max_retries = TgBot::HttpClient::kRequestMaxRetries;
     while (true) {
@@ -171,10 +174,9 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
             try {
                 result = nlohmann::json::parse(serverResponse);
             } catch (const nlohmann::json::parse_error&) {
-                if constexpr (kSendRequestDebug) {
-                    std::cerr << "tgbot-cpp: Failed to parse response:"
-                              << serverResponse << std::endl;
-                }
+                TgBot::detail::log(
+                    TgBot::LogLevel::Error,
+                    "Failed to parse json response: " + serverResponse);
                 throw TgException(
                     "tgbot-cpp library can't parse json response.",
                     TgException::ErrorCode::InvalidJson);
@@ -198,6 +200,10 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
                     delay = std::chrono::seconds(
                         result["parameters"]["retry_after"].get<int>());
                 }
+                TgBot::detail::log(
+                    TgBot::LogLevel::Warning,
+                    "Rate limited by Telegram, retrying " + std::string(method) +
+                        " after " + std::to_string(delay.count()) + "s");
                 std::this_thread::sleep_for(delay);
                 retries++;
                 continue;
@@ -209,11 +215,12 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
             // Only transient network failures are retried; API errors above are
             // deterministic and must propagate (retrying could duplicate
             // non-idempotent requests such as sendMessage).
-            if constexpr (kSendRequestDebug) {
-                std::cerr << "tgbot-cpp: Network error: " << ex.what()
-                          << std::endl;
-            }
-            if (max_retries >= 0 && retries >= max_retries) {
+            const bool willRetry = max_retries < 0 || retries < max_retries;
+            TgBot::detail::log(
+                willRetry ? TgBot::LogLevel::Warning : TgBot::LogLevel::Error,
+                std::string("Network error on ") + std::string(method) + ": " +
+                    ex.what() + (willRetry ? " (retrying)" : " (giving up)"));
+            if (!willRetry) {
                 throw;
             }
             std::this_thread::sleep_for(TgBot::HttpClient::kRequestBackoff);
