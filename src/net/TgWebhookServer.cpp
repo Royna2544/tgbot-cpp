@@ -1,10 +1,4 @@
-#ifndef CPPHTTPLIB_OPENSSL_SUPPORT
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#endif
-#ifndef CPPHTTPLIB_ZLIB_SUPPORT
-#define CPPHTTPLIB_ZLIB_SUPPORT
-#endif
-#include <httplib.h>
+#include "httplib_wrapper.h"
 
 #include <exception>
 #include <nlohmann/json.hpp>

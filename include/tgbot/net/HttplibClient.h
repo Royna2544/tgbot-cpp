@@ -3,16 +3,11 @@
 
 #include <chrono>
 #include <memory>
-#include <mutex>
 #include <string>
 
 #include "tgbot/net/HttpClient.h"
 #include "tgbot/net/HttpReqArg.h"
 #include "tgbot/net/Url.h"
-
-namespace httplib {
-class Client;
-}
 
 namespace TgBot {
 
@@ -23,7 +18,8 @@ namespace TgBot {
  * using the system's trusted CA store (or a custom certificate set through
  * HttpClient::setServerCert). The underlying connection is kept alive and
  * reused across requests; access is serialized so a single instance can be
- * shared between threads.
+ * shared between threads. The vendored cpp-httplib is fully hidden behind this
+ * class (pimpl), so it never appears in the public headers.
  *
  * @ingroup net
  */
@@ -44,9 +40,8 @@ class TGBOT_API HttplibClient : public HttpClient {
                             const HttpReqArg::Vec& args) const override;
 
    private:
-    mutable std::mutex _mutex;
-    mutable std::unique_ptr<httplib::Client> _client;
-    mutable std::string _clientBase;
+    struct Impl;
+    std::unique_ptr<Impl> _impl;
 };
 
 }  // namespace TgBot

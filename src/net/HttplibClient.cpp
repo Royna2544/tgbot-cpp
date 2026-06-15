@@ -1,20 +1,22 @@
-#ifndef CPPHTTPLIB_OPENSSL_SUPPORT
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#endif
-#ifndef CPPHTTPLIB_ZLIB_SUPPORT
-#define CPPHTTPLIB_ZLIB_SUPPORT
-#endif
-#include <httplib.h>
+#include "httplib_wrapper.h"
 
+#include <mutex>
 #include <string>
+#include <utility>
 
 #include "tgbot/TgException.h"
 #include "tgbot/net/HttplibClient.h"
 
 namespace TgBot {
 
+struct HttplibClient::Impl {
+    std::mutex mutex;
+    std::unique_ptr<httplib::Client> client;
+    std::string clientBase;
+};
+
 HttplibClient::HttplibClient(std::chrono::seconds timeout)
-    : HttpClient(timeout) {}
+    : HttpClient(timeout), _impl(std::make_unique<Impl>()) {}
 
 HttplibClient::~HttplibClient() = default;
 
@@ -41,14 +43,14 @@ std::string HttplibClient::makeRequest(const Url& url,
 
     // httplib::Client keeps a single connection and is not safe for concurrent
     // use, so serialize requests and reuse the client across calls.
-    std::lock_guard<std::mutex> lock(_mutex);
-    if (!_client || _clientBase != base) {
-        _client = std::make_unique<httplib::Client>(base);
-        _clientBase = base;
-        _client->set_follow_location(true);
-        _client->set_keep_alive(true);
+    std::lock_guard<std::mutex> lock(_impl->mutex);
+    if (!_impl->client || _impl->clientBase != base) {
+        _impl->client = std::make_unique<httplib::Client>(base);
+        _impl->clientBase = base;
+        _impl->client->set_follow_location(true);
+        _impl->client->set_keep_alive(true);
     }
-    httplib::Client& client = *_client;
+    httplib::Client& client = *_impl->client;
 
     // The timeout may change between calls (e.g. long polling), so apply it
     // every time.
