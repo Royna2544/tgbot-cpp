@@ -344,11 +344,23 @@ struct is_matrix<Matrix<T>> : std::true_type {
 template <typename T>
 constexpr bool is_matrix_v = is_matrix<T>::value;
 
+// Always-false helper so a fallback template can static_assert only when it is
+// actually instantiated (i.e. for an unregistered type).
+template <typename>
+inline constexpr bool always_false_v = false;
+
 }  // namespace detail
 
-// Parse function for shared_ptr<T>
+// Parse function for shared_ptr<T>. This primary template is only selected when
+// no IMPLEMENT_PARSERS(T) specialization exists for T; emit a readable error
+// instead of the cryptic "use of deleted function".
 template <typename T>
-std::shared_ptr<T> parse(const nlohmann::json &data) = delete;
+std::shared_ptr<T> parse(const nlohmann::json & /*data*/) {
+    static_assert(detail::always_false_v<T>,
+                  "No JSON parser registered for this type. Declare it with "
+                  "IMPLEMENT_PARSERS(T) (and define the parser in src/types).");
+    return nullptr;
+}
 
 #define DECLARE_PARSER_FROM_JSON(TYPE) \
     template <>                        \
@@ -429,9 +441,17 @@ std::vector<T> parsePrimitiveRequiredArray(const nlohmann::json& data,
     return result;
 }
 
-// Put function for objects to JSON
+// Put function for objects to JSON. This primary template is only selected when
+// no IMPLEMENT_PARSERS(T) specialization exists for T; emit a readable error
+// instead of the cryptic "use of deleted function".
 template <typename T>
-nlohmann::json put(const T &value) = delete;
+nlohmann::json put(const T & /*value*/) {
+    static_assert(detail::always_false_v<T>,
+                  "No JSON serializer registered for this type. Declare it with "
+                  "IMPLEMENT_PARSERS(T) (and define the serializer in "
+                  "src/types).");
+    return {};
+}
 
 #define DECLARE_PARSER_TO_JSON(TYPE) \
     template <>                      \
@@ -518,20 +538,20 @@ struct JsonWrapper {
     // Required objects
     template <typename T,
         std::enable_if_t<!detail::is_primitive_v<T>, bool> = true>
-    void put(const std::string_view key, std::shared_ptr<T> value) {
+    void put(const std::string_view key, const std::shared_ptr<T>& value) {
         data_[std::string(key)] = TgBot::put(value);
     }
 
     // Support for vector of primitives and objects
     template <typename T>
-    void put(const std::string_view key, std::vector<T> value) {
+    void put(const std::string_view key, const std::vector<T>& value) {
         data_[std::string(key)] = TgBot::put(value);
     }
 
     // Overload for optional types
     template <typename T,
         std::enable_if_t<detail::is_primitive_v<T>, bool> = true>
-    void put(const std::string_view key, std::optional<T> value) {
+    void put(const std::string_view key, const std::optional<T>& value) {
         if (!value) {
             return;  // Skip empty optional
         }
@@ -539,7 +559,7 @@ struct JsonWrapper {
     }
     template <typename T,
         std::enable_if_t<!detail::is_primitive_v<T>, bool> = true>
-    void put(const std::string_view key, std::optional<T> value) {
+    void put(const std::string_view key, const std::optional<T>& value) {
         if (!value) {
             return;  // Skip empty optional
         }
