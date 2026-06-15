@@ -1,4 +1,12 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/TransactionPartner.h>
+#include <tgbot/types/TransactionPartnerAffiliateProgram.h>
+#include <tgbot/types/TransactionPartnerChat.h>
+#include <tgbot/types/TransactionPartnerFragment.h>
+#include <tgbot/types/TransactionPartnerOther.h>
+#include <tgbot/types/TransactionPartnerTelegramAds.h>
+#include <tgbot/types/TransactionPartnerTelegramApi.h>
+#include <tgbot/types/TransactionPartnerUser.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

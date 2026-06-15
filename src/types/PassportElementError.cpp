@@ -1,4 +1,14 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/PassportElementError.h>
+#include <tgbot/types/PassportElementErrorDataField.h>
+#include <tgbot/types/PassportElementErrorFile.h>
+#include <tgbot/types/PassportElementErrorFiles.h>
+#include <tgbot/types/PassportElementErrorFrontSide.h>
+#include <tgbot/types/PassportElementErrorReverseSide.h>
+#include <tgbot/types/PassportElementErrorSelfie.h>
+#include <tgbot/types/PassportElementErrorTranslationFile.h>
+#include <tgbot/types/PassportElementErrorTranslationFiles.h>
+#include <tgbot/types/PassportElementErrorUnspecified.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/ShippingQuery.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

@@ -1,4 +1,8 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/ChatBoostSource.h>
+#include <tgbot/types/ChatBoostSourceGiftCode.h>
+#include <tgbot/types/ChatBoostSourceGiveaway.h>
+#include <tgbot/types/ChatBoostSourcePremium.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

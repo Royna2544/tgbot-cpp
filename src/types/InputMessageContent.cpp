@@ -1,4 +1,10 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/InputMessageContent.h>
+#include <tgbot/types/InputContactMessageContent.h>
+#include <tgbot/types/InputInvoiceMessageContent.h>
+#include <tgbot/types/InputLocationMessageContent.h>
+#include <tgbot/types/InputTextMessageContent.h>
+#include <tgbot/types/InputVenueMessageContent.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

@@ -1,6 +1,9 @@
 #ifndef TGBOT_TRANSACTIONPARTNERCHAT_H
 #define TGBOT_TRANSACTIONPARTNERCHAT_H
 
+#include "tgbot/types/Chat.h"
+#include "tgbot/types/Gift.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>

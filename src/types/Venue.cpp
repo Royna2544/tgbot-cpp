@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/Venue.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/InlineQueryResultGif.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

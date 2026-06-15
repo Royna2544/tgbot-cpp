@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/SuggestedPostInfo.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

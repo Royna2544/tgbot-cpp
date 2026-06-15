@@ -1,4 +1,7 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/MaybeInaccessibleMessage.h>
+#include <tgbot/types/Message.h>
+#include <tgbot/types/InaccessibleMessage.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

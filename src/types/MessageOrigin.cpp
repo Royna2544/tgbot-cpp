@@ -1,4 +1,9 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/MessageOrigin.h>
+#include <tgbot/types/MessageOriginChannel.h>
+#include <tgbot/types/MessageOriginChat.h>
+#include <tgbot/types/MessageOriginHiddenUser.h>
+#include <tgbot/types/MessageOriginUser.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

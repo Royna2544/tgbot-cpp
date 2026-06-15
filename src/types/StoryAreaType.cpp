@@ -1,4 +1,10 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/StoryAreaType.h>
+#include <tgbot/types/StoryAreaTypeLink.h>
+#include <tgbot/types/StoryAreaTypeLocation.h>
+#include <tgbot/types/StoryAreaTypeSuggestedReaction.h>
+#include <tgbot/types/StoryAreaTypeUniqueGift.h>
+#include <tgbot/types/StoryAreaTypeWeather.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/MessageReactionUpdated.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

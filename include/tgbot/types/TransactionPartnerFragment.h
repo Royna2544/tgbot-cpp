@@ -1,6 +1,8 @@
 #ifndef TGBOT_TRANSACTIONPARTNERFRAGMENT_H
 #define TGBOT_TRANSACTIONPARTNERFRAGMENT_H
 
+#include "tgbot/types/RevenueWithdrawalState.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>

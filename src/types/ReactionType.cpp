@@ -1,4 +1,8 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/ReactionType.h>
+#include <tgbot/types/ReactionTypeCustomEmoji.h>
+#include <tgbot/types/ReactionTypeEmoji.h>
+#include <tgbot/types/ReactionTypePaid.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

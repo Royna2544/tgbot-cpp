@@ -1,6 +1,8 @@
 #ifndef TGBOT_TRANSACTIONPARTNERAFFILIATEPROGRAM_H
 #define TGBOT_TRANSACTIONPARTNERAFFILIATEPROGRAM_H
 
+#include "tgbot/types/User.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>

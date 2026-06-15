@@ -1,5 +1,6 @@
 #include <tgbot/TgException.h>
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/CallbackGame.h>
 
 namespace TgBot {
 

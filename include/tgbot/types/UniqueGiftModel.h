@@ -1,6 +1,8 @@
 #ifndef TGBOT_UNIQUEGIFTMODEL_H
 #define TGBOT_UNIQUEGIFTMODEL_H
 
+#include "tgbot/types/Sticker.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>

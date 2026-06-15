@@ -1,4 +1,12 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/BotCommandScope.h>
+#include <tgbot/types/BotCommandScopeAllChatAdministrators.h>
+#include <tgbot/types/BotCommandScopeAllGroupChats.h>
+#include <tgbot/types/BotCommandScopeAllPrivateChats.h>
+#include <tgbot/types/BotCommandScopeChat.h>
+#include <tgbot/types/BotCommandScopeChatAdministrators.h>
+#include <tgbot/types/BotCommandScopeChatMember.h>
+#include <tgbot/types/BotCommandScopeDefault.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

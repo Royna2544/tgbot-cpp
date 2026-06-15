@@ -1,4 +1,7 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/OwnedGift.h>
+#include <tgbot/types/OwnedGiftRegular.h>
+#include <tgbot/types/OwnedGiftUnique.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

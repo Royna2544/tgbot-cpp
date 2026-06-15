@@ -1,4 +1,9 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/BackgroundType.h>
+#include <tgbot/types/BackgroundTypeChatTheme.h>
+#include <tgbot/types/BackgroundTypeFill.h>
+#include <tgbot/types/BackgroundTypePattern.h>
+#include <tgbot/types/BackgroundTypeWallpaper.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

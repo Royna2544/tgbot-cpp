@@ -1,4 +1,7 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/InputProfilePhoto.h>
+#include <tgbot/types/InputProfilePhotoAnimated.h>
+#include <tgbot/types/InputProfilePhotoStatic.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

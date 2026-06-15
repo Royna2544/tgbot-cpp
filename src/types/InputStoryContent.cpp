@@ -1,4 +1,7 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/InputStoryContent.h>
+#include <tgbot/types/InputStoryContentPhoto.h>
+#include <tgbot/types/InputStoryContentVideo.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

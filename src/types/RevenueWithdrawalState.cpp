@@ -1,4 +1,8 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/RevenueWithdrawalState.h>
+#include <tgbot/types/RevenueWithdrawalStateFailed.h>
+#include <tgbot/types/RevenueWithdrawalStatePending.h>
+#include <tgbot/types/RevenueWithdrawalStateSucceeded.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

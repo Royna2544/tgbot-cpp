@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/ChatMemberBanned.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

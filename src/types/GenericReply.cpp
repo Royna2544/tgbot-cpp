@@ -1,4 +1,9 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/GenericReply.h>
+#include <tgbot/types/ForceReply.h>
+#include <tgbot/types/InlineKeyboardMarkup.h>
+#include <tgbot/types/ReplyKeyboardMarkup.h>
+#include <tgbot/types/ReplyKeyboardRemove.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

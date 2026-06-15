@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/SuccessfulPayment.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

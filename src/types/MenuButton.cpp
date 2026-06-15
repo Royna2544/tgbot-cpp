@@ -1,4 +1,8 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/MenuButton.h>
+#include <tgbot/types/MenuButtonCommands.h>
+#include <tgbot/types/MenuButtonDefault.h>
+#include <tgbot/types/MenuButtonWebApp.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

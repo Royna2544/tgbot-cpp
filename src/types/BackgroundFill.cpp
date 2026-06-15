@@ -1,4 +1,8 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/BackgroundFill.h>
+#include <tgbot/types/BackgroundFillFreeformGradient.h>
+#include <tgbot/types/BackgroundFillGradient.h>
+#include <tgbot/types/BackgroundFillSolid.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

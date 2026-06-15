@@ -1,4 +1,5 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/GameHighScore.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {

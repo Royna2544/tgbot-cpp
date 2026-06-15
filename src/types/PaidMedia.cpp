@@ -1,4 +1,8 @@
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/PaidMedia.h>
+#include <tgbot/types/PaidMediaPhoto.h>
+#include <tgbot/types/PaidMediaPreview.h>
+#include <tgbot/types/PaidMediaVideo.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {
