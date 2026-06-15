@@ -20,6 +20,8 @@ jobs:
         run: python scripts/fetch_api_spec.py
       - name: Lint C++ types and methods against api.json
         run: python scripts/lint_api_types.py api.json include/tgbot/types --methods src/Api.cpp
+      - name: Check generated parsers are in sync with the spec
+        run: python scripts/gen_parsers.py --check
 
   build:
     runs-on: ubuntu-latest

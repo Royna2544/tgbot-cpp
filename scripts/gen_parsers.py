@@ -22,8 +22,20 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HDR_DIR = os.path.join(ROOT, "include", "tgbot", "types")
 SRC_DIR = os.path.join(ROOT, "src", "types")
 
-# Types with bespoke (non-mechanical) parsers; left hand-written.
-HAND_WRITTEN = {"MaybeInaccessibleMessage"}
+# Types with bespoke (non-mechanical) parsers; left hand-written and never
+# generated. Everything else must match the generator (enforced in CI).
+HAND_WRITTEN = {
+    # enum-valued fields (need a value<->string mapping)
+    "Chat", "MessageEntity", "Sticker", "StickerSet",
+    # std::variant (MaybeInaccessibleMessage) members / bespoke logic
+    "MaybeInaccessibleMessage", "Message", "CallbackQuery",
+    # polymorphic base without a discriminator field (structural dispatch)
+    "InputMessageContent",
+    # polymorphic base whose discriminator value is ambiguous (cached vs not)
+    "InlineQueryResult",
+    # empty / upload-only types
+    "InputFile", "CallbackGame",
+}
 
 
 def snake_to_camel(s):
@@ -80,8 +92,9 @@ def classify(cpp_type):
     m = re.fullmatch(r"std::vector<\s*(\w+)::Ptr\s*>", inner)
     if m:
         return ("array" if opt else "array_req"), m.group(1)
-    if re.fullmatch(r"std::vector<.+>", inner):
-        return "prim_array", None        # Array of String/Integer; not modelled yet
+    m = re.fullmatch(r"std::vector<\s*(.+?)\s*>", inner)
+    if m:
+        return ("prim_array" if opt else "prim_array_req"), m.group(1)
     m = re.fullmatch(r"(\w+)::Ptr", inner)
     if m:
         return ("ptr_opt" if opt else "ptr_req"), m.group(1)
@@ -114,7 +127,13 @@ def gen_field(field, members):
     if kind == "matrix":
         return (f'    result->{camel} = parseMatrix<{inner}>(data, "{snake}");',
                 f'        json.put("{snake}", object->{camel});')
-    return None  # enum / prim_array -> not modelled
+    if kind == "prim_array":
+        return (f'    result->{camel} = parsePrimitiveArray<{inner}>(data, "{snake}");',
+                f'        json.put("{snake}", object->{camel});')
+    if kind == "prim_array_req":
+        return (f'    result->{camel} = parsePrimitiveRequiredArray<{inner}>(data, "{snake}");',
+                f'        json.put("{snake}", object->{camel});')
+    return None  # enum -> not modelled (kept hand-written)
 
 
 def discriminator_values(spec, base):
@@ -123,7 +142,8 @@ def discriminator_values(spec, base):
     field_name = None
     for sub in spec["types"][base].get("subtypes", []):
         for f in spec["types"].get(sub, {}).get("fields", []):
-            mm = re.search(r'always\s+\\?"([\w-]+)\\?"', f.get("description", ""))
+            mm = re.search(r'(?:always|must be)\s+"?([\w-]+)"?',
+                           f.get("description", ""))
             if mm:
                 out[sub] = mm.group(1)
                 field_name = f["name"]
@@ -145,6 +165,10 @@ def gen_type(spec, name):
         df, disc = discriminator_values(spec, name)
         if df is None or len(disc) != len(subtypes):
             return None, "base:missing-discriminator"
+        if len(set(disc.values())) != len(disc):
+            # e.g. InlineQueryResult: cached/non-cached share a "type" value, so
+            # the discriminator alone can't pick the subtype.
+            return None, "base:ambiguous-discriminator"
         for sub in sorted(subtypes):
             inc.append(f"#include <tgbot/types/{sub}.h>")
         dcamel = snake_to_camel(df)
@@ -204,23 +228,30 @@ def gen_type(spec, name):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", default=os.path.join(ROOT, "api.json"))
-    ap.add_argument("--write", action="store_true")
+    ap.add_argument("--write", action="store_true",
+                    help="overwrite the generated .cpp files")
+    ap.add_argument("--only", help="comma-separated type names to limit to")
+    ap.add_argument("--check", action="store_true",
+                    help="exit non-zero if any non-exception type differs from "
+                         "the generator (the CI parity gate)")
     args = ap.parse_args()
     spec = json.load(open(args.spec, encoding="utf-8"))
+    only = set(args.only.split(",")) if args.only else None
 
-    match = mismatch = skipped = 0
+    match = mismatch = 0
     mism_list, skip_list = [], []
     for name in spec["types"]:
+        if only and name not in only:
+            continue
         if name in HAND_WRITTEN:
-            skipped += 1
             skip_list.append((name, "hand-written"))
             continue
         gen, reason = gen_type(spec, name)
         if gen is None:
-            skipped += 1
             skip_list.append((name, reason))
             continue
         path = os.path.join(SRC_DIR, f"{name}.cpp")
+        # Text mode normalises line endings, so the check is CRLF/LF agnostic.
         cur = open(path, encoding="utf-8").read() if os.path.exists(path) else ""
         if gen == cur:
             match += 1
@@ -228,14 +259,27 @@ def main():
             mismatch += 1
             mism_list.append(name)
         if args.write:
-            open(path, "w", encoding="utf-8").write(gen)
+            open(path, "w", encoding="utf-8", newline="\n").write(gen)
+
+    # Skips that are NOT declared hand-written mean the generator can't model a
+    # type yet -- that must fail the gate so it's either fixed or declared.
+    unexpected = [n for n, r in skip_list if n not in HAND_WRITTEN]
 
     print(f"byte-identical: {match}")
     print(f"differs       : {mismatch}  {mism_list[:20]}")
-    print(f"skipped       : {skipped}")
-    for n, r in skip_list:
-        print(f"    skip {n}: {r}")
+    print(f"hand-written  : {len(skip_list) - len(unexpected)}")
+    if unexpected:
+        print(f"UNMODELLED    : {unexpected}")
+
+    if args.check:
+        if mismatch or unexpected:
+            print("\nPARITY CHECK FAILED: regenerate with "
+                  "`python scripts/gen_parsers.py --write` or update HAND_WRITTEN.")
+            return 1
+        print("\nPARITY OK")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    sys.exit(main())

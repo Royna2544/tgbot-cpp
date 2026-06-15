@@ -14,36 +14,38 @@
 namespace TgBot {
 
 DECLARE_PARSER_FROM_JSON(PassportElementError) {
-    std::string source;
+    std::string type;
     PassportElementError::Ptr result;
-    parse(data, "source", &source);
-    if (source == "data") {
+    parse(data, "source", &type);
+    if (type == "data") {
         result = parse<PassportElementErrorDataField>(data);
-    } else if (source == "front_side") {
+    } else if (type == "front_side") {
         result = parse<PassportElementErrorFrontSide>(data);
-    } else if (source == "reverse_side") {
+    } else if (type == "reverse_side") {
         result = parse<PassportElementErrorReverseSide>(data);
-    } else if (source == "selfie") {
+    } else if (type == "selfie") {
         result = parse<PassportElementErrorSelfie>(data);
-    } else if (source == "file") {
+    } else if (type == "file") {
         result = parse<PassportElementErrorFile>(data);
-    } else if (source == "files") {
+    } else if (type == "files") {
         result = parse<PassportElementErrorFiles>(data);
-    } else if (source == "translation_file") {
+    } else if (type == "translation_file") {
         result = parse<PassportElementErrorTranslationFile>(data);
-    } else if (source == "translation_files") {
+    } else if (type == "translation_files") {
         result = parse<PassportElementErrorTranslationFiles>(data);
-    } else if (source == "unspecified") {
+    } else if (type == "unspecified") {
         result = parse<PassportElementErrorUnspecified>(data);
     } else {
-        throw invalidType("PassportElementError", source);
+        throw invalidType("PassportElementError", type);
     }
+
     return result;
 }
 
 DECLARE_PARSER_TO_JSON(PassportElementError) {
     JsonWrapper json;
     if (object) {
+        json.put("source", object->source);
         if (object->source == "data") {
             json += put<PassportElementErrorDataField>(object);
         } else if (object->source == "front_side") {

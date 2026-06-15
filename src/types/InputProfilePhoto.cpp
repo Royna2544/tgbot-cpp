@@ -17,12 +17,14 @@ DECLARE_PARSER_FROM_JSON(InputProfilePhoto) {
     } else {
         throw invalidType("InputProfilePhoto", type);
     }
+
     return result;
 }
 
 DECLARE_PARSER_TO_JSON(InputProfilePhoto) {
     JsonWrapper json;
     if (object) {
+        json.put("type", object->type);
         if (object->type == "static") {
             json += put<InputProfilePhotoStatic>(object);
         } else if (object->type == "animated") {

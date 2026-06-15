@@ -17,12 +17,14 @@ DECLARE_PARSER_FROM_JSON(InputStoryContent) {
     } else {
         throw invalidType("InputStoryContent", type);
     }
+
     return result;
 }
 
 DECLARE_PARSER_TO_JSON(InputStoryContent) {
     JsonWrapper json;
     if (object) {
+        json.put("type", object->type);
         if (object->type == "photo") {
             json += put<InputStoryContentPhoto>(object);
         } else if (object->type == "video") {

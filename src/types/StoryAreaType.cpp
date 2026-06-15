@@ -26,12 +26,14 @@ DECLARE_PARSER_FROM_JSON(StoryAreaType) {
     } else {
         throw invalidType("StoryAreaType", type);
     }
+
     return result;
 }
 
 DECLARE_PARSER_TO_JSON(StoryAreaType) {
     JsonWrapper json;
     if (object) {
+        json.put("type", object->type);
         if (object->type == "location") {
             json += put<StoryAreaTypeLocation>(object);
         } else if (object->type == "suggested_reaction") {

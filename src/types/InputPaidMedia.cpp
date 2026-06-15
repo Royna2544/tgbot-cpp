@@ -17,12 +17,14 @@ DECLARE_PARSER_FROM_JSON(InputPaidMedia) {
     } else {
         throw invalidType("InputPaidMedia", type);
     }
+
     return result;
 }
 
 DECLARE_PARSER_TO_JSON(InputPaidMedia) {
     JsonWrapper json;
     if (object) {
+        json.put("type", object->type);
         if (object->type == "photo") {
             json += put<InputPaidMediaPhoto>(object);
         } else if (object->type == "video") {
