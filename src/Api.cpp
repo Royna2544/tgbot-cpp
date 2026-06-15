@@ -155,23 +155,22 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
             arg->print(std::cout) << std::endl;
         }
     }
+    constexpr int max_retries = TgBot::HttpClient::kRequestMaxRetries;
     while (true) {
         try {
             std::string serverResponse = _httpClient->makeRequest(url, vec);
 
             if (!serverResponse.compare(0, 6, "<html>")) {
-                std::string message =
+                throw TgException(
                     "tgbot-cpp library have got html page instead of json "
-                    "response. "
-                    "Maybe you entered wrong bot token.";
-                throw TgException(message,
-                                  TgException::ErrorCode::HtmlResponse);
+                    "response. Maybe you entered wrong bot token.",
+                    TgException::ErrorCode::HtmlResponse);
             }
 
             nlohmann::json result;
             try {
                 result = nlohmann::json::parse(serverResponse);
-            } catch (const nlohmann::json::parse_error& e) {
+            } catch (const nlohmann::json::parse_error&) {
                 if constexpr (kSendRequestDebug) {
                     std::cerr << "tgbot-cpp: Failed to parse response:"
                               << serverResponse << std::endl;
@@ -181,27 +180,44 @@ nlohmann::json sendRequest(const std::string_view _bot_url,
                     TgException::ErrorCode::InvalidJson);
             }
 
-            if (result["ok"].get<bool>()) {
+            if (result.value("ok", false)) {
                 return result["result"];
-            } else {
-                std::string message = result["description"].get<std::string>();
-                int errorCode = result["error_code"].get<int>();
+            }
 
-                throw TgException(
-                    message, static_cast<TgException::ErrorCode>(errorCode));
-            }
-        } catch (const TgException& ex) {
-            if constexpr (kSendRequestDebug) {
-                std::cerr << "tgbot-cpp: Error: " << ex.what() << std::endl;
-            }
-            int max_retries = TgBot::HttpClient::kRequestMaxRetries;
-            if ((max_retries >= 0) && (retries == max_retries)) {
-                throw;
-            } else {
-                std::this_thread::sleep_for(TgBot::HttpClient::kRequestBackoff);
+            const std::string message =
+                result.value("description", "Unknown error");
+            const int errorCode = result.value("error_code", 0);
+
+            // Honour Telegram rate limiting (HTTP 429): the request never
+            // reached the bot logic, so wait the suggested time and retry.
+            if (errorCode == 429 &&
+                (max_retries < 0 || retries < max_retries)) {
+                std::chrono::seconds delay = TgBot::HttpClient::kRequestBackoff;
+                if (result.contains("parameters") &&
+                    result["parameters"].contains("retry_after")) {
+                    delay = std::chrono::seconds(
+                        result["parameters"]["retry_after"].get<int>());
+                }
+                std::this_thread::sleep_for(delay);
                 retries++;
                 continue;
             }
+
+            throw TgException(message,
+                              static_cast<TgException::ErrorCode>(errorCode));
+        } catch (const TgBot::NetworkException& ex) {
+            // Only transient network failures are retried; API errors above are
+            // deterministic and must propagate (retrying could duplicate
+            // non-idempotent requests such as sendMessage).
+            if constexpr (kSendRequestDebug) {
+                std::cerr << "tgbot-cpp: Network error: " << ex.what()
+                          << std::endl;
+            }
+            if (max_retries >= 0 && retries >= max_retries) {
+                throw;
+            }
+            std::this_thread::sleep_for(TgBot::HttpClient::kRequestBackoff);
+            retries++;
         }
     }
 }

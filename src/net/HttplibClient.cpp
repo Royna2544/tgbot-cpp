@@ -37,14 +37,25 @@ namespace {
 
 std::string HttplibClient::makeRequest(const Url& url,
                                        const HttpReqArg::Vec& args) const {
-    httplib::Client client(url.protocol + "://" + url.host);
+    const std::string base = url.protocol + "://" + url.host;
 
+    // httplib::Client keeps a single connection and is not safe for concurrent
+    // use, so serialize requests and reuse the client across calls.
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (!_client || _clientBase != base) {
+        _client = std::make_unique<httplib::Client>(base);
+        _clientBase = base;
+        _client->set_follow_location(true);
+        _client->set_keep_alive(true);
+    }
+    httplib::Client& client = *_client;
+
+    // The timeout may change between calls (e.g. long polling), so apply it
+    // every time.
     const auto timeoutSecs = timeout().count();
     client.set_connection_timeout(timeoutSecs);
     client.set_read_timeout(timeoutSecs);
     client.set_write_timeout(timeoutSecs);
-    client.set_follow_location(true);
-    client.set_keep_alive(true);
 
     // HTTPS certificate verification: httplib falls back to the system's
     // default verify paths when no explicit CA certificate is configured.

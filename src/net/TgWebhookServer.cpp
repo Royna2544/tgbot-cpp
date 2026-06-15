@@ -8,6 +8,7 @@
 
 #include <exception>
 #include <nlohmann/json.hpp>
+#include <string>
 #include <utility>
 
 #include "tgbot/EventHandler.h"
@@ -16,6 +17,26 @@
 #include "tgbot/types/Update.h"
 
 namespace TgBot {
+
+namespace {
+
+// httplib treats route patterns as regular expressions; escape the path so it
+// is matched literally (bot tokens and custom paths may contain regex
+// metacharacters).
+std::string escapeRegex(const std::string& path) {
+    static const std::string specials = R"(.^$|()[]{}*+?\)";
+    std::string escaped;
+    escaped.reserve(path.size());
+    for (char c : path) {
+        if (specials.find(c) != std::string::npos) {
+            escaped += '\\';
+        }
+        escaped += c;
+    }
+    return escaped;
+}
+
+}  // namespace
 
 struct TgWebhookServer::Impl {
     Bind bind;
@@ -27,8 +48,8 @@ struct TgWebhookServer::Impl {
         : bind(std::move(bind_)),
           path(std::move(path_)),
           eventHandler(eventHandler_) {
-        server.Post(path, [this](const httplib::Request& req,
-                                 httplib::Response& res) {
+        server.Post(escapeRegex(path), [this](const httplib::Request& req,
+                                               httplib::Response& res) {
             try {
                 nlohmann::json update = nlohmann::json::parse(req.body);
                 eventHandler->handleUpdate(parse<Update>(update));

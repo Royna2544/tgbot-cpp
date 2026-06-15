@@ -35,11 +35,12 @@ std::string generateRandomString(std::size_t length) {
     static constexpr std::string_view chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890-=[]\\',./!@#$%^&*()_+{}|:\"<>?`~";
     std::string result;
 
+    static thread_local std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<std::size_t> dist(0, chars.size() - 1);
+
     result.reserve(length);
-    std::generate_n(std::back_inserter(result), length, [&] {
-        std::mt19937 gen(std::random_device{}());
-        return chars[std::uniform_int_distribution<std::size_t>(0, chars.size() - 1)(gen)];
-    });
+    std::generate_n(std::back_inserter(result), length,
+                    [&] { return chars[dist(gen)]; });
     return result;
 }
 
