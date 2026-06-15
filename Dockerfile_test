@@ -5,8 +5,7 @@ RUN apt-get -qq update && \
     apt-get -qq install -y \
         build-essential \
         cmake \
-        libboost-all-dev \
-        libcurl4-openssl-dev \
+        libboost-test-dev \
         libssl-dev \
         zlib1g-dev \
         nlohmann-json3-dev \
@@ -16,6 +15,7 @@ RUN apt-get -qq update && \
 WORKDIR /usr/src/tgbot-cpp
 COPY include include
 COPY src src
+COPY third_party third_party
 COPY test test
 COPY CMakeLists.txt ./
 
@@ -29,10 +29,6 @@ WORKDIR /usr/src/tgbot-cpp/samples/echobot
 RUN rm -rf CMakeCache.txt CMakeFiles/ && \
     cmake . && make -j$(nproc)
 
-WORKDIR /usr/src/tgbot-cpp/samples/echobot-curl-client
-RUN rm -rf CMakeCache.txt CMakeFiles/ && \
-    cmake . && make -j$(nproc)
-
 WORKDIR /usr/src/tgbot-cpp/samples/echobot-setmycommands
 RUN rm -rf CMakeCache.txt CMakeFiles/ && \
     cmake . && make -j$(nproc)
@@ -41,6 +37,7 @@ WORKDIR /usr/src/tgbot-cpp
 RUN rm -rf samples/echobot-submodule/tgbot-cpp/
 COPY include samples/echobot-submodule/tgbot-cpp/include
 COPY src samples/echobot-submodule/tgbot-cpp/src
+COPY third_party samples/echobot-submodule/tgbot-cpp/third_party
 COPY CMakeLists.txt samples/echobot-submodule/tgbot-cpp/
 WORKDIR /usr/src/tgbot-cpp/samples/echobot-submodule
 RUN rm -rf CMakeCache.txt CMakeFiles/ && \

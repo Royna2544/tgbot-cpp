@@ -1,12 +1,8 @@
 #ifndef TGBOT_HTTPPARAMETER_H
 #define TGBOT_HTTPPARAMETER_H
 
-#ifdef HAVE_CURL
-#include <curl/curl.h>
-#endif /* HAVE_CURL */
-
+#include <memory>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -14,16 +10,6 @@
 
 #include "tgbot/export.h"
 #include "tgbot/types/InputFile.h"
-
-namespace TgBot::detail {
-struct CRLF_T {};
-constexpr CRLF_T CRLF{};
-}  // namespace TgBot::detail
-
-inline std::ostream& operator<<(std::ostream& stream,
-                                const TgBot::detail::CRLF_T& /*unused*/) {
-    return stream << "\r\n";
-}
 
 namespace TgBot {
 
@@ -62,27 +48,6 @@ class TGBOT_API HttpReqArg {
      * @brief Value of an argument.
      */
     std::string value;
-
-#ifdef HAVE_CURL
-    /**
-     * @brief Constructs curl_mime* unique_ptr for this argument.
-     */
-    virtual void update_mime_part(curl_mimepart* part) const {
-        curl_mime_data(part, value.c_str(), value.size());
-        curl_mime_type(part, "text/plain");
-        curl_mime_name(part, name.c_str());
-    }
-#endif
-
-    [[nodiscard]] virtual std::string create_mime_part(
-        const std::string_view boundary) const {
-        std::stringstream stream;
-        stream << "--" << boundary << detail::CRLF;
-        stream << "Content-Disposition: form-data; name=" << std::quoted(name)
-               << detail::CRLF << detail::CRLF;
-        stream << value << detail::CRLF;
-        return stream.str();
-    }
 
     virtual std::ostream& print(std::ostream& stream) const {
         return stream << name << "=" << value;
@@ -123,27 +88,6 @@ class TGBOT_API HttpReqArgFile : public HttpReqArg {
      * @brief Should be set if an argument value hold some file contents
      */
     std::string fileName;
-
-#ifdef HAVE_CURL
-    void update_mime_part(curl_mimepart* part) const override {
-        curl_mime_data(part, value.c_str(), value.size());
-        curl_mime_type(part, mimeType.c_str());
-        curl_mime_name(part, name.c_str());
-        curl_mime_filename(part, fileName.c_str());
-    }
-#endif
-
-    [[nodiscard]] std::string create_mime_part(
-        const std::string_view boundary) const override {
-        std::stringstream stream;
-        stream << "--" << boundary << detail::CRLF;
-        stream << "Content-Disposition: form-data; name=" << std::quoted(name)
-               << "; filename=" << std::quoted(fileName) << detail::CRLF;
-        stream << "Content-Type: " << mimeType << detail::CRLF
-               << detail::CRLF;
-        stream << value << detail::CRLF;
-        return stream.str();
-    }
 
     std::ostream& print(std::ostream& stream) const override {
         return stream << name << "= <file:" << fileName << ">";

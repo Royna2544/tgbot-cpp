@@ -3,5 +3,6 @@
 !samples
 !src
 !test
+!third_party
 !CMakeLists.txt
 !CMake

@@ -4,18 +4,11 @@
     "version-string": "1.0.0",
     "builtin-baseline": "d015e31e90838a4c9dfa3eed45979bc70d9357fc",
     "dependencies": [
-        "boost-asio",
         "openssl",
         "nlohmann-json",
         "zlib"
     ],
     "features": {
-        "curl": {
-            "description": "Add cURL support",
-            "dependencies": [
-                "curl"
-            ]
-        },
         "testing": {
             "description": "Add testing dependencies",
             "dependencies": [

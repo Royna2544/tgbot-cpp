@@ -1,34 +1,32 @@
 #ifndef TGBOT_TGWEBHOOKLOCALSERVER_H
 #define TGBOT_TGWEBHOOKLOCALSERVER_H
 
-#include <boost/asio/local/basic_endpoint.hpp>
-
-#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
-
-#include <tgbot/net/TgWebhookServer.h>
+#ifndef _WIN32
 
 #include <string>
+#include <utility>
+
+#include "tgbot/net/TgWebhookServer.h"
 
 namespace TgBot {
 
 /**
- * @brief This class setups HTTP server for receiving Telegram Update objects
- * from unix socket.
+ * @brief Sets up an HTTP server for receiving Telegram Update objects over a
+ * UNIX domain socket.
  *
  * @ingroup net
  */
-class TgWebhookLocalServer
-    : public TgWebhookServer<boost::asio::local::stream_protocol> {
+class TGBOT_API TgWebhookLocalServer : public TgWebhookServer {
    public:
-    TgWebhookLocalServer(const std::string& unixSocketPath,
-                         const std::string& path, EventHandler* eventHandler)
-        : TgWebhookServer<boost::asio::local::stream_protocol>(
-              boost::asio::local::stream_protocol::endpoint(unixSocketPath),
-              path, eventHandler) {}
+    TgWebhookLocalServer(std::string unixSocketPath, std::string path,
+                         EventHandler* eventHandler)
+        : TgWebhookServer(
+              Bind{true, std::string(), 0, std::move(unixSocketPath)},
+              std::move(path), eventHandler) {}
 };
 
 }  // namespace TgBot
 
-#endif  // BOOST_ASIO_HAS_LOCAL_SOCKETS
+#endif  // _WIN32
 
 #endif  // TGBOT_TGWEBHOOKLOCALSERVER_H

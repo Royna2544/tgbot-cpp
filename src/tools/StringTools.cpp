@@ -1,8 +1,6 @@
 #include "tgbot/tools/StringTools.h"
 
 #include <algorithm>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <iomanip>
 #include <cstdio>
 #include <random>
@@ -11,15 +9,26 @@
 namespace StringTools {
 
 bool startsWith(const std::string& str1, const std::string& str2) {
-    return boost::starts_with(str1, str2);
+    return str1.size() >= str2.size() &&
+           str1.compare(0, str2.size(), str2) == 0;
 }
 
 bool endsWith(const std::string& str1, const std::string& str2) {
-    return boost::ends_with(str1, str2);
+    return str1.size() >= str2.size() &&
+           str1.compare(str1.size() - str2.size(), str2.size(), str2) == 0;
 }
 
 void split(const std::string& str, char delimiter, std::vector<std::string>& dest) {
-    boost::split(dest, str, [delimiter](char c) { return c == delimiter; });
+    std::string::size_type start = 0;
+    while (true) {
+        std::string::size_type pos = str.find(delimiter, start);
+        if (pos == std::string::npos) {
+            dest.push_back(str.substr(start));
+            break;
+        }
+        dest.push_back(str.substr(start, pos - start));
+        start = pos + 1;
+    }
 }
 
 std::string generateRandomString(std::size_t length) {

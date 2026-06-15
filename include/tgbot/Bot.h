@@ -6,7 +6,7 @@
 #include <tgbot/net/HttpClient.h>
 #include <tgbot/net/TgLongPoll.h>
 #include <tgbot/net/TgWebhookTcpServer.h>
-#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
+#ifndef _WIN32
 #include <tgbot/net/TgWebhookLocalServer.h>
 #endif
 
@@ -73,7 +73,7 @@ class TGBOT_API Bot {
         return _webhookTcp.get();
     }
 
-#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
+#ifndef _WIN32
     inline TgWebhookLocalServer* createWebHookLocal(
         std::string unixSocketPath, std::string_view _path = {}) {
         std::string path(_path);
@@ -100,7 +100,7 @@ class TGBOT_API Bot {
     std::unique_ptr<EventBroadcaster> _eventBroadcaster;
     std::unique_ptr<EventHandler> _eventHandler;
     std::unique_ptr<TgLongPoll> _longPoll;
-#ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
+#ifndef _WIN32
     std::unique_ptr<TgWebhookLocalServer> _webhookLocal;
 #endif
     std::unique_ptr<TgWebhookTcpServer> _webhookTcp;

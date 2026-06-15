@@ -7,15 +7,13 @@
 #include <map>
 #include <unordered_map>
 
-#include <boost/lexical_cast.hpp>
-
 template<typename T>
 inline std::string diff(const T& test, const T& expected, std::string (*toStringFunc)(const typename T::value_type&)) {
     std::string result;
     result += "\n*** BEGIN ***	 Count: t=";
-    result += boost::lexical_cast<std::string>(test.size());
+    result += std::to_string(test.size());
     result += " e=";
-    result += boost::lexical_cast<std::string>(expected.size());
+    result += std::to_string(expected.size());
     result += '\n';
 
     typename T::const_iterator iter1 = test.begin();
@@ -35,19 +33,19 @@ inline std::string diff(const T& test, const T& expected, std::string (*toString
             s2 = toStringFunc(*iter2++);
         }
         if (r1 && r2 && s1 == s2) {
-            result += boost::lexical_cast<std::string>(i);
+            result += std::to_string(i);
             result += " [=] ";
             result += s1;
             result += "\n";
         } else {
             if (r1) {
-                result += boost::lexical_cast<std::string>(i);
+                result += std::to_string(i);
                 result += " [t] ";
                 result += s1;
                 result += "\n";
             }
             if (r2) {
-                result += boost::lexical_cast<std::string>(i);
+                result += std::to_string(i);
                 result += " [e] ";
                 result += s2;
                 result += "\n";

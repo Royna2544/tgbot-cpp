@@ -6,14 +6,13 @@
 #include "tgbot/EventBroadcaster.h"
 #include "tgbot/EventHandler.h"
 #include "tgbot/TgException.h"
-#include "tgbot/net/BoostSslClient.h"
-#include "tgbot/net/CurlHttpClient.h"
 #include "tgbot/net/HttpClient.h"
-#include "tgbot/net/HttpParser.h"
 #include "tgbot/net/HttpReqArg.h"
-#include "tgbot/net/HttpServer.h"
+#include "tgbot/net/HttplibClient.h"
 #include "tgbot/net/TgLongPoll.h"
+#ifndef _WIN32
 #include "tgbot/net/TgWebhookLocalServer.h"
+#endif
 #include "tgbot/net/TgWebhookServer.h"
 #include "tgbot/net/TgWebhookTcpServer.h"
 #include "tgbot/net/Url.h"

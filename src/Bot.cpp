@@ -1,5 +1,5 @@
 #include "tgbot/Api.h"
-#include "tgbot/net/BoostSslClient.h"
+#include "tgbot/net/HttplibClient.h"
 #include "tgbot/Bot.h"
 
 #include "tgbot/EventBroadcaster.h"
@@ -18,7 +18,7 @@ Bot::Bot(std::string token, std::unique_ptr<HttpClient> httpClient, std::string 
 }
 
 std::unique_ptr<HttpClient> Bot::_getDefaultHttpClient() {
-    return std::make_unique<BoostSslClient>();
+    return std::make_unique<HttplibClient>();
 }
 
 }

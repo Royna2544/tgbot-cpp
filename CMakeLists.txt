@@ -20,9 +20,6 @@ find_package(ZLIB REQUIRED)
 ## openssl
 find_package(OpenSSL REQUIRED)
 
-## curl
-find_package(CURL 7.58.0)
-
 ## nlohmann_json
 find_package(nlohmann_json 3.2.0 REQUIRED)
 
@@ -33,10 +30,6 @@ file(GLOB SRC_LIST CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/src/types/*.cpp"
 )
 
-if (NOT CURL_FOUND)
-    list(REMOVE_ITEM SRC_LIST "${CMAKE_CURRENT_SOURCE_DIR}/src/net/CurlHttpClient.cpp")
-endif()
-
 # building project
 add_library(${PROJECT_NAME} ${SRC_LIST})
 
@@ -46,7 +39,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD_REQUIRED 17)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_EXTENSIONS OFF)
 if (WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0601)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32_WINNT=0x0A00)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN)
     target_compile_definitions(${PROJECT_NAME} PRIVATE NOMINMAX)
 else()
@@ -57,43 +50,32 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(${PROJECT_NAME} PRIVATE TGBOT_LP64)
 endif()
 
-## CURL
-if (CURL_FOUND)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_CURL)
-endif()
-
-## boost
-set(Boost_USE_MULTITHREADED ON)
+# Tests use Boost.Test; the library itself no longer depends on Boost.
 if (ENABLE_TESTS)
-    find_package(Boost 1.70 CONFIG COMPONENTS system unit_test_framework REQUIRED)
-else()
-    find_package(Boost 1.70 CONFIG COMPONENTS system REQUIRED)
+    set(Boost_USE_MULTITHREADED ON)
+    find_package(Boost 1.70 CONFIG COMPONENTS unit_test_framework REQUIRED)
 endif()
-if(NOT Boost_USE_STATIC_LIBS)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC BOOST_ALL_DYN_LINK)
-endif()
-target_compile_definitions(${PROJECT_NAME} PUBLIC BOOST_BIND_GLOBAL_PLACEHOLDERS)
 
 set(LIB_LIST
     Threads::Threads
     ZLIB::ZLIB
     OpenSSL::SSL
-    Boost::system
+    OpenSSL::Crypto
     nlohmann_json::nlohmann_json
 )
-
-if (CURL_FOUND)
-    list(APPEND LIB_LIST CURL::libcurl)
-endif()
 
 if (WIN32)
     list(APPEND LIB_LIST Ws2_32)
 endif()
 
-target_include_directories(${PROJECT_NAME} PUBLIC 
+target_include_directories(${PROJECT_NAME} PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
-target_link_libraries(${PROJECT_NAME} ${LIB_LIST})
+# cpp-httplib is vendored (single header) and fully hidden behind the library
+# (pimpl), so it is only needed when building the library itself.
+target_include_directories(${PROJECT_NAME} PRIVATE
+                           ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${LIB_LIST})
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}-targets

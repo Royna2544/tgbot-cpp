@@ -52,19 +52,19 @@ All other samples are located [here](samples).
 
 Dependencies:
 - CMake
-- Boost
 - OpenSSL
 - ZLib
 - nlohmann/json
-- Libcurl (optional unless you want to use curl-based http client `CurlHttpClient`).
 
+The HTTP backend (cpp-httplib) is vendored in `third_party/`, so it does not
+need to be installed separately. Boost is only required to build the unit tests.
 
 ## Library installation on Linux
 
 You can install dependencies on Debian-based distibutives with these commands:
 
 ```sh
-sudo apt install g++ make binutils cmake libboost-system-dev libssl-dev zlib1g-dev libcurl4-openssl-dev nlohmann-json3-dev
+sudo apt install g++ make binutils cmake libssl-dev zlib1g-dev nlohmann-json3-dev
 ```
 
 Optionally, install the dependencies for testing and documenting
@@ -90,7 +90,7 @@ Alternatively, you can use Docker to build and run your bot. Set the base image 
 You can install dependencies with these commands:
 
 ```sh
-brew install gcc cmake boost openssl zlib curl nlohmann-json
+brew install gcc cmake openssl zlib nlohmann-json
 ```
 
 You can compile and install the library like Linux instructions.

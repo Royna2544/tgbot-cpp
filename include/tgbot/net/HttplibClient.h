@@ -1,26 +1,28 @@
-#ifndef TGBOT_BOOSTHTTPCLIENT_H
-#define TGBOT_BOOSTHTTPCLIENT_H
+#ifndef TGBOT_HTTPLIBCLIENT_H
+#define TGBOT_HTTPLIBCLIENT_H
 
-#include <boost/asio.hpp>
+#include <chrono>
 #include <string>
-#include <vector>
 
 #include "tgbot/net/HttpClient.h"
-#include "tgbot/net/HttpParser.h"
 #include "tgbot/net/HttpReqArg.h"
 #include "tgbot/net/Url.h"
 
 namespace TgBot {
 
 /**
- * @brief This class makes http requests via boost::asio.
+ * @brief This class makes http requests via cpp-httplib.
+ *
+ * It is the default HttpClient used by Bot and supports HTTPS out of the box
+ * using the system's trusted CA store (or a custom certificate set through
+ * HttpClient::setServerCert).
  *
  * @ingroup net
  */
-class TGBOT_API BoostSslClient : public HttpClient {
+class TGBOT_API HttplibClient : public HttpClient {
    public:
-    explicit BoostSslClient(std::chrono::seconds timeout = kDefaultTimeout);
-    ~BoostSslClient() override;
+    explicit HttplibClient(std::chrono::seconds timeout = kDefaultTimeout);
+    ~HttplibClient() override;
 
     /**
      * @brief Sends a request to the url.
@@ -32,16 +34,8 @@ class TGBOT_API BoostSslClient : public HttpClient {
      */
     std::string makeRequest(const Url& url,
                             const HttpReqArg::Vec& args) const override;
-
-   private:
-#if BOOST_VERSION >= 108700
-    mutable boost::asio::io_context _ioService;
-#else
-    mutable boost::asio::io_service _ioService;
-#endif
-    std::thread _ioServiceThread;
 };
 
 }  // namespace TgBot
 
-#endif  // TGBOT_BOOSTHTTPCLIENT_H
+#endif  // TGBOT_HTTPLIBCLIENT_H
