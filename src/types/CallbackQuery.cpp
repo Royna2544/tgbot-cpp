@@ -7,7 +7,9 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     auto result = std::make_shared<CallbackQuery>();
     parse(data, "id", &result->id);
     result->from = parseRequired<User>(data, "from");
-    result->message = parse<MaybeInaccessibleMessage>(data, "message");
+    if (data.contains("message") && !data["message"].is_null()) {
+        result->message = parse(data["message"]);
+    }
     parse(data, "inline_message_id", &result->inlineMessageId);
     parse(data, "chat_instance", &result->chatInstance);
     parse(data, "data", &result->data);

@@ -9,10 +9,20 @@ on:
       - master
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Lint C++ types and methods against api.json
+        run: python scripts/lint_api_types.py api.json include/tgbot/types --methods src/Api.cpp
+
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Build docker image
         run: docker build -t reo7sp/tgbot-cpp -f Dockerfile .
       - name: Build docker image with examples and unit tests

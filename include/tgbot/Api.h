@@ -56,6 +56,20 @@
 #include "tgbot/types/UserChatBoosts.h"
 #include "tgbot/types/UserProfilePhotos.h"
 #include "tgbot/types/WebhookInfo.h"
+#include "tgbot/types/AcceptedGiftTypes.h"
+#include "tgbot/types/Gifts.h"
+#include "tgbot/types/InputChecklist.h"
+#include "tgbot/types/InputPaidMedia.h"
+#include "tgbot/types/InputProfilePhoto.h"
+#include "tgbot/types/InputStoryContent.h"
+#include "tgbot/types/OwnedGifts.h"
+#include "tgbot/types/PreparedInlineMessage.h"
+#include "tgbot/types/StarAmount.h"
+#include "tgbot/types/StarTransactions.h"
+#include "tgbot/types/Story.h"
+#include "tgbot/types/StoryArea.h"
+#include "tgbot/types/SuggestedPostParameters.h"
+#include "tgbot/types/UserProfileAudios.h"
 
 namespace TgBot {
 
@@ -356,6 +370,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -369,7 +391,11 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& entities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to forward messages of any kind.
@@ -388,6 +414,14 @@ class TGBOT_API Api {
      * message from forwarding and saving
      * @param messageThreadId Optional. Unique identifier for the target message
      * thread (topic) of the forum; for forum supergroups only
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be forwarded
+     * @param videoStartTimestamp Optional. New start timestamp for the forwarded
+     * video in the message
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -395,7 +429,11 @@ class TGBOT_API Api {
         ChatIdType chatId, ChatIdType fromChatId, std::int32_t messageId,
         optional<bool> disableNotification = {},
         optional<bool> protectContent = {},
-        optional<std::int32_t> messageThreadId = {}) const;
+        optional<std::int32_t> messageThreadId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<std::int32_t> videoStartTimestamp = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to forward multiple messages of any kind.
@@ -418,6 +456,8 @@ class TGBOT_API Api {
      * will receive a notification with no sound.
      * @param protectContent Optional. Protects the contents of the forwarded
      * message from forwarding and saving
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the messages will be forwarded
      *
      * @return On success, an array of MessageId of the sent messages is
      * returned.
@@ -427,7 +467,8 @@ class TGBOT_API Api {
         const std::vector<std::int32_t>& messageIds,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> disableNotification = {},
-        optional<bool> protectContent = {}) const;
+        optional<bool> protectContent = {},
+        optional<std::int32_t> directMessagesTopicId = {}) const;
 
     /**
      * @brief Use this method to copy messages of any kind.
@@ -466,6 +507,18 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param messageThreadId Optional. Unique identifier for the target message
      * thread (topic) of the forum; for forum supergroups only
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param videoStartTimestamp Optional. New start timestamp for the copied
+     * video in the message
+     * @param showCaptionAboveMedia Optional. Pass True, if the caption must be
+     * shown above the message media
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return Returns the MessageId of the sent message on success.
      */
@@ -478,7 +531,13 @@ class TGBOT_API Api {
         ReplyParameters::Ptr replyParameters = nullptr,
         GenericReply::Ptr replyMarkup = nullptr,
         optional<bool> protectContent = {},
-        optional<std::int32_t> messageThreadId = {}) const;
+        optional<std::int32_t> messageThreadId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<std::int32_t> videoStartTimestamp = {},
+        optional<bool> showCaptionAboveMedia = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to copy messages of any kind.
@@ -507,6 +566,8 @@ class TGBOT_API Api {
      * messages from forwarding and saving
      * @param removeCaption Optional. Pass True to copy the messages without
      * their captions
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the messages will be sent
      *
      * @return On success, an array of MessageId of the sent messages is
      * returned.
@@ -517,7 +578,8 @@ class TGBOT_API Api {
         optional<std::int32_t> messageThreadId = {},
         optional<bool> disableNotification = {},
         optional<bool> protectContent = {},
-        optional<bool> removeCaption = {}) const;
+        optional<bool> removeCaption = {},
+        optional<std::int32_t> directMessagesTopicId = {}) const;
 
     /**
      * @brief Use this method to send photos.
@@ -557,6 +619,16 @@ class TGBOT_API Api {
      * with a spoiler animation
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param showCaptionAboveMedia Optional. Pass True, if the caption must be
+     * shown above the message media
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -570,7 +642,12 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {}, optional<bool> hasSpoiler = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> showCaptionAboveMedia = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send audio files, if you want Telegram clients
@@ -625,6 +702,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -642,7 +727,11 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send general files.
@@ -693,6 +782,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -708,7 +805,11 @@ class TGBOT_API Api {
         optional<bool> disableContentTypeDetection = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send video files, Telegram clients support
@@ -764,6 +865,19 @@ class TGBOT_API Api {
      * with a spoiler animation
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param cover Optional. Cover for the video in the message
+     * @param startTimestamp Optional. Start timestamp for the video in the
+     * message
+     * @param showCaptionAboveMedia Optional. Pass True, if the caption must be
+     * shown above the message media
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -780,7 +894,14 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {}, optional<bool> hasSpoiler = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        FileHandleType cover = {},
+        optional<std::int32_t> startTimestamp = {},
+        optional<bool> showCaptionAboveMedia = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send animation files (GIF or H.264/MPEG-4 AVC
@@ -834,6 +955,16 @@ class TGBOT_API Api {
      * covered with a spoiler animation
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param showCaptionAboveMedia Optional. Pass True, if the caption must be
+     * shown above the message media
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -849,7 +980,12 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {}, optional<bool> hasSpoiler = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> showCaptionAboveMedia = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send audio files, if you want Telegram clients
@@ -892,6 +1028,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -906,7 +1050,11 @@ class TGBOT_API Api {
         const std::vector<MessageEntity::Ptr>& captionEntities = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send video messages.
@@ -949,6 +1097,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -961,7 +1117,11 @@ class TGBOT_API Api {
         GenericReply::Ptr replyMarkup = nullptr,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send a group of photos, videos, documents or
@@ -983,6 +1143,12 @@ class TGBOT_API Api {
      * messages from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the messages will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
      *
      * @return On success, an array of Messages that were sent is returned.
      */
@@ -992,7 +1158,10 @@ class TGBOT_API Api {
         ReplyParameters::Ptr replyParameters = nullptr,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {}) const;
 
     /**
      * @brief Use this method to send point on the map.
@@ -1027,6 +1196,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -1041,7 +1218,11 @@ class TGBOT_API Api {
         bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to edit live location messages.
@@ -1067,6 +1248,10 @@ class TGBOT_API Api {
      * @param proximityAlertRadius Optional. The maximum distance for proximity
      * alerts about approaching another chat member, in meters. Must be between
      * 1 and 100000 if specified.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
+     * @param livePeriod Optional. New period in seconds during which the
+     * location can be updated
      *
      * @return On success, the edited Message is returned.
      */
@@ -1077,8 +1262,9 @@ class TGBOT_API Api {
         InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
         bounded_optional<float, 0, 1500> horizontalAccuracy = {},
         bounded_optional<std::int32_t, 1, 360> heading = {},
-        bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius = {})
-        const;
+        bounded_optional<std::int32_t, 1, 100000> proximityAlertRadius = {},
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> livePeriod = {}) const;
 
     /**
      * @brief Use this method to stop updating a live location message before
@@ -1093,13 +1279,16 @@ class TGBOT_API Api {
      * specified. Identifier of the inline message
      * @param replyMarkup Optional. A JSON-serialized object for a new inline
      * keyboard.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
      *
      * @return On success, the edited Message is returned.
      */
     Message::Ptr stopMessageLiveLocation(
         ChatIdType chatId = {}, optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
-        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to send information about a venue.
@@ -1133,6 +1322,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -1148,7 +1345,11 @@ class TGBOT_API Api {
         const optional<std::string_view> googlePlaceType = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to send phone contacts.
@@ -1176,6 +1377,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -1189,7 +1398,11 @@ class TGBOT_API Api {
         GenericReply::Ptr replyMarkup = nullptr,
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Desribes a poll type
@@ -1244,6 +1457,14 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param questionParseMode Optional. Mode for parsing entities in the
+     * question. Currently, only custom emoji entities are allowed
+     * @param questionEntities Optional. A JSON-serialized list of special
+     * entities that appear in the poll question
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
      *
      * @return On success, the sent Message is returned.
      */
@@ -1265,7 +1486,11 @@ class TGBOT_API Api {
         optional<bool> isClosed = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        const optional<ParseMode> questionParseMode = {},
+        const std::vector<MessageEntity::Ptr>& questionEntities = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {}) const;
 
     /**
      * @brief Use this method to send an animated emoji that will display a
@@ -1293,6 +1518,14 @@ class TGBOT_API Api {
      * from forwarding
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -1303,7 +1536,11 @@ class TGBOT_API Api {
         const optional<std::string_view> emoji = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to change the chosen reactions on a message.
@@ -1542,6 +1779,11 @@ class TGBOT_API Api {
      * stories posted by other users
      * @param canDeleteStories Optional. Pass True if the administrator can
      * delete stories posted by other users
+     * @param canManageDirectMessages Optional. Pass True if the administrator
+     * can manage direct messages of the channel and decline suggested posts; for
+     * channels only
+     * @param canManageTags Optional. Pass True if the administrator can manage
+     * tags of the channel direct messages
      *
      * @return Returns True on success.
      */
@@ -1557,7 +1799,9 @@ class TGBOT_API Api {
         optional<bool> canRestrictMembers = {},
         optional<bool> canManageTopics = {}, optional<bool> canPostStories = {},
         optional<bool> canEditStories = {},
-        optional<bool> canDeleteStories = {}) const;
+        optional<bool> canDeleteStories = {},
+        optional<bool> canManageDirectMessages = {},
+        optional<bool> canManageTags = {}) const;
 
     /**
      * @brief Use this method to set a custom title for an administrator in a
@@ -1828,11 +2072,15 @@ class TGBOT_API Api {
      * @param disableNotification Optional. Pass True if it is not necessary to
      * send a notification to all chat members about the new pinned message.
      * Notifications are always disabled in channels and private chats.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message will be pinned
      *
      * @return Returns True on success.
      */
-    bool pinChatMessage(ChatIdType chatId, std::int32_t messageId,
-                        optional<bool> disableNotification = {}) const;
+    bool pinChatMessage(
+        ChatIdType chatId, std::int32_t messageId,
+        optional<bool> disableNotification = {},
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to remove a message from the list of pinned
@@ -1848,11 +2096,14 @@ class TGBOT_API Api {
      * @param messageId Optional. Identifier of a message to unpin. If not
      * specified, the most recent pinned message (by sending date) will be
      * unpinned.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message will be unpinned
      *
      * @return Returns True on success.
      */
-    bool unpinChatMessage(ChatIdType chatId,
-                          optional<std::int32_t> messageId = {}) const;
+    bool unpinChatMessage(
+        ChatIdType chatId, optional<std::int32_t> messageId = {},
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to clear the list of pinned messages in a chat.
@@ -2456,6 +2707,8 @@ class TGBOT_API Api {
      * keyboard.
      * @param entities Optional. List of special entities that appear in message
      * text, which can be specified instead of parseMode
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
      *
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
@@ -2467,7 +2720,8 @@ class TGBOT_API Api {
         const optional<ParseMode> parseMode = {},
         LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
         InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
-        const std::vector<MessageEntity::Ptr>& entities = {}) const;
+        const std::vector<MessageEntity::Ptr>& entities = {},
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to edit captions of messages.
@@ -2488,6 +2742,10 @@ class TGBOT_API Api {
      * more details.
      * @param captionEntities Optional. List of special entities that appear in
      * the caption, which can be specified instead of parseMode
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
+     * @param showCaptionAboveMedia Optional. Pass True, if the caption must be
+     * shown above the message media
      *
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
@@ -2498,7 +2756,9 @@ class TGBOT_API Api {
         const optional<std::string_view> inlineMessageId = {},
         GenericReply::Ptr replyMarkup = nullptr,
         const optional<ParseMode> parseMode = {},
-        const std::vector<MessageEntity::Ptr>& captionEntities = {}) const;
+        const std::vector<MessageEntity::Ptr>& captionEntities = {},
+        const optional<std::string_view> businessConnectionId = {},
+        optional<bool> showCaptionAboveMedia = {}) const;
 
     /**
      * @brief Use this method to edit animation, audio, document, photo, or
@@ -2521,6 +2781,8 @@ class TGBOT_API Api {
      * specified. Identifier of the inline message
      * @param replyMarkup Optional. A JSON-serialized object for a new inline
      * keyboard.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
      *
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
@@ -2529,7 +2791,8 @@ class TGBOT_API Api {
         InputMedia::Ptr media, ChatIdType chatId = {},
         optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
-        GenericReply::Ptr replyMarkup = nullptr) const;
+        GenericReply::Ptr replyMarkup = nullptr,
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to edit only the reply markup of messages.
@@ -2543,6 +2806,8 @@ class TGBOT_API Api {
      * specified. Identifier of the inline message
      * @param replyMarkup Optional. A JSON-serialized object for an inline
      * keyboard.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
      *
      * @return On success, if the edited message is not an inline message, the
      * edited Message is returned, otherwise nullptr is returned.
@@ -2550,7 +2815,8 @@ class TGBOT_API Api {
     Message::Ptr editMessageReplyMarkup(
         ChatIdType chatId = {}, optional<std::int32_t> messageId = {},
         const optional<std::string_view> inlineMessageId = {},
-        GenericReply::Ptr replyMarkup = nullptr) const;
+        GenericReply::Ptr replyMarkup = nullptr,
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to stop a poll which was sent by the bot.
@@ -2560,11 +2826,15 @@ class TGBOT_API Api {
      * @param messageId Identifier of the original message with the poll
      * @param replyMarkup Optional. A JSON-serialized object for a new message
      * inline keyboard.
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the message to be edited was sent
      *
      * @return On success, the stopped Poll is returned.
      */
-    Poll::Ptr stopPoll(ChatIdType chatId, std::int64_t messageId,
-                       InlineKeyboardMarkup::Ptr replyMarkup = {}) const;
+    Poll::Ptr stopPoll(
+        ChatIdType chatId, std::int64_t messageId,
+        InlineKeyboardMarkup::Ptr replyMarkup = {},
+        const optional<std::string_view> businessConnectionId = {}) const;
 
     /**
      * @brief Use this method to delete a message, including service messages,
@@ -2642,6 +2912,14 @@ class TGBOT_API Api {
      * uploaded stickers
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -2653,7 +2931,11 @@ class TGBOT_API Api {
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
         const optional<std::string_view> emoji = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to get a sticker set.
@@ -3009,6 +3291,14 @@ class TGBOT_API Api {
      * with the value used as the start parameter
      * @param protectContent Optional. Protects the contents of the sent message
      * from forwarding and saving
+     * @param directMessagesTopicId Optional. Identifier of the direct messages
+     * topic to which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
+     * @param suggestedPostParameters Optional. A JSON-serialized object
+     * containing the parameters of the suggested post to send
      *
      * @return On success, the sent Message is returned.
      */
@@ -3033,7 +3323,11 @@ class TGBOT_API Api {
         optional<std::int32_t> maxTipAmount = {},
         const std::vector<std::int32_t>& suggestedTipAmounts = {},
         const optional<std::string_view> startParameter = {},
-        optional<bool> protectContent = {}) const;
+        optional<bool> protectContent = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
 
     /**
      * @brief Use this method to create a link for an invoice.
@@ -3080,6 +3374,10 @@ class TGBOT_API Api {
      * address should be sent to the provider
      * @param isFlexible Optional. Pass True, if the final price depends on the
      * shipping method
+     * @param businessConnectionId Optional. Unique identifier of the business
+     * connection on behalf of which the link will be created
+     * @param subscriptionPeriod Optional. The number of seconds the subscription
+     * will be active for before the next payment
      *
      * @return Returns the created invoice link as String on success.
      */
@@ -3099,7 +3397,9 @@ class TGBOT_API Api {
         optional<bool> needShippingAddress = {},
         optional<bool> sendPhoneNumberToProvider = {},
         optional<bool> sendEmailToProvider = {},
-        optional<bool> isFlexible = {}) const;
+        optional<bool> isFlexible = {},
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> subscriptionPeriod = {}) const;
 
     /**
      * @brief Use this method to reply to shipping queries.
@@ -3192,6 +3492,10 @@ class TGBOT_API Api {
      * from forwarding and saving
      * @param businessConnectionId Optional. Unique identifier of the business
      * connection on behalf of which the message will be sent
+     * @param allowPaidBroadcast Optional. Pass True to allow up to 1000 messages
+     * per second, ignoring broadcasting limits for a fee
+     * @param messageEffectId Optional. Unique identifier of the message effect to
+     * be added to the message
      *
      * @return On success, the sent Message is returned.
      */
@@ -3202,7 +3506,9 @@ class TGBOT_API Api {
         optional<bool> disableNotification = {},
         optional<std::int32_t> messageThreadId = {},
         optional<bool> protectContent = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {}) const;
 
     /**
      * @brief Use this method to set the score of the specified user in a game
@@ -3290,6 +3596,491 @@ class TGBOT_API Api {
      * @return Returns True if bot is blocked by user
      */
     bool blockedByUser(std::int64_t chatId) const;
+
+    /**
+     * @brief Use this method to send paid media.
+     *
+     * @return On success, the sent Message is returned.
+     */
+    Message::Ptr sendPaidMedia(
+        ChatIdType chatId, std::int32_t starCount,
+        const std::vector<InputPaidMedia::Ptr>& media,
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> messageThreadId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        const optional<std::string_view> payload = {},
+        const optional<std::string_view> caption = {},
+        const optional<ParseMode> parseMode = {},
+        const std::vector<MessageEntity::Ptr>& captionEntities = {},
+        optional<bool> showCaptionAboveMedia = {},
+        optional<bool> disableNotification = {},
+        optional<bool> protectContent = {},
+        optional<bool> allowPaidBroadcast = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        ReplyParameters::Ptr replyParameters = nullptr,
+        GenericReply::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to send a checklist on behalf of a connected
+     * business account.
+     *
+     * @return On success, the sent Message is returned.
+     */
+    Message::Ptr sendChecklist(
+        const std::string_view businessConnectionId, std::int64_t chatId,
+        InputChecklist::Ptr checklist, optional<bool> disableNotification = {},
+        optional<bool> protectContent = {},
+        const optional<std::string_view> messageEffectId = {},
+        ReplyParameters::Ptr replyParameters = nullptr,
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to store a message draft for the bot in a chat.
+     *
+     * @return Returns True on success.
+     */
+    bool sendMessageDraft(std::int64_t chatId, std::int32_t draftId,
+                          const std::string_view text,
+                          optional<std::int32_t> messageThreadId = {},
+                          const optional<ParseMode> parseMode = {},
+                          const std::vector<MessageEntity::Ptr>& entities = {})
+        const;
+
+    /**
+     * @brief Use this method to get a list of audio files posted on a user's
+     * profile.
+     *
+     * @return Returns a UserProfileAudios object.
+     */
+    UserProfileAudios::Ptr getUserProfileAudios(
+        std::int64_t userId, optional<std::int32_t> offset = {},
+        optional<std::int32_t> limit = {}) const;
+
+    /**
+     * @brief Use this method to change the emoji status of a user.
+     *
+     * @return Returns True on success.
+     */
+    bool setUserEmojiStatus(
+        std::int64_t userId,
+        const optional<std::string_view> emojiStatusCustomEmojiId = {},
+        optional<std::int32_t> emojiStatusExpirationDate = {}) const;
+
+    /**
+     * @brief Use this method to set a custom tag for a chat member.
+     *
+     * @return Returns True on success.
+     */
+    bool setChatMemberTag(ChatIdType chatId, std::int64_t userId,
+                          const optional<std::string_view> tag = {}) const;
+
+    /**
+     * @brief Use this method to create a subscription invite link for a channel
+     * chat.
+     *
+     * @return Returns the new invite link as a ChatInviteLink object.
+     */
+    ChatInviteLink::Ptr createChatSubscriptionInviteLink(
+        ChatIdType chatId, std::int32_t subscriptionPeriod,
+        std::int32_t subscriptionPrice,
+        const optional<std::string_view> name = {}) const;
+
+    /**
+     * @brief Use this method to edit a subscription invite link created by the
+     * bot.
+     *
+     * @return Returns the edited invite link as a ChatInviteLink object.
+     */
+    ChatInviteLink::Ptr editChatSubscriptionInviteLink(
+        ChatIdType chatId, const std::string_view inviteLink,
+        const optional<std::string_view> name = {}) const;
+
+    /**
+     * @brief Use this method to change the profile photo of the bot.
+     *
+     * @return Returns True on success.
+     */
+    bool setMyProfilePhoto(InputProfilePhoto::Ptr photo) const;
+
+    /**
+     * @brief Use this method to remove the profile photo of the bot.
+     *
+     * @return Returns True on success.
+     */
+    bool removeMyProfilePhoto() const;
+
+    /**
+     * @brief Use this method to get the list of gifts that can be sent by the
+     * bot to users and channel chats.
+     *
+     * @return Returns a Gifts object.
+     */
+    Gifts::Ptr getAvailableGifts() const;
+
+    /**
+     * @brief Use this method to send a gift to the given user or channel chat.
+     *
+     * @return Returns True on success.
+     */
+    bool sendGift(const std::string_view giftId,
+                  optional<std::int64_t> userId = {},
+                  optional<ChatIdType> chatId = {},
+                  optional<bool> payForUpgrade = {},
+                  const optional<std::string_view> text = {},
+                  const optional<ParseMode> textParseMode = {},
+                  const std::vector<MessageEntity::Ptr>& textEntities = {})
+        const;
+
+    /**
+     * @brief Use this method to gift a Telegram Premium subscription to the
+     * given user.
+     *
+     * @return Returns True on success.
+     */
+    bool giftPremiumSubscription(
+        std::int64_t userId, std::int32_t monthCount, std::int32_t starCount,
+        const optional<std::string_view> text = {},
+        const optional<ParseMode> textParseMode = {},
+        const std::vector<MessageEntity::Ptr>& textEntities = {}) const;
+
+    /**
+     * @brief Use this method to verify a user on behalf of the organization
+     * which is represented by the bot.
+     *
+     * @return Returns True on success.
+     */
+    bool verifyUser(std::int64_t userId,
+                    const optional<std::string_view> customDescription = {})
+        const;
+
+    /**
+     * @brief Use this method to verify a chat on behalf of the organization
+     * which is represented by the bot.
+     *
+     * @return Returns True on success.
+     */
+    bool verifyChat(ChatIdType chatId,
+                    const optional<std::string_view> customDescription = {})
+        const;
+
+    /**
+     * @brief Use this method to remove verification from a user who is currently
+     * verified on behalf of the organization represented by the bot.
+     *
+     * @return Returns True on success.
+     */
+    bool removeUserVerification(std::int64_t userId) const;
+
+    /**
+     * @brief Use this method to remove verification from a chat that is
+     * currently verified on behalf of the organization represented by the bot.
+     *
+     * @return Returns True on success.
+     */
+    bool removeChatVerification(ChatIdType chatId) const;
+
+    /**
+     * @brief Use this method to mark an incoming message as read on behalf of a
+     * business account.
+     *
+     * @return Returns True on success.
+     */
+    bool readBusinessMessage(const std::string_view businessConnectionId,
+                             std::int64_t chatId, std::int32_t messageId) const;
+
+    /**
+     * @brief Use this method to delete messages on behalf of a business
+     * account.
+     *
+     * @return Returns True on success.
+     */
+    bool deleteBusinessMessages(
+        const std::string_view businessConnectionId,
+        const std::vector<std::int32_t>& messageIds) const;
+
+    /**
+     * @brief Use this method to change the first and last name of a managed
+     * business account.
+     *
+     * @return Returns True on success.
+     */
+    bool setBusinessAccountName(
+        const std::string_view businessConnectionId,
+        const std::string_view firstName,
+        const optional<std::string_view> lastName = {}) const;
+
+    /**
+     * @brief Use this method to change the username of a managed business
+     * account.
+     *
+     * @return Returns True on success.
+     */
+    bool setBusinessAccountUsername(
+        const std::string_view businessConnectionId,
+        const optional<std::string_view> username = {}) const;
+
+    /**
+     * @brief Use this method to change the bio of a managed business account.
+     *
+     * @return Returns True on success.
+     */
+    bool setBusinessAccountBio(
+        const std::string_view businessConnectionId,
+        const optional<std::string_view> bio = {}) const;
+
+    /**
+     * @brief Use this method to change the profile photo of a managed business
+     * account.
+     *
+     * @return Returns True on success.
+     */
+    bool setBusinessAccountProfilePhoto(
+        const std::string_view businessConnectionId,
+        InputProfilePhoto::Ptr photo, optional<bool> isPublic = {}) const;
+
+    /**
+     * @brief Use this method to remove the current profile photo of a managed
+     * business account.
+     *
+     * @return Returns True on success.
+     */
+    bool removeBusinessAccountProfilePhoto(
+        const std::string_view businessConnectionId,
+        optional<bool> isPublic = {}) const;
+
+    /**
+     * @brief Use this method to change the privacy settings pertaining to
+     * incoming gifts in a managed business account.
+     *
+     * @return Returns True on success.
+     */
+    bool setBusinessAccountGiftSettings(
+        const std::string_view businessConnectionId, bool showGiftButton,
+        AcceptedGiftTypes::Ptr acceptedGiftTypes) const;
+
+    /**
+     * @brief Use this method to get the amount of Telegram Stars owned by a
+     * managed business account.
+     *
+     * @return Returns a StarAmount object.
+     */
+    StarAmount::Ptr getBusinessAccountStarBalance(
+        const std::string_view businessConnectionId) const;
+
+    /**
+     * @brief Use this method to transfer Telegram Stars from a managed business
+     * account to the bot's account.
+     *
+     * @return Returns True on success.
+     */
+    bool transferBusinessAccountStars(
+        const std::string_view businessConnectionId,
+        std::int32_t starCount) const;
+
+    /**
+     * @brief Use this method to get the gifts received and owned by a managed
+     * business account.
+     *
+     * @return Returns an OwnedGifts object.
+     */
+    OwnedGifts::Ptr getBusinessAccountGifts(
+        const std::string_view businessConnectionId,
+        optional<bool> excludeUnsaved = {}, optional<bool> excludeSaved = {},
+        optional<bool> excludeUnlimited = {},
+        optional<bool> excludeLimitedUpgradable = {},
+        optional<bool> excludeLimitedNonUpgradable = {},
+        optional<bool> excludeUnique = {},
+        optional<bool> excludeFromBlockchain = {},
+        optional<bool> sortByPrice = {},
+        const optional<std::string_view> offset = {},
+        optional<std::int32_t> limit = {}) const;
+
+    /**
+     * @brief Use this method to get the gifts received and owned by a user.
+     *
+     * @return Returns an OwnedGifts object.
+     */
+    OwnedGifts::Ptr getUserGifts(
+        std::int64_t userId, optional<bool> excludeUnlimited = {},
+        optional<bool> excludeLimitedUpgradable = {},
+        optional<bool> excludeLimitedNonUpgradable = {},
+        optional<bool> excludeFromBlockchain = {},
+        optional<bool> excludeUnique = {}, optional<bool> sortByPrice = {},
+        const optional<std::string_view> offset = {},
+        optional<std::int32_t> limit = {}) const;
+
+    /**
+     * @brief Use this method to get the gifts received and owned by a channel
+     * chat.
+     *
+     * @return Returns an OwnedGifts object.
+     */
+    OwnedGifts::Ptr getChatGifts(
+        ChatIdType chatId, optional<bool> excludeUnsaved = {},
+        optional<bool> excludeSaved = {}, optional<bool> excludeUnlimited = {},
+        optional<bool> excludeLimitedUpgradable = {},
+        optional<bool> excludeLimitedNonUpgradable = {},
+        optional<bool> excludeFromBlockchain = {},
+        optional<bool> excludeUnique = {}, optional<bool> sortByPrice = {},
+        const optional<std::string_view> offset = {},
+        optional<std::int32_t> limit = {}) const;
+
+    /**
+     * @brief Use this method to convert a given regular gift to Telegram Stars.
+     *
+     * @return Returns True on success.
+     */
+    bool convertGiftToStars(const std::string_view businessConnectionId,
+                            const std::string_view ownedGiftId) const;
+
+    /**
+     * @brief Use this method to upgrade a given regular gift to a unique gift.
+     *
+     * @return Returns True on success.
+     */
+    bool upgradeGift(const std::string_view businessConnectionId,
+                     const std::string_view ownedGiftId,
+                     optional<bool> keepOriginalDetails = {},
+                     optional<std::int32_t> starCount = {}) const;
+
+    /**
+     * @brief Use this method to transfer an owned unique gift to another user.
+     *
+     * @return Returns True on success.
+     */
+    bool transferGift(const std::string_view businessConnectionId,
+                      const std::string_view ownedGiftId,
+                      std::int64_t newOwnerChatId,
+                      optional<std::int32_t> starCount = {}) const;
+
+    /**
+     * @brief Use this method to post a story on behalf of a managed business
+     * account.
+     *
+     * @return Returns Story on success.
+     */
+    Story::Ptr postStory(
+        const std::string_view businessConnectionId,
+        InputStoryContent::Ptr content, std::int32_t activePeriod,
+        const optional<std::string_view> caption = {},
+        const optional<ParseMode> parseMode = {},
+        const std::vector<MessageEntity::Ptr>& captionEntities = {},
+        const std::vector<StoryArea::Ptr>& areas = {},
+        optional<bool> postToChatPage = {},
+        optional<bool> protectContent = {}) const;
+
+    /**
+     * @brief Use this method to repost a story on behalf of a managed business
+     * account.
+     *
+     * @return Returns Story on success.
+     */
+    Story::Ptr repostStory(const std::string_view businessConnectionId,
+                           std::int64_t fromChatId, std::int32_t fromStoryId,
+                           std::int32_t activePeriod,
+                           optional<bool> postToChatPage = {},
+                           optional<bool> protectContent = {}) const;
+
+    /**
+     * @brief Use this method to edit a story previously posted by the bot on
+     * behalf of a managed business account.
+     *
+     * @return Returns Story on success.
+     */
+    Story::Ptr editStory(
+        const std::string_view businessConnectionId, std::int32_t storyId,
+        InputStoryContent::Ptr content,
+        const optional<std::string_view> caption = {},
+        const optional<ParseMode> parseMode = {},
+        const std::vector<MessageEntity::Ptr>& captionEntities = {},
+        const std::vector<StoryArea::Ptr>& areas = {}) const;
+
+    /**
+     * @brief Use this method to delete a story previously posted by the bot on
+     * behalf of a managed business account.
+     *
+     * @return Returns True on success.
+     */
+    bool deleteStory(const std::string_view businessConnectionId,
+                     std::int32_t storyId) const;
+
+    /**
+     * @brief Use this method to edit a checklist on behalf of a connected
+     * business account.
+     *
+     * @return On success, the edited Message is returned.
+     */
+    Message::Ptr editMessageChecklist(
+        const std::string_view businessConnectionId, std::int64_t chatId,
+        std::int32_t messageId, InputChecklist::Ptr checklist,
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to approve a suggested post in a direct messages
+     * chat.
+     *
+     * @return Returns True on success.
+     */
+    bool approveSuggestedPost(std::int64_t chatId, std::int32_t messageId,
+                              optional<std::int32_t> sendDate = {}) const;
+
+    /**
+     * @brief Use this method to decline a suggested post in a direct messages
+     * chat.
+     *
+     * @return Returns True on success.
+     */
+    bool declineSuggestedPost(std::int64_t chatId, std::int32_t messageId,
+                              const optional<std::string_view> comment = {})
+        const;
+
+    /**
+     * @brief Use this method to store a message that can be sent by a user of a
+     * Mini App.
+     *
+     * @return Returns a PreparedInlineMessage object.
+     */
+    PreparedInlineMessage::Ptr savePreparedInlineMessage(
+        std::int64_t userId, InlineQueryResult::Ptr result,
+        optional<bool> allowUserChats = {}, optional<bool> allowBotChats = {},
+        optional<bool> allowGroupChats = {},
+        optional<bool> allowChannelChats = {}) const;
+
+    /**
+     * @brief A method to get the current Telegram Stars balance of the bot.
+     *
+     * @return Returns a StarAmount object.
+     */
+    StarAmount::Ptr getMyStarBalance() const;
+
+    /**
+     * @brief Use this method to get the bot's Telegram Star transactions in
+     * chronological order.
+     *
+     * @return Returns a StarTransactions object.
+     */
+    StarTransactions::Ptr getStarTransactions(
+        optional<std::int32_t> offset = {},
+        optional<std::int32_t> limit = {}) const;
+
+    /**
+     * @brief Use this method to refund a successful payment in Telegram Stars.
+     *
+     * @return Returns True on success.
+     */
+    bool refundStarPayment(
+        std::int64_t userId,
+        const std::string_view telegramPaymentChargeId) const;
+
+    /**
+     * @brief Use this method to allow or to cancel a recurring subscription paid
+     * in Telegram Stars.
+     *
+     * @return Returns True on success.
+     */
+    bool editUserStarSubscription(
+        std::int64_t userId, const std::string_view telegramPaymentChargeId,
+        bool isCanceled) const;
 
    private:
     std::string _bot_api_baseurl;

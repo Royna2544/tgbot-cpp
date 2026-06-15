@@ -1,6 +1,7 @@
 import json
 import argparse
 import re
+import sys
 from pathlib import Path
 
 def strip_cpp_comments(code):
@@ -170,7 +171,66 @@ def generate_html_report(report_data, output_filepath):
 """
     with open(output_filepath, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"\n📄 HTML Report generated successfully: {output_filepath}")
+    print(f"\nHTML Report generated successfully: {output_filepath}")
+
+def lint_telegram_json_methods(json_filepath, api_cpp_path):
+    """Lint Api.cpp method implementations against the JSON spec.
+
+    Checks that every method in the spec is implemented (its name appears as a
+    string literal in the `Api::<method>(...)` definition) and that every method
+    parameter is wired into the request (its snake_case name appears as a
+    `"snake_key"` literal *within that method's definition span* -- scoping by
+    method avoids false positives from keys shared across methods, e.g.
+    `chat_id`).
+    """
+    json_path = Path(json_filepath)
+    cpp_path = Path(api_cpp_path)
+
+    if not json_path.is_file() or not cpp_path.is_file():
+        print("Error: Invalid JSON file or Api.cpp path.")
+        return 0
+
+    with open(json_path, 'r', encoding='utf-8') as f:
+        api_data = json.load(f)
+
+    methods_data = api_data.get("methods", {})
+    clean_content = strip_cpp_comments(cpp_path.read_text(encoding='utf-8'))
+
+    # Locate every `Api::<name>(` definition and build per-method spans so that
+    # a field search is confined to the method it belongs to.
+    defs = [(m.group(1), m.start())
+            for m in re.finditer(r'\bApi::([A-Za-z0-9_]+)\s*\(', clean_content)]
+    defs.sort(key=lambda x: x[1])
+    spans = {}
+    for i, (name, start) in enumerate(defs):
+        end = defs[i + 1][1] if i + 1 < len(defs) else len(clean_content)
+        # Last definition wins if a name somehow appears twice.
+        spans[name] = clean_content[start:end]
+
+    issues_found = 0
+    for method_name, method_info in methods_data.items():
+        if method_name not in spans:
+            print(f"{cpp_path}:(0) Missing method implementation for "
+                  f"`{method_name}`")
+            issues_found += 1
+            continue
+
+        span = spans[method_name]
+        for field in method_info.get("fields", []):
+            original_field_name = field.get("name")
+            if f'"{original_field_name}"' not in span:
+                req = "required" if field.get("required") else "optional"
+                print(f"{cpp_path}:(1) `{method_name}` is missing the "
+                      f"{req} parameter `{original_field_name}`")
+                issues_found += 1
+
+    if issues_found == 0:
+        print("\n[OK] All Api.cpp methods match the JSON specification!")
+    else:
+        print(f"\n[FAIL] Finished with {issues_found} missing method(s)/"
+              f"parameter(s).")
+    return issues_found
+
 
 def lint_telegram_json_fields(json_filepath, directory_path, report_filepath=None):
     json_path = Path(json_filepath)
@@ -251,18 +311,28 @@ def lint_telegram_json_fields(json_filepath, directory_path, report_filepath=Non
                 })
 
     if issues_found == 0:
-        print("\n✅ All C++ headers match the JSON specification perfectly!")
+        print("\n[OK] All C++ headers match the JSON specification perfectly!")
     else:
-        print(f"\n❌ Finished with {issues_found} missing file(s)/field(s).")
+        print(f"\n[FAIL] Finished with {issues_found} missing file(s)/field(s).")
         
     if report_filepath:
         generate_html_report(report_data, report_filepath)
+
+    return issues_found
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Lint C++ headers against a Telegram API JSON spec and optionally generate an HTML report.")
     parser.add_argument("json_file", type=str, help="Path to the Telegram API JSON file")
     parser.add_argument("directory", type=str, help="Path to the directory containing .h files")
     parser.add_argument("--generate-report", type=str, default=None, help="Filepath to save the structured HTML summary report (e.g., report.html)")
-    
+    parser.add_argument("--methods", type=str, default=None, metavar="API_CPP", help="Path to src/Api.cpp; additionally lint method/parameter coverage against the spec")
+
     args = parser.parse_args()
-    lint_telegram_json_fields(args.json_file, args.directory, args.generate_report)
+    issues = lint_telegram_json_fields(args.json_file, args.directory,
+                                       args.generate_report) or 0
+    if args.methods:
+        print("\n--- Method/parameter coverage ---")
+        issues += lint_telegram_json_methods(args.json_file, args.methods) or 0
+
+    # Non-zero exit on any gap so this can gate CI.
+    sys.exit(1 if issues else 0)
