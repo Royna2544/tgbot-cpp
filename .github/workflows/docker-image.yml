@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Fetch the pinned Telegram Bot API spec
+        run: python scripts/fetch_api_spec.py
       - name: Lint C++ types and methods against api.json
         run: python scripts/lint_api_types.py api.json include/tgbot/types --methods src/Api.cpp
 
