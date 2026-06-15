@@ -1,21 +1,13 @@
-FROM ubuntu:jammy
-MAINTAINER Oleg Morozenkov <m@oleg.rocks>
+FROM ubuntu:24.04
+LABEL org.opencontainers.image.authors="Oleg Morozenkov <m@oleg.rocks>"
 
 RUN apt-get -qq update && \
     apt-get -qq install -y \
-        autotools-dev \
-        binutils \
         build-essential \
         cmake \
-        g++ \
         libboost-all-dev \
-        libbz2-dev \
         libcurl4-openssl-dev \
-        libicu-dev \
         libssl-dev \
-        make \
-        python2.7-dev \
-        wget \
         zlib1g-dev \
         nlohmann-json3-dev \
         pkg-config && \
@@ -80,4 +72,4 @@ RUN rm -rf CMakeCache.txt CMakeFiles/ && \
 
 WORKDIR /usr/src/tgbot-cpp
 ENV CTEST_OUTPUT_ON_FAILURE=1
-CMD make test
+CMD ["make", "test"]

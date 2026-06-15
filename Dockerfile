@@ -1,5 +1,5 @@
 FROM debian:latest
-MAINTAINER Oleg Morozenkov <m@oleg.rocks>
+LABEL org.opencontainers.image.authors="Oleg Morozenkov <m@oleg.rocks>"
 
 RUN apt-get -qq update && \
     apt-get -qq install -y g++ make binutils cmake libssl-dev libboost-system-dev libcurl4-openssl-dev zlib1g-dev nlohmann-json3-dev && \
