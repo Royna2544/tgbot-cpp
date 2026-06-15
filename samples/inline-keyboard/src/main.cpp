@@ -33,9 +33,14 @@ int main() {
         bot.getApi().sendMessage(message->chat->id, response, nullptr, nullptr, keyboard, TgBot::Api::ParseMode::Markdown);
     });
     bot.getEvents().onCallbackQuery([&bot, &keyboard](CallbackQuery::Ptr query) {
-        if (StringTools::startsWith(query->data, "check")) {
+        if (StringTools::startsWith(query->data, "check") && query->message) {
             string response = "ok";
-            bot.getApi().sendMessage(query->message->chat->id, response, nullptr, nullptr, keyboard, TgBot::Api::ParseMode::Markdown);
+            // query->message is a MaybeInaccessibleMessage (Message or
+            // InaccessibleMessage); both carry a chat.
+            int64_t chatId = std::visit(
+                [](const auto& message) { return message->chat->id; },
+                *query->message);
+            bot.getApi().sendMessage(chatId, response, nullptr, nullptr, keyboard, TgBot::Api::ParseMode::Markdown);
         }
     });
 

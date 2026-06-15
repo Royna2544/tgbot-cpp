@@ -28,7 +28,7 @@ int main() {
         bot.getApi().sendMessage(message->chat->id, "Your message is: " + *message->text);
         
         if (message->document) {
-            File::Ptr file = bot.getApi().getFile(message->document->fileId);
+            File::Ptr file = bot.getApi().getFile((*message->document)->fileId);
             if (file->filePath) {
                 string fileContent = bot.getApi().downloadFile(*file->filePath);
 
