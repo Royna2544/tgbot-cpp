@@ -26,6 +26,9 @@ out/
 # MacOS dependecies
 .DS_Store
 
+# Python
+__pycache__/
+
 # Telegram Bot API spec: fetched from upstream (PaulSonOfLars/telegram-bot-api-spec),
 # pinned by scripts/api_spec.ref. Refresh with scripts/fetch_api_spec.py.
 /api.json
