@@ -68,6 +68,12 @@ if (WIN32)
     list(APPEND LIB_LIST Ws2_32)
 endif()
 
+# On macOS the vendored cpp-httplib loads root certificates from the system
+# keychain (via the Security framework), so consumers must link these.
+if (APPLE)
+    list(APPEND LIB_LIST "-framework CoreFoundation" "-framework Security")
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
