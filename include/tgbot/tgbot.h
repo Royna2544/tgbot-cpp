@@ -357,6 +357,9 @@
 #include "tgbot/types/RichBlockCaption.h"
 #include "tgbot/types/RichBlockTableCell.h"
 #include "tgbot/types/RichBlockListItem.h"
+#include "tgbot/types/RichMessage.h"
+#include "tgbot/types/InputRichMessage.h"
+#include "tgbot/types/InputRichMessageContent.h"
 
 
 /**

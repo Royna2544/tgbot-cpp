@@ -683,6 +683,10 @@ IMPLEMENT_PARSERS(RichBlockCaption);
 IMPLEMENT_PARSERS(RichBlockTableCell);
 IMPLEMENT_PARSERS(RichBlockListItem);
 
+IMPLEMENT_PARSERS(RichMessage);
+IMPLEMENT_PARSERS(InputRichMessage);
+IMPLEMENT_PARSERS(InputRichMessageContent);
+
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
 template <>
 nlohmann::json put(const MaybeInaccessibleMessage& value);

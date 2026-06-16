@@ -2628,4 +2628,42 @@ bool Api::editUserStarSubscription(
         .get<bool>();
 }
 
+Message::Ptr Api::sendRichMessage(
+    ChatIdType chatId, InputRichMessage::Ptr richMessage,
+    const optional<std::string_view> businessConnectionId,
+    optional<std::int32_t> messageThreadId,
+    optional<std::int32_t> directMessagesTopicId,
+    optional<bool> disableNotification, optional<bool> protectContent,
+    optional<bool> allowPaidBroadcast,
+    const optional<std::string_view> messageEffectId,
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup) const {
+    return parse<Message>(sendRequest(
+        _bot_api_baseurl, _httpClient, "sendRichMessage",
+        std::pair{"chat_id", std::move(chatId)},
+        std::pair{"rich_message", std::move(richMessage)},
+        std::pair{"business_connection_id", businessConnectionId},
+        std::pair{"message_thread_id", messageThreadId},
+        std::pair{"direct_messages_topic_id", directMessagesTopicId},
+        std::pair{"disable_notification", disableNotification},
+        std::pair{"protect_content", protectContent},
+        std::pair{"allow_paid_broadcast", allowPaidBroadcast},
+        std::pair{"message_effect_id", messageEffectId},
+        std::pair{"suggested_post_parameters",
+                  std::move(suggestedPostParameters)},
+        std::pair{"reply_parameters", std::move(replyParameters)},
+        std::pair{"reply_markup", std::move(replyMarkup)}));
+}
+
+bool Api::sendRichMessageDraft(std::int64_t chatId, std::int32_t draftId,
+                               InputRichMessage::Ptr richMessage,
+                               optional<std::int32_t> messageThreadId) const {
+    return sendRequest(_bot_api_baseurl, _httpClient, "sendRichMessageDraft",
+                       std::pair{"chat_id", chatId},
+                       std::pair{"draft_id", draftId},
+                       std::pair{"rich_message", std::move(richMessage)},
+                       std::pair{"message_thread_id", messageThreadId})
+        .get<bool>();
+}
+
 }  // namespace TgBot

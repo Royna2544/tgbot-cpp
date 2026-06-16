@@ -3,6 +3,7 @@
 #include <tgbot/types/InputContactMessageContent.h>
 #include <tgbot/types/InputInvoiceMessageContent.h>
 #include <tgbot/types/InputLocationMessageContent.h>
+#include <tgbot/types/InputRichMessageContent.h>
 #include <tgbot/types/InputTextMessageContent.h>
 #include <tgbot/types/InputVenueMessageContent.h>
 #include <nlohmann/json.hpp>
@@ -10,6 +11,9 @@
 namespace TgBot {
 
 DECLARE_PARSER_FROM_JSON(InputMessageContent) {
+    if (data.contains("rich_message")) {
+        return parse<InputRichMessageContent>(data);
+    }
     if (data.contains("message_text")) {
         return parse<InputTextMessageContent>(data);
     }
@@ -31,6 +35,9 @@ DECLARE_PARSER_FROM_JSON(InputMessageContent) {
 DECLARE_PARSER_TO_JSON(InputMessageContent) {
     JsonWrapper json;
     if (object) {
+        if (std::dynamic_pointer_cast<InputRichMessageContent>(object)) {
+            return put(std::dynamic_pointer_cast<InputRichMessageContent>(object));
+        }
         if (std::dynamic_pointer_cast<InputTextMessageContent>(object)) {
             return put(std::dynamic_pointer_cast<InputTextMessageContent>(object));
         }

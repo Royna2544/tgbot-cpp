@@ -61,6 +61,7 @@
 #include "tgbot/types/InputChecklist.h"
 #include "tgbot/types/InputPaidMedia.h"
 #include "tgbot/types/InputProfilePhoto.h"
+#include "tgbot/types/InputRichMessage.h"
 #include "tgbot/types/InputStoryContent.h"
 #include "tgbot/types/OwnedGifts.h"
 #include "tgbot/types/PreparedInlineMessage.h"
@@ -4081,6 +4082,35 @@ class TGBOT_API Api {
     bool editUserStarSubscription(
         std::int64_t userId, const std::string_view telegramPaymentChargeId,
         bool isCanceled) const;
+
+    /**
+     * @brief Use this method to send a rich message (Instant-View-style
+     * formatted content) to a chat.
+     *
+     * @return On success, the sent Message is returned.
+     */
+    Message::Ptr sendRichMessage(
+        ChatIdType chatId, InputRichMessage::Ptr richMessage,
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> messageThreadId = {},
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<bool> disableNotification = {},
+        optional<bool> protectContent = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        ReplyParameters::Ptr replyParameters = nullptr,
+        GenericReply::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to store a rich-message draft for the bot in a
+     * chat.
+     *
+     * @return Returns True on success.
+     */
+    bool sendRichMessageDraft(std::int64_t chatId, std::int32_t draftId,
+                              InputRichMessage::Ptr richMessage,
+                              optional<std::int32_t> messageThreadId = {}) const;
 
    private:
     std::string _bot_api_baseurl;
