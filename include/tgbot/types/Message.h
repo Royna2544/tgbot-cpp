@@ -2,6 +2,11 @@
 #define TGBOT_MESSAGE_H
 
 #include "tgbot/types/DirectMessagesTopic.h"
+#include "tgbot/types/LivePhoto.h"
+#include "tgbot/types/ManagedBotCreated.h"
+#include "tgbot/types/PollOptionAdded.h"
+#include "tgbot/types/PollOptionDeleted.h"
+#include "tgbot/types/RichMessage.h"
 #include "tgbot/types/ChatOwnerLeft.h"
 #include "tgbot/types/SuggestedPostApproved.h"
 #include "tgbot/types/SuggestedPostApprovalFailed.h"
@@ -660,6 +665,51 @@ public:
      * @brief Optional. Service message: payment for a suggested post was refunded
      */
     std::optional<SuggestedPostRefunded::Ptr> suggestedPostRefunded;
+    /**
+     * @brief Optional. The unique identifier for the guest query. Use this identifier with the method answerGuestQuery to send a response message. If non-empty, the message belongs to the chat where the guest bot was summoned, which may not coincide with other existing bot chats sharing the same identifier.
+     */
+    std::optional<std::string> guestQueryId;
+
+    /**
+     * @brief Optional. Persistent identifier of the specific poll option that is being replied to
+     */
+    std::optional<std::string> replyToPollOptionId;
+
+    /**
+     * @brief Optional. For a message sent by a guest bot, this is the user whose original message triggered the bot's response
+     */
+    std::optional<User::Ptr> guestBotCallerUser;
+
+    /**
+     * @brief Optional. For a message sent by a guest bot, this is the chat whose original message triggered the bot's response
+     */
+    std::optional<Chat::Ptr> guestBotCallerChat;
+
+    /**
+     * @brief Optional. Message is a rich formatted message
+     */
+    std::optional<RichMessage::Ptr> richMessage;
+
+    /**
+     * @brief Optional. Message is a live photo, information about the live photo. For backward compatibility, when this field is set, the photo field will also be set.
+     */
+    std::optional<LivePhoto::Ptr> livePhoto;
+
+    /**
+     * @brief Optional. Service message: user created a bot that will be managed by the current bot
+     */
+    std::optional<ManagedBotCreated::Ptr> managedBotCreated;
+
+    /**
+     * @brief Optional. Service message: answer option was added to a poll
+     */
+    std::optional<PollOptionAdded::Ptr> pollOptionAdded;
+
+    /**
+     * @brief Optional. Service message: answer option was deleted from a poll
+     */
+    std::optional<PollOptionDeleted::Ptr> pollOptionDeleted;
+
 };
 }
 

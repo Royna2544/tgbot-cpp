@@ -245,13 +245,21 @@ def lint_telegram_json_fields(json_filepath, directory_path, report_filepath=Non
 
     types_data = api_data.get("types", {})
     issues_found = 0
-    
+
     report_data = {
         "missing_files": [],
         "missing_fields": {}
     }
 
+    # The spec's two poll input-media bases are intentionally collapsed into the
+    # single base InputMedia (they are put-only and only a method-parameter type;
+    # see InputMedia.cpp / scripts/gen_parsers.py), so they have no header of
+    # their own -- skip them rather than reporting a missing file.
+    collapsed_types = {"InputPollMedia", "InputPollOptionMedia"}
+
     for type_name, type_info in types_data.items():
+        if type_name in collapsed_types:
+            continue
         header_filename = f"{type_name}.h"
         matched_files = list(target_dir.rglob(header_filename))
         

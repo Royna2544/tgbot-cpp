@@ -112,6 +112,15 @@ DECLARE_PARSER_FROM_JSON(Message) {
     result->videoChatParticipantsInvited = parse<VideoChatParticipantsInvited>(data, "video_chat_participants_invited");
     result->webAppData = parse<WebAppData>(data, "web_app_data");
     result->replyMarkup = parse<InlineKeyboardMarkup>(data, "reply_markup");
+    parse(data, "guest_query_id", &result->guestQueryId);
+    parse(data, "reply_to_poll_option_id", &result->replyToPollOptionId);
+    result->guestBotCallerUser = parse<User>(data, "guest_bot_caller_user");
+    result->guestBotCallerChat = parse<Chat>(data, "guest_bot_caller_chat");
+    result->richMessage = parse<RichMessage>(data, "rich_message");
+    result->livePhoto = parse<LivePhoto>(data, "live_photo");
+    result->managedBotCreated = parse<ManagedBotCreated>(data, "managed_bot_created");
+    result->pollOptionAdded = parse<PollOptionAdded>(data, "poll_option_added");
+    result->pollOptionDeleted = parse<PollOptionDeleted>(data, "poll_option_deleted");
     return result;
 }
 
@@ -224,6 +233,15 @@ DECLARE_PARSER_TO_JSON(Message) {
         json.put("video_chat_participants_invited", object->videoChatParticipantsInvited);
         json.put("web_app_data", object->webAppData);
         json.put("reply_markup", object->replyMarkup);
+        json.put("guest_query_id", object->guestQueryId);
+        json.put("reply_to_poll_option_id", object->replyToPollOptionId);
+        json.put("guest_bot_caller_user", object->guestBotCallerUser);
+        json.put("guest_bot_caller_chat", object->guestBotCallerChat);
+        json.put("rich_message", object->richMessage);
+        json.put("live_photo", object->livePhoto);
+        json.put("managed_bot_created", object->managedBotCreated);
+        json.put("poll_option_added", object->pollOptionAdded);
+        json.put("poll_option_deleted", object->pollOptionDeleted);
     }
     return json;
 }
