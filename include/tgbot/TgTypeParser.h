@@ -630,6 +630,33 @@ IMPLEMENT_PARSERS(UserProfileAudios);
 IMPLEMENT_PARSERS(UserRating);
 IMPLEMENT_PARSERS(VideoQuality);
 
+IMPLEMENT_PARSERS(RichText);
+IMPLEMENT_PARSERS(RichTextBold);
+IMPLEMENT_PARSERS(RichTextItalic);
+IMPLEMENT_PARSERS(RichTextUnderline);
+IMPLEMENT_PARSERS(RichTextStrikethrough);
+IMPLEMENT_PARSERS(RichTextSpoiler);
+IMPLEMENT_PARSERS(RichTextDateTime);
+IMPLEMENT_PARSERS(RichTextTextMention);
+IMPLEMENT_PARSERS(RichTextSubscript);
+IMPLEMENT_PARSERS(RichTextSuperscript);
+IMPLEMENT_PARSERS(RichTextMarked);
+IMPLEMENT_PARSERS(RichTextCode);
+IMPLEMENT_PARSERS(RichTextCustomEmoji);
+IMPLEMENT_PARSERS(RichTextMathematicalExpression);
+IMPLEMENT_PARSERS(RichTextUrl);
+IMPLEMENT_PARSERS(RichTextEmailAddress);
+IMPLEMENT_PARSERS(RichTextPhoneNumber);
+IMPLEMENT_PARSERS(RichTextBankCardNumber);
+IMPLEMENT_PARSERS(RichTextMention);
+IMPLEMENT_PARSERS(RichTextHashtag);
+IMPLEMENT_PARSERS(RichTextCashtag);
+IMPLEMENT_PARSERS(RichTextBotCommand);
+IMPLEMENT_PARSERS(RichTextAnchor);
+IMPLEMENT_PARSERS(RichTextAnchorLink);
+IMPLEMENT_PARSERS(RichTextReference);
+IMPLEMENT_PARSERS(RichTextReferenceLink);
+
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
 template <>
 nlohmann::json put(const MaybeInaccessibleMessage& value);

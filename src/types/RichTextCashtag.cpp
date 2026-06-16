@@ -1,0 +1,25 @@
+#include <tgbot/TgTypeParser.h>
+#include <tgbot/types/RichTextCashtag.h>
+#include <nlohmann/json.hpp>
+
+namespace TgBot {
+
+DECLARE_PARSER_FROM_JSON(RichTextCashtag) {
+    auto result = std::make_shared<RichTextCashtag>();
+    parse(data, "type", &result->type);
+    result->text = parseRequired<RichText>(data, "text");
+    parse(data, "cashtag", &result->cashtag);
+    return result;
+}
+
+DECLARE_PARSER_TO_JSON(RichTextCashtag) {
+    JsonWrapper json;
+    if (object) {
+        json.put("type", object->type);
+        json.put("text", object->text);
+        json.put("cashtag", object->cashtag);
+    }
+    return json;
+}
+
+} // namespace TgBot

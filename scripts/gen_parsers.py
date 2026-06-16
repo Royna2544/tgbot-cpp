@@ -33,6 +33,10 @@ HAND_WRITTEN = {
     "InputMessageContent",
     # polymorphic base whose discriminator value is ambiguous (cached vs not)
     "InlineQueryResult",
+    # recursive variant AST (String | Array of RichText | styled nodes); the
+    # base + the two synthetic wrappers are hand-written, the styled subtypes
+    # (RichTextBold, ...) are generated normally.
+    "RichText",
     # empty / upload-only types
     "InputFile", "CallbackGame",
 }

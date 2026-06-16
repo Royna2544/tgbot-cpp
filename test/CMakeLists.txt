@@ -1,6 +1,7 @@
 set(TEST_SRC_LIST
     main.cpp
     tgbot/ApiTest.cpp
+    tgbot/RichTextTest.cpp
     tgbot/net/Url.cpp
     tgbot/tools/StringTools.cpp
 )
