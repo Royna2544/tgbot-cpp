@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(StarTransactions) {
+template <>
+std::shared_ptr<StarTransactions> parse(const nlohmann::json &data) {
     auto result = std::make_shared<StarTransactions>();
     result->transactions = parseRequiredArray<StarTransaction>(data, "transactions");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(StarTransactions) {
+template <>
+nlohmann::json put(const std::shared_ptr<StarTransactions> &object) {
     JsonWrapper json;
     if (object) {
         json.put("transactions", object->transactions);

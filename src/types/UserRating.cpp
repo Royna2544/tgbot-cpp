@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(UserRating) {
+template <>
+std::shared_ptr<UserRating> parse(const nlohmann::json &data) {
     auto result = std::make_shared<UserRating>();
     parse(data, "level", &result->level);
     parse(data, "rating", &result->rating);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(UserRating) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(UserRating) {
+template <>
+nlohmann::json put(const std::shared_ptr<UserRating> &object) {
     JsonWrapper json;
     if (object) {
         json.put("level", object->level);

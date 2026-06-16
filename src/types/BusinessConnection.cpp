@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BusinessConnection) {
+template <>
+std::shared_ptr<BusinessConnection> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BusinessConnection>();
     parse(data, "id", &result->id);
     result->user = parseRequired<User>(data, "user");
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(BusinessConnection) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BusinessConnection) {
+template <>
+nlohmann::json put(const std::shared_ptr<BusinessConnection> &object) {
     JsonWrapper json;
     if (object) {
         json.put("id", object->id);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(SwitchInlineQueryChosenChat) {
+template <>
+std::shared_ptr<SwitchInlineQueryChosenChat> parse(const nlohmann::json &data) {
     auto result = std::make_shared<SwitchInlineQueryChosenChat>();
     parse(data, "query", &result->query);
     parse(data, "allow_user_chats", &result->allowUserChats);
@@ -14,7 +15,8 @@ DECLARE_PARSER_FROM_JSON(SwitchInlineQueryChosenChat) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(SwitchInlineQueryChosenChat) {
+template <>
+nlohmann::json put(const std::shared_ptr<SwitchInlineQueryChosenChat> &object) {
     JsonWrapper json;
     if (object) {
         json.put("query", object->query);

@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(TransactionPartnerFragment) {
+template <>
+std::shared_ptr<TransactionPartnerFragment> parse(const nlohmann::json &data) {
     auto result = std::make_shared<TransactionPartnerFragment>();
     parse(data, "type", &result->type);
     result->withdrawalState = parse<RevenueWithdrawalState>(data, "withdrawal_state");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(TransactionPartnerFragment) {
+template <>
+nlohmann::json put(const std::shared_ptr<TransactionPartnerFragment> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

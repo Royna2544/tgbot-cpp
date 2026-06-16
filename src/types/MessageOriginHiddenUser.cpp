@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(MessageOriginHiddenUser) {
+template <>
+std::shared_ptr<MessageOriginHiddenUser> parse(const nlohmann::json &data) {
     auto result = std::make_shared<MessageOriginHiddenUser>();
     parse(data, "type", &result->type);
     parse(data, "date", &result->date);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(MessageOriginHiddenUser) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(MessageOriginHiddenUser) {
+template <>
+nlohmann::json put(const std::shared_ptr<MessageOriginHiddenUser> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

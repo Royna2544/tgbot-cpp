@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ReactionCount) {
+template <>
+std::shared_ptr<ReactionCount> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ReactionCount>();
     result->type = parseRequired<ReactionType>(data, "type");
     parse(data, "total_count", &result->totalCount);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ReactionCount) {
+template <>
+nlohmann::json put(const std::shared_ptr<ReactionCount> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

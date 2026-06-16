@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(MaskPosition) {
+template <>
+std::shared_ptr<MaskPosition> parse(const nlohmann::json &data) {
     auto result = std::make_shared<MaskPosition>();
     parse(data, "point", &result->point);
     parse(data, "x_shift", &result->xShift);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(MaskPosition) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(MaskPosition) {
+template <>
+nlohmann::json put(const std::shared_ptr<MaskPosition> &object) {
     JsonWrapper json;
     if (object) {
         json.put("point", object->point);

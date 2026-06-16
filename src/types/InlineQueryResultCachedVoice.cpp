@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedVoice) {
+template <>
+std::shared_ptr<InlineQueryResultCachedVoice> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InlineQueryResultCachedVoice>();
     parse(data, "type", &result->type);
     parse(data, "id", &result->id);
@@ -18,7 +19,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedVoice) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InlineQueryResultCachedVoice) {
+template <>
+nlohmann::json put(const std::shared_ptr<InlineQueryResultCachedVoice> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

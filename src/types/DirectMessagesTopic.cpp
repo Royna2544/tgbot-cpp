@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(DirectMessagesTopic) {
+template <>
+std::shared_ptr<DirectMessagesTopic> parse(const nlohmann::json &data) {
     auto result = std::make_shared<DirectMessagesTopic>();
     parse(data, "topic_id", &result->topicId);
     result->user = parse<User>(data, "user");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(DirectMessagesTopic) {
+template <>
+nlohmann::json put(const std::shared_ptr<DirectMessagesTopic> &object) {
     JsonWrapper json;
     if (object) {
         json.put("topic_id", object->topicId);

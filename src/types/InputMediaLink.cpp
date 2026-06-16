@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputMediaLink) {
+template <>
+std::shared_ptr<InputMediaLink> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputMediaLink>();
     parse(data, "type", &result->type);
     parse(data, "url", &result->url);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputMediaLink) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputMediaLink> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

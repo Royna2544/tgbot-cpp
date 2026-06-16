@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(UserProfilePhotos) {
+template <>
+std::shared_ptr<UserProfilePhotos> parse(const nlohmann::json &data) {
     auto result = std::make_shared<UserProfilePhotos>();
     parse(data, "total_count", &result->totalCount);
     result->photos = parseMatrix<PhotoSize>(data, "photos");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(UserProfilePhotos) {
+template <>
+nlohmann::json put(const std::shared_ptr<UserProfilePhotos> &object) {
     JsonWrapper json;
     if (object) {
         json.put("total_count", object->totalCount);

@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(TransactionPartnerTelegramApi) {
+template <>
+std::shared_ptr<TransactionPartnerTelegramApi> parse(const nlohmann::json &data) {
     auto result = std::make_shared<TransactionPartnerTelegramApi>();
     parse(data, "type", &result->type);
     parse(data, "request_count", &result->requestCount);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(TransactionPartnerTelegramApi) {
+template <>
+nlohmann::json put(const std::shared_ptr<TransactionPartnerTelegramApi> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

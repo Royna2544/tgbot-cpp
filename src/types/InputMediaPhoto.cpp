@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputMediaPhoto) {
+template <>
+std::shared_ptr<InputMediaPhoto> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputMediaPhoto>();
     parse(data, "type", &result->type);
     parse(data, "media", &result->media);
@@ -16,7 +17,8 @@ DECLARE_PARSER_FROM_JSON(InputMediaPhoto) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputMediaPhoto) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputMediaPhoto> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

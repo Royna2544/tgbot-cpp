@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BusinessOpeningHours) {
+template <>
+std::shared_ptr<BusinessOpeningHours> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BusinessOpeningHours>();
     parse(data, "time_zone_name", &result->timeZoneName);
     result->openingHours = parseRequiredArray<BusinessOpeningHoursInterval>(data, "opening_hours");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BusinessOpeningHours) {
+template <>
+nlohmann::json put(const std::shared_ptr<BusinessOpeningHours> &object) {
     JsonWrapper json;
     if (object) {
         json.put("time_zone_name", object->timeZoneName);

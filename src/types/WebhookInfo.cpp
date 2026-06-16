@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(WebhookInfo) {
+template <>
+std::shared_ptr<WebhookInfo> parse(const nlohmann::json &data) {
     auto result = std::make_shared<WebhookInfo>();
     parse(data, "url", &result->url);
     parse(data, "has_custom_certificate", &result->hasCustomCertificate);
@@ -18,7 +19,8 @@ DECLARE_PARSER_FROM_JSON(WebhookInfo) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(WebhookInfo) {
+template <>
+nlohmann::json put(const std::shared_ptr<WebhookInfo> &object) {
     JsonWrapper json;
     if (object) {
         json.put("url", object->url);

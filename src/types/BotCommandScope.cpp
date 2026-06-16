@@ -11,7 +11,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BotCommandScope) {
+template <>
+std::shared_ptr<BotCommandScope> parse(const nlohmann::json &data) {
     std::string type;
     BotCommandScope::Ptr result;
     parse(data, "type", &type);
@@ -36,7 +37,8 @@ DECLARE_PARSER_FROM_JSON(BotCommandScope) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BotCommandScope) {
+template <>
+nlohmann::json put(const std::shared_ptr<BotCommandScope> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

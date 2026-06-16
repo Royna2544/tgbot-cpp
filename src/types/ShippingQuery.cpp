@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ShippingQuery) {
+template <>
+std::shared_ptr<ShippingQuery> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ShippingQuery>();
     parse(data, "id", &result->id);
     result->from = parseRequired<User>(data, "from");
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(ShippingQuery) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ShippingQuery) {
+template <>
+nlohmann::json put(const std::shared_ptr<ShippingQuery> &object) {
     JsonWrapper json;
     if (object) {
         json.put("id", object->id);

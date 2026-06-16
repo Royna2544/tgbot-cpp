@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(StoryAreaTypeLocation) {
+template <>
+std::shared_ptr<StoryAreaTypeLocation> parse(const nlohmann::json &data) {
     auto result = std::make_shared<StoryAreaTypeLocation>();
     parse(data, "type", &result->type);
     parse(data, "latitude", &result->latitude);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(StoryAreaTypeLocation) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(StoryAreaTypeLocation) {
+template <>
+nlohmann::json put(const std::shared_ptr<StoryAreaTypeLocation> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

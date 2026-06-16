@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichBlockVoiceNote) {
+template <>
+std::shared_ptr<RichBlockVoiceNote> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichBlockVoiceNote>();
     parse(data, "type", &result->type);
     result->voiceNote = parseRequired<Voice>(data, "voice_note");
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(RichBlockVoiceNote) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichBlockVoiceNote) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichBlockVoiceNote> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

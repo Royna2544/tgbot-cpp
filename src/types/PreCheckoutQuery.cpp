@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PreCheckoutQuery) {
+template <>
+std::shared_ptr<PreCheckoutQuery> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PreCheckoutQuery>();
     parse(data, "id", &result->id);
     result->from = parseRequired<User>(data, "from");
@@ -16,7 +17,8 @@ DECLARE_PARSER_FROM_JSON(PreCheckoutQuery) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PreCheckoutQuery) {
+template <>
+nlohmann::json put(const std::shared_ptr<PreCheckoutQuery> &object) {
     JsonWrapper json;
     if (object) {
         json.put("id", object->id);

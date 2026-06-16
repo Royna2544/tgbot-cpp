@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(WebAppInfo) {
+template <>
+std::shared_ptr<WebAppInfo> parse(const nlohmann::json &data) {
     auto result = std::make_shared<WebAppInfo>();
     parse(data, "url", &result->url);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(WebAppInfo) {
+template <>
+nlohmann::json put(const std::shared_ptr<WebAppInfo> &object) {
     JsonWrapper json;
     if (object) {
         json.put("url", object->url);

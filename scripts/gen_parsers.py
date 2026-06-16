@@ -246,7 +246,8 @@ def gen_type(spec, name):
     out = []
     out += inc
     out += ["", "namespace TgBot {", ""]
-    out.append(f"DECLARE_PARSER_FROM_JSON({name}) {{")
+    out.append("template <>")
+    out.append(f"std::shared_ptr<{name}> parse(const nlohmann::json &data) {{")
     if subtypes:
         out += body_parse
         out += ["", "    return result;", "}"]
@@ -254,8 +255,9 @@ def gen_type(spec, name):
         out.append(f"    auto result = std::make_shared<{name}>();")
         out += body_parse
         out += ["    return result;", "}"]
-    out += ["", f"DECLARE_PARSER_TO_JSON({name}) {{", "    JsonWrapper json;",
-            "    if (object) {"]
+    out += ["", "template <>",
+            f"nlohmann::json put(const std::shared_ptr<{name}> &object) {{",
+            "    JsonWrapper json;", "    if (object) {"]
     out += body_put
     out += ["    }", "    return json;", "}", "", "} // namespace TgBot", ""]
     return "\n".join(out), None

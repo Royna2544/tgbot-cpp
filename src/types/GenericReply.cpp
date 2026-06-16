@@ -8,7 +8,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(GenericReply) {
+template <>
+std::shared_ptr<GenericReply> parse(const nlohmann::json &data) {
     if (data.contains("inline_keyboard")) return parse<InlineKeyboardMarkup>(data);
     if (data.contains("keyboard")) return parse<ReplyKeyboardMarkup>(data);
     if (data.contains("remove_keyboard")) return parse<ReplyKeyboardRemove>(data);
@@ -16,7 +17,8 @@ DECLARE_PARSER_FROM_JSON(GenericReply) {
     return nullptr;
 }
 
-DECLARE_PARSER_TO_JSON(GenericReply) {
+template <>
+nlohmann::json put(const std::shared_ptr<GenericReply> &object) {
     JsonWrapper json;
     if (object) {
         if (auto t = std::dynamic_pointer_cast<InlineKeyboardMarkup>(object)) return put(t);

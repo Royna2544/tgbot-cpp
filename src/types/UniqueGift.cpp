@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(UniqueGift) {
+template <>
+std::shared_ptr<UniqueGift> parse(const nlohmann::json &data) {
     auto result = std::make_shared<UniqueGift>();
     parse(data, "gift_id", &result->giftId);
     parse(data, "base_name", &result->baseName);
@@ -21,7 +22,8 @@ DECLARE_PARSER_FROM_JSON(UniqueGift) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(UniqueGift) {
+template <>
+nlohmann::json put(const std::shared_ptr<UniqueGift> &object) {
     JsonWrapper json;
     if (object) {
         json.put("gift_id", object->giftId);

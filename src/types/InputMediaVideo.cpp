@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputMediaVideo) {
+template <>
+std::shared_ptr<InputMediaVideo> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputMediaVideo>();
     parse(data, "type", &result->type);
     parse(data, "media", &result->media);
@@ -23,7 +24,8 @@ DECLARE_PARSER_FROM_JSON(InputMediaVideo) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputMediaVideo) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputMediaVideo> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

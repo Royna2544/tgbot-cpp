@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(VideoQuality) {
+template <>
+std::shared_ptr<VideoQuality> parse(const nlohmann::json &data) {
     auto result = std::make_shared<VideoQuality>();
     parse(data, "file_id", &result->fileId);
     parse(data, "file_unique_id", &result->fileUniqueId);
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(VideoQuality) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(VideoQuality) {
+template <>
+nlohmann::json put(const std::shared_ptr<VideoQuality> &object) {
     JsonWrapper json;
     if (object) {
         json.put("file_id", object->fileId);

@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PreparedInlineMessage) {
+template <>
+std::shared_ptr<PreparedInlineMessage> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PreparedInlineMessage>();
     parse(data, "id", &result->id);
     parse(data, "expiration_date", &result->expirationDate);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PreparedInlineMessage) {
+template <>
+nlohmann::json put(const std::shared_ptr<PreparedInlineMessage> &object) {
     JsonWrapper json;
     if (object) {
         json.put("id", object->id);

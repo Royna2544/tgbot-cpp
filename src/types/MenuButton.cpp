@@ -7,7 +7,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(MenuButton) {
+template <>
+std::shared_ptr<MenuButton> parse(const nlohmann::json &data) {
     std::string type;
     MenuButton::Ptr result;
     parse(data, "type", &type);
@@ -24,7 +25,8 @@ DECLARE_PARSER_FROM_JSON(MenuButton) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(MenuButton) {
+template <>
+nlohmann::json put(const std::shared_ptr<MenuButton> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

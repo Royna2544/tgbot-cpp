@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichBlockList) {
+template <>
+std::shared_ptr<RichBlockList> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichBlockList>();
     parse(data, "type", &result->type);
     result->items = parseRequiredArray<RichBlockListItem>(data, "items");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichBlockList) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichBlockList> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BackgroundFillFreeformGradient) {
+template <>
+std::shared_ptr<BackgroundFillFreeformGradient> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BackgroundFillFreeformGradient>();
     parse(data, "type", &result->type);
     result->colors = parsePrimitiveRequiredArray<std::int64_t>(data, "colors");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BackgroundFillFreeformGradient) {
+template <>
+nlohmann::json put(const std::shared_ptr<BackgroundFillFreeformGradient> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

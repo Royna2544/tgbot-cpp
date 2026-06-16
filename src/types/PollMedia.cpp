@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PollMedia) {
+template <>
+std::shared_ptr<PollMedia> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PollMedia>();
     result->animation = parse<Animation>(data, "animation");
     result->audio = parse<Audio>(data, "audio");
@@ -19,7 +20,8 @@ DECLARE_PARSER_FROM_JSON(PollMedia) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PollMedia) {
+template <>
+nlohmann::json put(const std::shared_ptr<PollMedia> &object) {
     JsonWrapper json;
     if (object) {
         json.put("animation", object->animation);

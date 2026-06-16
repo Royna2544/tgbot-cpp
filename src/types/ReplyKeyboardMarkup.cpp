@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ReplyKeyboardMarkup) {
+template <>
+std::shared_ptr<ReplyKeyboardMarkup> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ReplyKeyboardMarkup>();
     result->keyboard = parseMatrix<KeyboardButton>(data, "keyboard");
     parse(data, "is_persistent", &result->isPersistent);
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(ReplyKeyboardMarkup) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ReplyKeyboardMarkup) {
+template <>
+nlohmann::json put(const std::shared_ptr<ReplyKeyboardMarkup> &object) {
     JsonWrapper json;
     if (object) {
         json.put("keyboard", object->keyboard);

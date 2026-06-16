@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PollOptionDeleted) {
+template <>
+std::shared_ptr<PollOptionDeleted> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PollOptionDeleted>();
     if (data.contains("poll_message") && !data["poll_message"].is_null()) {
         result->pollMessage = parse(data["poll_message"]);
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(PollOptionDeleted) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PollOptionDeleted) {
+template <>
+nlohmann::json put(const std::shared_ptr<PollOptionDeleted> &object) {
     JsonWrapper json;
     if (object) {
         json.put("poll_message", object->pollMessage);

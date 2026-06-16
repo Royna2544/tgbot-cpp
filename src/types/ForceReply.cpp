@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ForceReply) {
+template <>
+std::shared_ptr<ForceReply> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ForceReply>();
     parse(data, "force_reply", &result->forceReply);
     parse(data, "input_field_placeholder", &result->inputFieldPlaceholder);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(ForceReply) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ForceReply) {
+template <>
+nlohmann::json put(const std::shared_ptr<ForceReply> &object) {
     JsonWrapper json;
     if (object) {
         json.put("force_reply", object->forceReply);

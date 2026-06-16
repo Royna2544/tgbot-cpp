@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ChatBackground) {
+template <>
+std::shared_ptr<ChatBackground> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ChatBackground>();
     result->type = parseRequired<BackgroundType>(data, "type");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ChatBackground) {
+template <>
+nlohmann::json put(const std::shared_ptr<ChatBackground> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

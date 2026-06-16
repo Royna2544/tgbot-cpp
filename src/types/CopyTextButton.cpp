@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(CopyTextButton) {
+template <>
+std::shared_ptr<CopyTextButton> parse(const nlohmann::json &data) {
     auto result = std::make_shared<CopyTextButton>();
     parse(data, "text", &result->text);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(CopyTextButton) {
+template <>
+nlohmann::json put(const std::shared_ptr<CopyTextButton> &object) {
     JsonWrapper json;
     if (object) {
         json.put("text", object->text);

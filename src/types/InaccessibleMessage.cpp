@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InaccessibleMessage) {
+template <>
+std::shared_ptr<InaccessibleMessage> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InaccessibleMessage>();
     result->chat = parseRequired<Chat>(data, "chat");
     parse(data, "message_id", &result->messageId);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(InaccessibleMessage) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InaccessibleMessage) {
+template <>
+nlohmann::json put(const std::shared_ptr<InaccessibleMessage> &object) {
     JsonWrapper json;
     if (object) {
         json.put("chat", object->chat);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputRichMessage) {
+template <>
+std::shared_ptr<InputRichMessage> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputRichMessage>();
     parse(data, "html", &result->html);
     parse(data, "markdown", &result->markdown);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(InputRichMessage) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputRichMessage) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputRichMessage> &object) {
     JsonWrapper json;
     if (object) {
         json.put("html", object->html);

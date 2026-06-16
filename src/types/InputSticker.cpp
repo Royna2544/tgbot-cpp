@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputSticker) {
+template <>
+std::shared_ptr<InputSticker> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputSticker>();
     parse(data, "sticker", &result->sticker);
     parse(data, "format", &result->format);
@@ -14,7 +15,8 @@ DECLARE_PARSER_FROM_JSON(InputSticker) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputSticker) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputSticker> &object) {
     JsonWrapper json;
     if (object) {
         json.put("sticker", object->sticker);

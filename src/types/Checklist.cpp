@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Checklist) {
+template <>
+std::shared_ptr<Checklist> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Checklist>();
     parse(data, "title", &result->title);
     result->titleEntities = parseArray<MessageEntity>(data, "title_entities");
@@ -14,7 +15,8 @@ DECLARE_PARSER_FROM_JSON(Checklist) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Checklist) {
+template <>
+nlohmann::json put(const std::shared_ptr<Checklist> &object) {
     JsonWrapper json;
     if (object) {
         json.put("title", object->title);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichBlockAudio) {
+template <>
+std::shared_ptr<RichBlockAudio> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichBlockAudio>();
     parse(data, "type", &result->type);
     result->audio = parseRequired<Audio>(data, "audio");
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(RichBlockAudio) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichBlockAudio) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichBlockAudio> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

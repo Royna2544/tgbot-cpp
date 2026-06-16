@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(SuggestedPostPaid) {
+template <>
+std::shared_ptr<SuggestedPostPaid> parse(const nlohmann::json &data) {
     auto result = std::make_shared<SuggestedPostPaid>();
     result->suggestedPostMessage = parse<Message>(data, "suggested_post_message");
     parse(data, "currency", &result->currency);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(SuggestedPostPaid) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(SuggestedPostPaid) {
+template <>
+nlohmann::json put(const std::shared_ptr<SuggestedPostPaid> &object) {
     JsonWrapper json;
     if (object) {
         json.put("suggested_post_message", object->suggestedPostMessage);

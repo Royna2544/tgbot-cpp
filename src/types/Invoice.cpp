@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Invoice) {
+template <>
+std::shared_ptr<Invoice> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Invoice>();
     parse(data, "title", &result->title);
     parse(data, "description", &result->description);
@@ -14,7 +15,8 @@ DECLARE_PARSER_FROM_JSON(Invoice) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Invoice) {
+template <>
+nlohmann::json put(const std::shared_ptr<Invoice> &object) {
     JsonWrapper json;
     if (object) {
         json.put("title", object->title);

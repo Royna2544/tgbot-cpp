@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Dice) {
+template <>
+std::shared_ptr<Dice> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Dice>();
     parse(data, "emoji", &result->emoji);
     parse(data, "value", &result->value);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Dice) {
+template <>
+nlohmann::json put(const std::shared_ptr<Dice> &object) {
     JsonWrapper json;
     if (object) {
         json.put("emoji", object->emoji);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(KeyboardButtonRequestManagedBot) {
+template <>
+std::shared_ptr<KeyboardButtonRequestManagedBot> parse(const nlohmann::json &data) {
     auto result = std::make_shared<KeyboardButtonRequestManagedBot>();
     parse(data, "request_id", &result->requestId);
     parse(data, "suggested_name", &result->suggestedName);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(KeyboardButtonRequestManagedBot) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(KeyboardButtonRequestManagedBot) {
+template <>
+nlohmann::json put(const std::shared_ptr<KeyboardButtonRequestManagedBot> &object) {
     JsonWrapper json;
     if (object) {
         json.put("request_id", object->requestId);

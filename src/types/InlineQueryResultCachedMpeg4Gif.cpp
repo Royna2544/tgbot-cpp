@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedMpeg4Gif) {
+template <>
+std::shared_ptr<InlineQueryResultCachedMpeg4Gif> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InlineQueryResultCachedMpeg4Gif>();
     parse(data, "type", &result->type);
     parse(data, "id", &result->id);
@@ -19,7 +20,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultCachedMpeg4Gif) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InlineQueryResultCachedMpeg4Gif) {
+template <>
+nlohmann::json put(const std::shared_ptr<InlineQueryResultCachedMpeg4Gif> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

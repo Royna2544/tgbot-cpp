@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(StoryAreaTypeWeather) {
+template <>
+std::shared_ptr<StoryAreaTypeWeather> parse(const nlohmann::json &data) {
     auto result = std::make_shared<StoryAreaTypeWeather>();
     parse(data, "type", &result->type);
     parse(data, "temperature", &result->temperature);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(StoryAreaTypeWeather) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(StoryAreaTypeWeather) {
+template <>
+nlohmann::json put(const std::shared_ptr<StoryAreaTypeWeather> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

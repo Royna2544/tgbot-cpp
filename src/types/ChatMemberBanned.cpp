@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ChatMemberBanned) {
+template <>
+std::shared_ptr<ChatMemberBanned> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ChatMemberBanned>();
     parse(data, "status", &result->status);
     result->user = parseRequired<User>(data, "user");
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(ChatMemberBanned) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ChatMemberBanned) {
+template <>
+nlohmann::json put(const std::shared_ptr<ChatMemberBanned> &object) {
     JsonWrapper json;
     if (object) {
         json.put("status", object->status);

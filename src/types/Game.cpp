@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Game) {
+template <>
+std::shared_ptr<Game> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Game>();
     parse(data, "title", &result->title);
     parse(data, "description", &result->description);
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(Game) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Game) {
+template <>
+nlohmann::json put(const std::shared_ptr<Game> &object) {
     JsonWrapper json;
     if (object) {
         json.put("title", object->title);

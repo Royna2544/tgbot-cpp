@@ -8,7 +8,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(MessageOrigin) {
+template <>
+std::shared_ptr<MessageOrigin> parse(const nlohmann::json &data) {
     std::string type;
     MessageOrigin::Ptr result;
     parse(data, "type", &type);
@@ -27,7 +28,8 @@ DECLARE_PARSER_FROM_JSON(MessageOrigin) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(MessageOrigin) {
+template <>
+nlohmann::json put(const std::shared_ptr<MessageOrigin> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

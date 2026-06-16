@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BotAccessSettings) {
+template <>
+std::shared_ptr<BotAccessSettings> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BotAccessSettings>();
     parse(data, "is_access_restricted", &result->isAccessRestricted);
     result->addedUsers = parseArray<User>(data, "added_users");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BotAccessSettings) {
+template <>
+nlohmann::json put(const std::shared_ptr<BotAccessSettings> &object) {
     JsonWrapper json;
     if (object) {
         json.put("is_access_restricted", object->isAccessRestricted);

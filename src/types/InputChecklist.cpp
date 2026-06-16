@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputChecklist) {
+template <>
+std::shared_ptr<InputChecklist> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputChecklist>();
     parse(data, "title", &result->title);
     parse(data, "parse_mode", &result->parseMode);
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(InputChecklist) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputChecklist) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputChecklist> &object) {
     JsonWrapper json;
     if (object) {
         json.put("title", object->title);

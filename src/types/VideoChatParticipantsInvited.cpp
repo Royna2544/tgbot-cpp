@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(VideoChatParticipantsInvited) {
+template <>
+std::shared_ptr<VideoChatParticipantsInvited> parse(const nlohmann::json &data) {
     auto result = std::make_shared<VideoChatParticipantsInvited>();
     result->users = parseRequiredArray<User>(data, "users");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(VideoChatParticipantsInvited) {
+template <>
+nlohmann::json put(const std::shared_ptr<VideoChatParticipantsInvited> &object) {
     JsonWrapper json;
     if (object) {
         json.put("users", object->users);

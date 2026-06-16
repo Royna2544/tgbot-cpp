@@ -86,13 +86,6 @@ std::shared_ptr<T> parse(const nlohmann::json & /*data*/) {
     return nullptr;
 }
 
-// Spelled as std::shared_ptr<TYPE> rather than TYPE::Ptr so the declaration
-// only needs a forward declaration of TYPE (TYPE::Ptr would require the full
-// definition). The two spellings denote the same type.
-#define DECLARE_PARSER_FROM_JSON(TYPE) \
-    template <>                        \
-    std::shared_ptr<TYPE> parse(const nlohmann::json &data)
-
 // Grab array of T from JSON array.
 template <typename T>
 std::vector<std::shared_ptr<T>> parseArray(const nlohmann::json &data) {
@@ -179,10 +172,6 @@ nlohmann::json put(const T & /*value*/) {
                   "src/types).");
     return {};
 }
-
-#define DECLARE_PARSER_TO_JSON(TYPE) \
-    template <>                      \
-    nlohmann::json put(const std::shared_ptr<TYPE> &object)
 
 // Helper to put base class shared_ptr to derived T.
 template <typename T, typename V,
@@ -341,9 +330,14 @@ void parse(const nlohmann::json& data, const std::string& key, T* value) {
 }
 
 
-#define IMPLEMENT_PARSERS(type)     \
-    DECLARE_PARSER_FROM_JSON(type); \
-    DECLARE_PARSER_TO_JSON(type)
+// Declares the parse/put specializations for a registered type. Spelled as
+// std::shared_ptr<type> rather than type::Ptr so the declaration only needs a
+// forward declaration of the type (the two spellings denote the same type).
+#define IMPLEMENT_PARSERS(type)                              \
+    template <>                                              \
+    std::shared_ptr<type> parse(const nlohmann::json &data); \
+    template <>                                              \
+    nlohmann::json put(const std::shared_ptr<type> &object)
 IMPLEMENT_PARSERS(Animation);
 IMPLEMENT_PARSERS(Audio);
 IMPLEMENT_PARSERS(Birthdate);

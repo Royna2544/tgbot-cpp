@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BackgroundFillGradient) {
+template <>
+std::shared_ptr<BackgroundFillGradient> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BackgroundFillGradient>();
     parse(data, "type", &result->type);
     parse(data, "top_color", &result->topColor);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(BackgroundFillGradient) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BackgroundFillGradient) {
+template <>
+nlohmann::json put(const std::shared_ptr<BackgroundFillGradient> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

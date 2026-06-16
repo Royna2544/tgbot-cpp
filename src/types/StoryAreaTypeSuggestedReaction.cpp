@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(StoryAreaTypeSuggestedReaction) {
+template <>
+std::shared_ptr<StoryAreaTypeSuggestedReaction> parse(const nlohmann::json &data) {
     auto result = std::make_shared<StoryAreaTypeSuggestedReaction>();
     parse(data, "type", &result->type);
     result->reactionType = parseRequired<ReactionType>(data, "reaction_type");
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(StoryAreaTypeSuggestedReaction) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(StoryAreaTypeSuggestedReaction) {
+template <>
+nlohmann::json put(const std::shared_ptr<StoryAreaTypeSuggestedReaction> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

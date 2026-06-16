@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Update) {
+template <>
+std::shared_ptr<Update> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Update>();
     parse(data, "update_id", &result->updateId);
     result->message = parse<Message>(data, "message");
@@ -35,7 +36,8 @@ DECLARE_PARSER_FROM_JSON(Update) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Update) {
+template <>
+nlohmann::json put(const std::shared_ptr<Update> &object) {
     JsonWrapper json;
     if (object) {
         json.put("update_id", object->updateId);

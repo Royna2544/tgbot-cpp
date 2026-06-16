@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PassportElementErrorReverseSide) {
+template <>
+std::shared_ptr<PassportElementErrorReverseSide> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PassportElementErrorReverseSide>();
     parse(data, "source", &result->source);
     parse(data, "type", &result->type);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(PassportElementErrorReverseSide) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PassportElementErrorReverseSide) {
+template <>
+nlohmann::json put(const std::shared_ptr<PassportElementErrorReverseSide> &object) {
     JsonWrapper json;
     if (object) {
         json.put("source", object->source);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichTextBankCardNumber) {
+template <>
+std::shared_ptr<RichTextBankCardNumber> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichTextBankCardNumber>();
     parse(data, "type", &result->type);
     result->text = parseRequired<RichText>(data, "text");
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(RichTextBankCardNumber) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichTextBankCardNumber) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichTextBankCardNumber> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

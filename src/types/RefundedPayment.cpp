@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RefundedPayment) {
+template <>
+std::shared_ptr<RefundedPayment> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RefundedPayment>();
     parse(data, "currency", &result->currency);
     parse(data, "total_amount", &result->totalAmount);
@@ -14,7 +15,8 @@ DECLARE_PARSER_FROM_JSON(RefundedPayment) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RefundedPayment) {
+template <>
+nlohmann::json put(const std::shared_ptr<RefundedPayment> &object) {
     JsonWrapper json;
     if (object) {
         json.put("currency", object->currency);

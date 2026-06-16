@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichBlockVideo) {
+template <>
+std::shared_ptr<RichBlockVideo> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichBlockVideo>();
     parse(data, "type", &result->type);
     result->video = parseRequired<Video>(data, "video");
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(RichBlockVideo) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichBlockVideo) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichBlockVideo> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

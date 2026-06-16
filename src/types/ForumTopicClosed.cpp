@@ -4,12 +4,14 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ForumTopicClosed) {
+template <>
+std::shared_ptr<ForumTopicClosed> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ForumTopicClosed>();
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ForumTopicClosed) {
+template <>
+nlohmann::json put(const std::shared_ptr<ForumTopicClosed> &object) {
     JsonWrapper json;
     if (object) {
     }

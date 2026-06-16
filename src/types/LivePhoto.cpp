@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(LivePhoto) {
+template <>
+std::shared_ptr<LivePhoto> parse(const nlohmann::json &data) {
     auto result = std::make_shared<LivePhoto>();
     result->photo = parseArray<PhotoSize>(data, "photo");
     parse(data, "file_id", &result->fileId);
@@ -17,7 +18,8 @@ DECLARE_PARSER_FROM_JSON(LivePhoto) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(LivePhoto) {
+template <>
+nlohmann::json put(const std::shared_ptr<LivePhoto> &object) {
     JsonWrapper json;
     if (object) {
         json.put("photo", object->photo);

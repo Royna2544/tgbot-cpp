@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ExternalReplyInfo) {
+template <>
+std::shared_ptr<ExternalReplyInfo> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ExternalReplyInfo>();
     result->origin = parseRequired<MessageOrigin>(data, "origin");
     result->chat = parse<Chat>(data, "chat");
@@ -35,7 +36,8 @@ DECLARE_PARSER_FROM_JSON(ExternalReplyInfo) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ExternalReplyInfo) {
+template <>
+nlohmann::json put(const std::shared_ptr<ExternalReplyInfo> &object) {
     JsonWrapper json;
     if (object) {
         json.put("origin", object->origin);

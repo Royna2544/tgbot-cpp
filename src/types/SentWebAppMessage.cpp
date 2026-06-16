@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(SentWebAppMessage) {
+template <>
+std::shared_ptr<SentWebAppMessage> parse(const nlohmann::json &data) {
     auto result = std::make_shared<SentWebAppMessage>();
     parse(data, "inline_message_id", &result->inlineMessageId);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(SentWebAppMessage) {
+template <>
+nlohmann::json put(const std::shared_ptr<SentWebAppMessage> &object) {
     JsonWrapper json;
     if (object) {
         json.put("inline_message_id", object->inlineMessageId);

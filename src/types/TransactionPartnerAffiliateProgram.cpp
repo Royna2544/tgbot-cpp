@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(TransactionPartnerAffiliateProgram) {
+template <>
+std::shared_ptr<TransactionPartnerAffiliateProgram> parse(const nlohmann::json &data) {
     auto result = std::make_shared<TransactionPartnerAffiliateProgram>();
     parse(data, "type", &result->type);
     result->sponsorUser = parse<User>(data, "sponsor_user");
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(TransactionPartnerAffiliateProgram) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(TransactionPartnerAffiliateProgram) {
+template <>
+nlohmann::json put(const std::shared_ptr<TransactionPartnerAffiliateProgram> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

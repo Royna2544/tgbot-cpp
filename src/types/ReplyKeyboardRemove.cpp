@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ReplyKeyboardRemove) {
+template <>
+std::shared_ptr<ReplyKeyboardRemove> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ReplyKeyboardRemove>();
     parse(data, "remove_keyboard", &result->removeKeyboard);
     parse(data, "selective", &result->selective);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ReplyKeyboardRemove) {
+template <>
+nlohmann::json put(const std::shared_ptr<ReplyKeyboardRemove> &object) {
     JsonWrapper json;
     if (object) {
         json.put("remove_keyboard", object->removeKeyboard);

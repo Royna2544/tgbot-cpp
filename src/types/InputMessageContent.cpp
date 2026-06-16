@@ -10,7 +10,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputMessageContent) {
+template <>
+std::shared_ptr<InputMessageContent> parse(const nlohmann::json &data) {
     if (data.contains("rich_message")) {
         return parse<InputRichMessageContent>(data);
     }
@@ -32,7 +33,8 @@ DECLARE_PARSER_FROM_JSON(InputMessageContent) {
     throw invalidType("InputMessageContent", "unknown");
 }
 
-DECLARE_PARSER_TO_JSON(InputMessageContent) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputMessageContent> &object) {
     JsonWrapper json;
     if (object) {
         if (std::dynamic_pointer_cast<InputRichMessageContent>(object)) {

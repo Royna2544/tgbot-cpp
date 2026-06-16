@@ -4,12 +4,14 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(CallbackGame) {
+template <>
+std::shared_ptr<CallbackGame> parse(const nlohmann::json &data) {
     auto result = std::make_shared<CallbackGame>();
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(CallbackGame) {
+template <>
+nlohmann::json put(const std::shared_ptr<CallbackGame> &object) {
     JsonWrapper json;
     if (object) {
     }

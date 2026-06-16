@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(UniqueGiftColors) {
+template <>
+std::shared_ptr<UniqueGiftColors> parse(const nlohmann::json &data) {
     auto result = std::make_shared<UniqueGiftColors>();
     parse(data, "model_custom_emoji_id", &result->modelCustomEmojiId);
     parse(data, "symbol_custom_emoji_id", &result->symbolCustomEmojiId);
@@ -15,7 +16,8 @@ DECLARE_PARSER_FROM_JSON(UniqueGiftColors) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(UniqueGiftColors) {
+template <>
+nlohmann::json put(const std::shared_ptr<UniqueGiftColors> &object) {
     JsonWrapper json;
     if (object) {
         json.put("model_custom_emoji_id", object->modelCustomEmojiId);

@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(KeyboardButtonPollType) {
+template <>
+std::shared_ptr<KeyboardButtonPollType> parse(const nlohmann::json &data) {
     auto result = std::make_shared<KeyboardButtonPollType>();
     parse(data, "type", &result->type);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(KeyboardButtonPollType) {
+template <>
+nlohmann::json put(const std::shared_ptr<KeyboardButtonPollType> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

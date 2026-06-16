@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputMediaSticker) {
+template <>
+std::shared_ptr<InputMediaSticker> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputMediaSticker>();
     parse(data, "type", &result->type);
     parse(data, "media", &result->media);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(InputMediaSticker) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputMediaSticker) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputMediaSticker> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

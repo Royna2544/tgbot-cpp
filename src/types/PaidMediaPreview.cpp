@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PaidMediaPreview) {
+template <>
+std::shared_ptr<PaidMediaPreview> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PaidMediaPreview>();
     parse(data, "type", &result->type);
     parse(data, "width", &result->width);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(PaidMediaPreview) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PaidMediaPreview) {
+template <>
+nlohmann::json put(const std::shared_ptr<PaidMediaPreview> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

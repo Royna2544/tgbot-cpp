@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(LinkPreviewOptions) {
+template <>
+std::shared_ptr<LinkPreviewOptions> parse(const nlohmann::json &data) {
     auto result = std::make_shared<LinkPreviewOptions>();
     parse(data, "is_disabled", &result->isDisabled);
     parse(data, "url", &result->url);
@@ -14,7 +15,8 @@ DECLARE_PARSER_FROM_JSON(LinkPreviewOptions) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(LinkPreviewOptions) {
+template <>
+nlohmann::json put(const std::shared_ptr<LinkPreviewOptions> &object) {
     JsonWrapper json;
     if (object) {
         json.put("is_disabled", object->isDisabled);

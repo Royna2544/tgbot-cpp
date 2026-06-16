@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Audio) {
+template <>
+std::shared_ptr<Audio> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Audio>();
     parse(data, "file_id", &result->fileId);
     parse(data, "file_unique_id", &result->fileUniqueId);
@@ -18,7 +19,8 @@ DECLARE_PARSER_FROM_JSON(Audio) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Audio) {
+template <>
+nlohmann::json put(const std::shared_ptr<Audio> &object) {
     JsonWrapper json;
     if (object) {
         json.put("file_id", object->fileId);

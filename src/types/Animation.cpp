@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Animation) {
+template <>
+std::shared_ptr<Animation> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Animation>();
     parse(data, "file_id", &result->fileId);
     parse(data, "file_unique_id", &result->fileUniqueId);
@@ -18,7 +19,8 @@ DECLARE_PARSER_FROM_JSON(Animation) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Animation) {
+template <>
+nlohmann::json put(const std::shared_ptr<Animation> &object) {
     JsonWrapper json;
     if (object) {
         json.put("file_id", object->fileId);

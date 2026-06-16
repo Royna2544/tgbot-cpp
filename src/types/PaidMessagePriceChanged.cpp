@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PaidMessagePriceChanged) {
+template <>
+std::shared_ptr<PaidMessagePriceChanged> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PaidMessagePriceChanged>();
     parse(data, "paid_message_star_count", &result->paidMessageStarCount);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PaidMessagePriceChanged) {
+template <>
+nlohmann::json put(const std::shared_ptr<PaidMessagePriceChanged> &object) {
     JsonWrapper json;
     if (object) {
         json.put("paid_message_star_count", object->paidMessageStarCount);

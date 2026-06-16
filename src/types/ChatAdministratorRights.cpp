@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ChatAdministratorRights) {
+template <>
+std::shared_ptr<ChatAdministratorRights> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ChatAdministratorRights>();
     parse(data, "is_anonymous", &result->isAnonymous);
     parse(data, "can_manage_chat", &result->canManageChat);
@@ -26,7 +27,8 @@ DECLARE_PARSER_FROM_JSON(ChatAdministratorRights) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ChatAdministratorRights) {
+template <>
+nlohmann::json put(const std::shared_ptr<ChatAdministratorRights> &object) {
     JsonWrapper json;
     if (object) {
         json.put("is_anonymous", object->isAnonymous);

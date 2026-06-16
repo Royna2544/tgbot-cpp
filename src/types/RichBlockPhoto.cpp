@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichBlockPhoto) {
+template <>
+std::shared_ptr<RichBlockPhoto> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichBlockPhoto>();
     parse(data, "type", &result->type);
     result->photo = parseRequiredArray<PhotoSize>(data, "photo");
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(RichBlockPhoto) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichBlockPhoto) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichBlockPhoto> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

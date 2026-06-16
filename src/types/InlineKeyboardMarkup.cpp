@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InlineKeyboardMarkup) {
+template <>
+std::shared_ptr<InlineKeyboardMarkup> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InlineKeyboardMarkup>();
     result->inlineKeyboard = parseMatrix<InlineKeyboardButton>(data, "inline_keyboard");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InlineKeyboardMarkup) {
+template <>
+nlohmann::json put(const std::shared_ptr<InlineKeyboardMarkup> &object) {
     JsonWrapper json;
     if (object) {
         json.put("inline_keyboard", object->inlineKeyboard);

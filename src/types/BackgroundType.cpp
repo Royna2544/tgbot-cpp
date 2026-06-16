@@ -8,7 +8,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BackgroundType) {
+template <>
+std::shared_ptr<BackgroundType> parse(const nlohmann::json &data) {
     std::string type;
     BackgroundType::Ptr result;
     parse(data, "type", &type);
@@ -27,7 +28,8 @@ DECLARE_PARSER_FROM_JSON(BackgroundType) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BackgroundType) {
+template <>
+nlohmann::json put(const std::shared_ptr<BackgroundType> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

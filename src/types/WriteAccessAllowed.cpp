@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(WriteAccessAllowed) {
+template <>
+std::shared_ptr<WriteAccessAllowed> parse(const nlohmann::json &data) {
     auto result = std::make_shared<WriteAccessAllowed>();
     parse(data, "from_request", &result->fromRequest);
     parse(data, "web_app_name", &result->webAppName);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(WriteAccessAllowed) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(WriteAccessAllowed) {
+template <>
+nlohmann::json put(const std::shared_ptr<WriteAccessAllowed> &object) {
     JsonWrapper json;
     if (object) {
         json.put("from_request", object->fromRequest);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(UniqueGiftBackdrop) {
+template <>
+std::shared_ptr<UniqueGiftBackdrop> parse(const nlohmann::json &data) {
     auto result = std::make_shared<UniqueGiftBackdrop>();
     parse(data, "name", &result->name);
     result->colors = parseRequired<UniqueGiftBackdropColors>(data, "colors");
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(UniqueGiftBackdrop) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(UniqueGiftBackdrop) {
+template <>
+nlohmann::json put(const std::shared_ptr<UniqueGiftBackdrop> &object) {
     JsonWrapper json;
     if (object) {
         json.put("name", object->name);

@@ -4,12 +4,14 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(VideoChatStarted) {
+template <>
+std::shared_ptr<VideoChatStarted> parse(const nlohmann::json &data) {
     auto result = std::make_shared<VideoChatStarted>();
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(VideoChatStarted) {
+template <>
+nlohmann::json put(const std::shared_ptr<VideoChatStarted> &object) {
     JsonWrapper json;
     if (object) {
     }

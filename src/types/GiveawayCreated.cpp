@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(GiveawayCreated) {
+template <>
+std::shared_ptr<GiveawayCreated> parse(const nlohmann::json &data) {
     auto result = std::make_shared<GiveawayCreated>();
     parse(data, "prize_star_count", &result->prizeStarCount);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(GiveawayCreated) {
+template <>
+nlohmann::json put(const std::shared_ptr<GiveawayCreated> &object) {
     JsonWrapper json;
     if (object) {
         json.put("prize_star_count", object->prizeStarCount);

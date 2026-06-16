@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BusinessBotRights) {
+template <>
+std::shared_ptr<BusinessBotRights> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BusinessBotRights>();
     parse(data, "can_reply", &result->canReply);
     parse(data, "can_read_messages", &result->canReadMessages);
@@ -23,7 +24,8 @@ DECLARE_PARSER_FROM_JSON(BusinessBotRights) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BusinessBotRights) {
+template <>
+nlohmann::json put(const std::shared_ptr<BusinessBotRights> &object) {
     JsonWrapper json;
     if (object) {
         json.put("can_reply", object->canReply);

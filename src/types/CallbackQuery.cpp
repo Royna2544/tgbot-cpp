@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(CallbackQuery) {
+template <>
+std::shared_ptr<CallbackQuery> parse(const nlohmann::json &data) {
     auto result = std::make_shared<CallbackQuery>();
     parse(data, "id", &result->id);
     result->from = parseRequired<User>(data, "from");
@@ -18,7 +19,8 @@ DECLARE_PARSER_FROM_JSON(CallbackQuery) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(CallbackQuery) {
+template <>
+nlohmann::json put(const std::shared_ptr<CallbackQuery> &object) {
     JsonWrapper json;
     if (object) {
         json.put("id", object->id);

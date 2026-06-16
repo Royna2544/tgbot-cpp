@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ReactionTypeCustomEmoji) {
+template <>
+std::shared_ptr<ReactionTypeCustomEmoji> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ReactionTypeCustomEmoji>();
     parse(data, "type", &result->type);
     parse(data, "custom_emoji_id", &result->customEmojiId);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ReactionTypeCustomEmoji) {
+template <>
+nlohmann::json put(const std::shared_ptr<ReactionTypeCustomEmoji> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

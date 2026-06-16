@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InlineQueryResultGame) {
+template <>
+std::shared_ptr<InlineQueryResultGame> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InlineQueryResultGame>();
     parse(data, "type", &result->type);
     parse(data, "id", &result->id);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(InlineQueryResultGame) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InlineQueryResultGame) {
+template <>
+nlohmann::json put(const std::shared_ptr<InlineQueryResultGame> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

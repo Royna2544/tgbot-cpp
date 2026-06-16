@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputProfilePhotoStatic) {
+template <>
+std::shared_ptr<InputProfilePhotoStatic> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputProfilePhotoStatic>();
     parse(data, "type", &result->type);
     parse(data, "photo", &result->photo);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputProfilePhotoStatic) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputProfilePhotoStatic> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

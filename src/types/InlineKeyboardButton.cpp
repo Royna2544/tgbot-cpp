@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InlineKeyboardButton) {
+template <>
+std::shared_ptr<InlineKeyboardButton> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InlineKeyboardButton>();
     parse(data, "text", &result->text);
     parse(data, "icon_custom_emoji_id", &result->iconCustomEmojiId);
@@ -22,7 +23,8 @@ DECLARE_PARSER_FROM_JSON(InlineKeyboardButton) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InlineKeyboardButton) {
+template <>
+nlohmann::json put(const std::shared_ptr<InlineKeyboardButton> &object) {
     JsonWrapper json;
     if (object) {
         json.put("text", object->text);

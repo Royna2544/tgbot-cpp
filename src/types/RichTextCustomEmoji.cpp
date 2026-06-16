@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichTextCustomEmoji) {
+template <>
+std::shared_ptr<RichTextCustomEmoji> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichTextCustomEmoji>();
     parse(data, "type", &result->type);
     parse(data, "custom_emoji_id", &result->customEmojiId);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(RichTextCustomEmoji) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichTextCustomEmoji) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichTextCustomEmoji> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

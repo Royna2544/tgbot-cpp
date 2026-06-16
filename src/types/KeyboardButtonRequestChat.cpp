@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(KeyboardButtonRequestChat) {
+template <>
+std::shared_ptr<KeyboardButtonRequestChat> parse(const nlohmann::json &data) {
     auto result = std::make_shared<KeyboardButtonRequestChat>();
     parse(data, "request_id", &result->requestId);
     parse(data, "chat_is_channel", &result->chatIsChannel);
@@ -20,7 +21,8 @@ DECLARE_PARSER_FROM_JSON(KeyboardButtonRequestChat) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(KeyboardButtonRequestChat) {
+template <>
+nlohmann::json put(const std::shared_ptr<KeyboardButtonRequestChat> &object) {
     JsonWrapper json;
     if (object) {
         json.put("request_id", object->requestId);

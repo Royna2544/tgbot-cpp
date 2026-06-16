@@ -4,14 +4,16 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PassportData) {
+template <>
+std::shared_ptr<PassportData> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PassportData>();
     result->data = parseRequiredArray<EncryptedPassportElement>(data, "data");
     result->credentials = parseRequired<EncryptedCredentials>(data, "credentials");
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PassportData) {
+template <>
+nlohmann::json put(const std::shared_ptr<PassportData> &object) {
     JsonWrapper json;
     if (object) {
         json.put("data", object->data);

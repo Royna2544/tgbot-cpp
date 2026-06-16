@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PassportElementErrorUnspecified) {
+template <>
+std::shared_ptr<PassportElementErrorUnspecified> parse(const nlohmann::json &data) {
     auto result = std::make_shared<PassportElementErrorUnspecified>();
     parse(data, "source", &result->source);
     parse(data, "type", &result->type);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(PassportElementErrorUnspecified) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PassportElementErrorUnspecified) {
+template <>
+nlohmann::json put(const std::shared_ptr<PassportElementErrorUnspecified> &object) {
     JsonWrapper json;
     if (object) {
         json.put("source", object->source);

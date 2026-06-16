@@ -8,7 +8,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(PaidMedia) {
+template <>
+std::shared_ptr<PaidMedia> parse(const nlohmann::json &data) {
     std::string type;
     PaidMedia::Ptr result;
     parse(data, "type", &type);
@@ -27,7 +28,8 @@ DECLARE_PARSER_FROM_JSON(PaidMedia) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(PaidMedia) {
+template <>
+nlohmann::json put(const std::shared_ptr<PaidMedia> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

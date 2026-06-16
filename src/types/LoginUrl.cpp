@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(LoginUrl) {
+template <>
+std::shared_ptr<LoginUrl> parse(const nlohmann::json &data) {
     auto result = std::make_shared<LoginUrl>();
     parse(data, "url", &result->url);
     parse(data, "forward_text", &result->forwardText);
@@ -13,7 +14,8 @@ DECLARE_PARSER_FROM_JSON(LoginUrl) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(LoginUrl) {
+template <>
+nlohmann::json put(const std::shared_ptr<LoginUrl> &object) {
     JsonWrapper json;
     if (object) {
         json.put("url", object->url);

@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(InputProfilePhotoAnimated) {
+template <>
+std::shared_ptr<InputProfilePhotoAnimated> parse(const nlohmann::json &data) {
     auto result = std::make_shared<InputProfilePhotoAnimated>();
     parse(data, "type", &result->type);
     parse(data, "animation", &result->animation);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(InputProfilePhotoAnimated) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(InputProfilePhotoAnimated) {
+template <>
+nlohmann::json put(const std::shared_ptr<InputProfilePhotoAnimated> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

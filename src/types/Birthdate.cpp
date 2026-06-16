@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(Birthdate) {
+template <>
+std::shared_ptr<Birthdate> parse(const nlohmann::json &data) {
     auto result = std::make_shared<Birthdate>();
     parse(data, "day", &result->day);
     parse(data, "month", &result->month);
@@ -12,7 +13,8 @@ DECLARE_PARSER_FROM_JSON(Birthdate) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(Birthdate) {
+template <>
+nlohmann::json put(const std::shared_ptr<Birthdate> &object) {
     JsonWrapper json;
     if (object) {
         json.put("day", object->day);

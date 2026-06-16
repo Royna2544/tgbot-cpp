@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(BotCommandScopeAllPrivateChats) {
+template <>
+std::shared_ptr<BotCommandScopeAllPrivateChats> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BotCommandScopeAllPrivateChats>();
     parse(data, "type", &result->type);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(BotCommandScopeAllPrivateChats) {
+template <>
+nlohmann::json put(const std::shared_ptr<BotCommandScopeAllPrivateChats> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);

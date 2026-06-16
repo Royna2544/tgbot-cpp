@@ -4,7 +4,8 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(ChatPermissions) {
+template <>
+std::shared_ptr<ChatPermissions> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ChatPermissions>();
     parse(data, "can_send_messages", &result->canSendMessages);
     parse(data, "can_send_audios", &result->canSendAudios);
@@ -25,7 +26,8 @@ DECLARE_PARSER_FROM_JSON(ChatPermissions) {
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(ChatPermissions) {
+template <>
+nlohmann::json put(const std::shared_ptr<ChatPermissions> &object) {
     JsonWrapper json;
     if (object) {
         json.put("can_send_messages", object->canSendMessages);

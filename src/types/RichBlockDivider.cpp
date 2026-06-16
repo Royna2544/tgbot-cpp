@@ -4,13 +4,15 @@
 
 namespace TgBot {
 
-DECLARE_PARSER_FROM_JSON(RichBlockDivider) {
+template <>
+std::shared_ptr<RichBlockDivider> parse(const nlohmann::json &data) {
     auto result = std::make_shared<RichBlockDivider>();
     parse(data, "type", &result->type);
     return result;
 }
 
-DECLARE_PARSER_TO_JSON(RichBlockDivider) {
+template <>
+nlohmann::json put(const std::shared_ptr<RichBlockDivider> &object) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);
