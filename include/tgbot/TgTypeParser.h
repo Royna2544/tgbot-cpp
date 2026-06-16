@@ -657,6 +657,32 @@ IMPLEMENT_PARSERS(RichTextAnchorLink);
 IMPLEMENT_PARSERS(RichTextReference);
 IMPLEMENT_PARSERS(RichTextReferenceLink);
 
+IMPLEMENT_PARSERS(RichBlock);
+IMPLEMENT_PARSERS(RichBlockParagraph);
+IMPLEMENT_PARSERS(RichBlockSectionHeading);
+IMPLEMENT_PARSERS(RichBlockPreformatted);
+IMPLEMENT_PARSERS(RichBlockFooter);
+IMPLEMENT_PARSERS(RichBlockDivider);
+IMPLEMENT_PARSERS(RichBlockMathematicalExpression);
+IMPLEMENT_PARSERS(RichBlockAnchor);
+IMPLEMENT_PARSERS(RichBlockList);
+IMPLEMENT_PARSERS(RichBlockBlockQuotation);
+IMPLEMENT_PARSERS(RichBlockPullQuotation);
+IMPLEMENT_PARSERS(RichBlockCollage);
+IMPLEMENT_PARSERS(RichBlockSlideshow);
+IMPLEMENT_PARSERS(RichBlockTable);
+IMPLEMENT_PARSERS(RichBlockDetails);
+IMPLEMENT_PARSERS(RichBlockMap);
+IMPLEMENT_PARSERS(RichBlockAnimation);
+IMPLEMENT_PARSERS(RichBlockAudio);
+IMPLEMENT_PARSERS(RichBlockPhoto);
+IMPLEMENT_PARSERS(RichBlockVideo);
+IMPLEMENT_PARSERS(RichBlockVoiceNote);
+IMPLEMENT_PARSERS(RichBlockThinking);
+IMPLEMENT_PARSERS(RichBlockCaption);
+IMPLEMENT_PARSERS(RichBlockTableCell);
+IMPLEMENT_PARSERS(RichBlockListItem);
+
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
 template <>
 nlohmann::json put(const MaybeInaccessibleMessage& value);

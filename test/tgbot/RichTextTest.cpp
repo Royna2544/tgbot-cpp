@@ -4,6 +4,9 @@
 
 #include <nlohmann/json.hpp>
 #include <tgbot/TgTypeParser.h>
+#include <tgbot/types/RichBlock.h>
+#include <tgbot/types/RichBlockBlockQuotation.h>
+#include <tgbot/types/RichBlockParagraph.h>
 #include <tgbot/types/RichText.h>
 #include <tgbot/types/RichTextArray.h>
 #include <tgbot/types/RichTextBold.h>
@@ -39,6 +42,23 @@ BOOST_AUTO_TEST_CASE(recursiveRoundTrip) {
     // Serialising back reproduces the input exactly (nlohmann == ignores object
     // key order; array order is preserved).
     BOOST_CHECK(put(rt) == in);
+}
+
+// A blockquote containing a paragraph (block recursion) whose text and credit
+// are RichText -- exercises RichBlock dispatch + nested blocks + RichText.
+BOOST_AUTO_TEST_CASE(richBlockRoundTrip) {
+    const auto in = nlohmann::json::parse(
+        R"({"type":"blockquote",)"
+        R"("blocks":[{"type":"paragraph","text":"hi"}],"credit":"src"})");
+
+    auto rb = parse<RichBlock>(in);
+
+    BOOST_REQUIRE(rb != nullptr);
+    BOOST_CHECK_EQUAL(rb->type, "blockquote");
+    auto quote = std::static_pointer_cast<RichBlockBlockQuotation>(rb);
+    BOOST_REQUIRE_EQUAL(quote->blocks.size(), 1u);
+    BOOST_CHECK_EQUAL(quote->blocks[0]->type, "paragraph");
+    BOOST_CHECK(put(rb) == in);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
