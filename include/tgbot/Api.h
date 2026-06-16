@@ -62,6 +62,10 @@
 #include "tgbot/types/InputPaidMedia.h"
 #include "tgbot/types/InputProfilePhoto.h"
 #include "tgbot/types/InputRichMessage.h"
+#include "tgbot/types/KeyboardButton.h"
+#include "tgbot/types/PreparedKeyboardButton.h"
+#include "tgbot/types/SentGuestMessage.h"
+#include "tgbot/types/BotAccessSettings.h"
 #include "tgbot/types/InputStoryContent.h"
 #include "tgbot/types/OwnedGifts.h"
 #include "tgbot/types/PreparedInlineMessage.h"
@@ -1491,7 +1495,15 @@ class TGBOT_API Api {
         const optional<ParseMode> questionParseMode = {},
         const std::vector<MessageEntity::Ptr>& questionEntities = {},
         optional<bool> allowPaidBroadcast = {},
-        const optional<std::string_view> messageEffectId = {}) const;
+        const optional<std::string_view> messageEffectId = {},
+        optional<bool> allowsRevoting = {}, optional<bool> shuffleOptions = {},
+        optional<bool> allowAddingOptions = {},
+        optional<bool> hideResultsUntilCloses = {},
+        optional<bool> membersOnly = {},
+        const std::vector<std::string>& countryCodes = {},
+        const std::vector<std::int32_t>& correctOptionIds = {},
+        const optional<ParseMode> descriptionParseMode = {},
+        const std::vector<MessageEntity::Ptr>& descriptionEntities = {}) const;
 
     /**
      * @brief Use this method to send an animated emoji that will display a
@@ -2151,7 +2163,8 @@ class TGBOT_API Api {
      *
      * @return Returns an Array of ChatMember objects.
      */
-    std::vector<ChatMember::Ptr> getChatAdministrators(ChatIdType chatId) const;
+    std::vector<ChatMember::Ptr> getChatAdministrators(
+        ChatIdType chatId, optional<bool> returnBots = {}) const;
 
     /**
      * @brief Use this method to get the number of members in a chat.
@@ -4111,6 +4124,117 @@ class TGBOT_API Api {
     bool sendRichMessageDraft(std::int64_t chatId, std::int32_t draftId,
                               InputRichMessage::Ptr richMessage,
                               optional<std::int32_t> messageThreadId = {}) const;
+
+    /**
+     * @brief Use this method to send a live photo (a photo with a short looping
+     * video).
+     *
+     * @return On success, the sent Message is returned.
+     */
+    Message::Ptr sendLivePhoto(
+        ChatIdType chatId, FileHandleType livePhoto, FileHandleType photo,
+        const optional<std::string_view> caption = {},
+        const optional<ParseMode> parseMode = {},
+        const std::vector<MessageEntity::Ptr>& captionEntities = {},
+        optional<bool> showCaptionAboveMedia = {},
+        optional<bool> hasSpoiler = {}, optional<bool> disableNotification = {},
+        optional<bool> protectContent = {},
+        optional<bool> allowPaidBroadcast = {},
+        const optional<std::string_view> messageEffectId = {},
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        ReplyParameters::Ptr replyParameters = nullptr,
+        GenericReply::Ptr replyMarkup = nullptr,
+        const optional<std::string_view> businessConnectionId = {},
+        optional<std::int32_t> messageThreadId = {},
+        optional<std::int32_t> directMessagesTopicId = {}) const;
+
+    /**
+     * @brief Use this method to answer a chat join request query.
+     *
+     * @return Returns True on success.
+     */
+    bool answerChatJoinRequestQuery(const std::string_view chatJoinRequestQueryId,
+                                    const std::string_view result) const;
+
+    /**
+     * @brief Use this method to open a Web App from a chat join request.
+     *
+     * @return Returns True on success.
+     */
+    bool sendChatJoinRequestWebApp(const std::string_view chatJoinRequestQueryId,
+                                   const std::string_view webAppUrl) const;
+
+    /**
+     * @brief Use this method to get messages from a user's personal chat.
+     *
+     * @return Returns an Array of Message objects.
+     */
+    std::vector<Message::Ptr> getUserPersonalChatMessages(
+        std::int64_t userId, std::int32_t limit) const;
+
+    /**
+     * @brief Use this method to answer a guest query.
+     *
+     * @return On success, the sent SentGuestMessage is returned.
+     */
+    SentGuestMessage::Ptr answerGuestQuery(const std::string_view guestQueryId,
+                                           InlineQueryResult::Ptr result) const;
+
+    /**
+     * @brief Use this method to get the token of a managed bot.
+     *
+     * @return Returns the token as String on success.
+     */
+    std::string getManagedBotToken(std::int64_t userId) const;
+
+    /**
+     * @brief Use this method to replace the token of a managed bot.
+     *
+     * @return Returns the new token as String on success.
+     */
+    std::string replaceManagedBotToken(std::int64_t userId) const;
+
+    /**
+     * @brief Use this method to get the access settings of a managed bot.
+     *
+     * @return Returns a BotAccessSettings object on success.
+     */
+    BotAccessSettings::Ptr getManagedBotAccessSettings(std::int64_t userId) const;
+
+    /**
+     * @brief Use this method to change the access settings of a managed bot.
+     *
+     * @return Returns True on success.
+     */
+    bool setManagedBotAccessSettings(
+        std::int64_t userId, bool isAccessRestricted,
+        const std::vector<std::int64_t>& addedUserIds = {}) const;
+
+    /**
+     * @brief Use this method to store a keyboard button for later use by a user.
+     *
+     * @return Returns a PreparedKeyboardButton object.
+     */
+    PreparedKeyboardButton::Ptr savePreparedKeyboardButton(
+        std::int64_t userId, KeyboardButton::Ptr button) const;
+
+    /**
+     * @brief Use this method to delete a specific reaction from a message.
+     *
+     * @return Returns True on success.
+     */
+    bool deleteMessageReaction(ChatIdType chatId, std::int32_t messageId,
+                               optional<std::int64_t> userId = {},
+                               optional<std::int64_t> actorChatId = {}) const;
+
+    /**
+     * @brief Use this method to delete all reactions from a message.
+     *
+     * @return Returns True on success.
+     */
+    bool deleteAllMessageReactions(
+        ChatIdType chatId, optional<std::int64_t> userId = {},
+        optional<std::int64_t> actorChatId = {}) const;
 
    private:
     std::string _bot_api_baseurl;

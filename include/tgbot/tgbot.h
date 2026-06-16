@@ -360,6 +360,19 @@
 #include "tgbot/types/RichMessage.h"
 #include "tgbot/types/InputRichMessage.h"
 #include "tgbot/types/InputRichMessageContent.h"
+#include "tgbot/types/LivePhoto.h"
+#include "tgbot/types/PaidMediaLivePhoto.h"
+#include "tgbot/types/Link.h"
+#include "tgbot/types/PollMedia.h"
+#include "tgbot/types/ManagedBotCreated.h"
+#include "tgbot/types/ManagedBotUpdated.h"
+#include "tgbot/types/PollOptionAdded.h"
+#include "tgbot/types/PollOptionDeleted.h"
+#include "tgbot/types/KeyboardButtonRequestManagedBot.h"
+#include "tgbot/types/BotAccessSettings.h"
+#include "tgbot/types/SentGuestMessage.h"
+#include "tgbot/types/PreparedKeyboardButton.h"
+#include "tgbot/types/InputPaidMediaLivePhoto.h"
 
 
 /**

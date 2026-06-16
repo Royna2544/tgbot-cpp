@@ -50,6 +50,8 @@ def elem_type(t, spec):
         return "std::int64_t"
     if t.startswith("Array of "):
         return f"std::vector<{elem_type(t[len('Array of '):], spec)}>"
+    if t == "MaybeInaccessibleMessage":
+        return "MaybeInaccessibleMessage"  # a std::variant alias, not a ::Ptr
     return f"{t}::Ptr"  # object type
 
 
@@ -65,7 +67,10 @@ def field_cpp_type(field, spec):
 
 
 def referenced_types(cpp_type):
-    return set(re.findall(r"([A-Z]\w*)::Ptr", cpp_type))
+    refs = set(re.findall(r"([A-Z]\w*)::Ptr", cpp_type))
+    if "MaybeInaccessibleMessage" in cpp_type:
+        refs.add("MaybeInaccessibleMessage")
+    return refs
 
 
 def discriminator(spec, name):

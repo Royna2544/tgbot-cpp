@@ -1014,7 +1014,13 @@ Message::Ptr Api::sendPoll(
     const optional<ParseMode> questionParseMode,
     const std::vector<MessageEntity::Ptr>& questionEntities,
     optional<bool> allowPaidBroadcast,
-    const optional<std::string_view> messageEffectId) const {
+    const optional<std::string_view> messageEffectId,
+    optional<bool> allowsRevoting, optional<bool> shuffleOptions,
+    optional<bool> allowAddingOptions, optional<bool> hideResultsUntilCloses,
+    optional<bool> membersOnly, const std::vector<std::string>& countryCodes,
+    const std::vector<std::int32_t>& correctOptionIds,
+    const optional<ParseMode> descriptionParseMode,
+    const std::vector<MessageEntity::Ptr>& descriptionEntities) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendPoll",
         std::pair{"chat_id", std::move(chatId)},
@@ -1036,7 +1042,16 @@ Message::Ptr Api::sendPoll(
         std::pair{"question_parse_mode", questionParseMode},
         std::pair{"question_entities", questionEntities},
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
-        std::pair{"message_effect_id", messageEffectId}));
+        std::pair{"message_effect_id", messageEffectId},
+        std::pair{"allows_revoting", allowsRevoting},
+        std::pair{"shuffle_options", shuffleOptions},
+        std::pair{"allow_adding_options", allowAddingOptions},
+        std::pair{"hide_results_until_closes", hideResultsUntilCloses},
+        std::pair{"members_only", membersOnly},
+        std::pair{"country_codes", countryCodes},
+        std::pair{"correct_option_ids", correctOptionIds},
+        std::pair{"description_parse_mode", descriptionParseMode},
+        std::pair{"description_entities", descriptionEntities}));
 }
 
 Message::Ptr Api::sendDice(
@@ -1334,10 +1349,11 @@ Chat::Ptr Api::getChat(ChatIdType chatId) const {
 }
 
 std::vector<ChatMember::Ptr> Api::getChatAdministrators(
-    ChatIdType chatId) const {
+    ChatIdType chatId, optional<bool> returnBots) const {
     return parseArray<ChatMember>(
         sendRequest(_bot_api_baseurl, _httpClient, "getChatAdministrators",
-                    std::pair{"chat_id", std::move(chatId)}));
+                    std::pair{"chat_id", std::move(chatId)},
+                    std::pair{"return_bots", returnBots}));
 }
 
 int32_t Api::getChatMemberCount(ChatIdType chatId) const {
@@ -2663,6 +2679,134 @@ bool Api::sendRichMessageDraft(std::int64_t chatId, std::int32_t draftId,
                        std::pair{"draft_id", draftId},
                        std::pair{"rich_message", std::move(richMessage)},
                        std::pair{"message_thread_id", messageThreadId})
+        .get<bool>();
+}
+
+Message::Ptr Api::sendLivePhoto(
+    ChatIdType chatId, FileHandleType livePhoto, FileHandleType photo,
+    const optional<std::string_view> caption, const optional<ParseMode> parseMode,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
+    optional<bool> showCaptionAboveMedia, optional<bool> hasSpoiler,
+    optional<bool> disableNotification, optional<bool> protectContent,
+    optional<bool> allowPaidBroadcast,
+    const optional<std::string_view> messageEffectId,
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
+    const optional<std::string_view> businessConnectionId,
+    optional<std::int32_t> messageThreadId,
+    optional<std::int32_t> directMessagesTopicId) const {
+    return parse<Message>(sendRequest(
+        _bot_api_baseurl, _httpClient, "sendLivePhoto",
+        std::pair{"chat_id", std::move(chatId)},
+        std::pair{"live_photo", std::move(livePhoto)},
+        std::pair{"photo", std::move(photo)}, std::pair{"caption", caption},
+        std::pair{"parse_mode", parseMode},
+        std::pair{"caption_entities", captionEntities},
+        std::pair{"show_caption_above_media", showCaptionAboveMedia},
+        std::pair{"has_spoiler", hasSpoiler},
+        std::pair{"disable_notification", disableNotification},
+        std::pair{"protect_content", protectContent},
+        std::pair{"allow_paid_broadcast", allowPaidBroadcast},
+        std::pair{"message_effect_id", messageEffectId},
+        std::pair{"suggested_post_parameters", std::move(suggestedPostParameters)},
+        std::pair{"reply_parameters", std::move(replyParameters)},
+        std::pair{"reply_markup", std::move(replyMarkup)},
+        std::pair{"business_connection_id", businessConnectionId},
+        std::pair{"message_thread_id", messageThreadId},
+        std::pair{"direct_messages_topic_id", directMessagesTopicId}));
+}
+
+bool Api::answerChatJoinRequestQuery(
+    const std::string_view chatJoinRequestQueryId,
+    const std::string_view result) const {
+    return sendRequest(
+               _bot_api_baseurl, _httpClient, "answerChatJoinRequestQuery",
+               std::pair{"chat_join_request_query_id", chatJoinRequestQueryId},
+               std::pair{"result", result})
+        .get<bool>();
+}
+
+bool Api::sendChatJoinRequestWebApp(
+    const std::string_view chatJoinRequestQueryId,
+    const std::string_view webAppUrl) const {
+    return sendRequest(
+               _bot_api_baseurl, _httpClient, "sendChatJoinRequestWebApp",
+               std::pair{"chat_join_request_query_id", chatJoinRequestQueryId},
+               std::pair{"web_app_url", webAppUrl})
+        .get<bool>();
+}
+
+std::vector<Message::Ptr> Api::getUserPersonalChatMessages(
+    std::int64_t userId, std::int32_t limit) const {
+    return parseArray<Message>(
+        sendRequest(_bot_api_baseurl, _httpClient, "getUserPersonalChatMessages",
+                    std::pair{"user_id", userId}, std::pair{"limit", limit}));
+}
+
+SentGuestMessage::Ptr Api::answerGuestQuery(
+    const std::string_view guestQueryId, InlineQueryResult::Ptr result) const {
+    return parse<SentGuestMessage>(
+        sendRequest(_bot_api_baseurl, _httpClient, "answerGuestQuery",
+                    std::pair{"guest_query_id", guestQueryId},
+                    std::pair{"result", std::move(result)}));
+}
+
+std::string Api::getManagedBotToken(std::int64_t userId) const {
+    return sendRequest(_bot_api_baseurl, _httpClient, "getManagedBotToken",
+                       std::pair{"user_id", userId})
+        .get<std::string>();
+}
+
+std::string Api::replaceManagedBotToken(std::int64_t userId) const {
+    return sendRequest(_bot_api_baseurl, _httpClient, "replaceManagedBotToken",
+                       std::pair{"user_id", userId})
+        .get<std::string>();
+}
+
+BotAccessSettings::Ptr Api::getManagedBotAccessSettings(
+    std::int64_t userId) const {
+    return parse<BotAccessSettings>(
+        sendRequest(_bot_api_baseurl, _httpClient, "getManagedBotAccessSettings",
+                    std::pair{"user_id", userId}));
+}
+
+bool Api::setManagedBotAccessSettings(
+    std::int64_t userId, bool isAccessRestricted,
+    const std::vector<std::int64_t>& addedUserIds) const {
+    return sendRequest(_bot_api_baseurl, _httpClient,
+                       "setManagedBotAccessSettings",
+                       std::pair{"user_id", userId},
+                       std::pair{"is_access_restricted", isAccessRestricted},
+                       std::pair{"added_user_ids", addedUserIds})
+        .get<bool>();
+}
+
+PreparedKeyboardButton::Ptr Api::savePreparedKeyboardButton(
+    std::int64_t userId, KeyboardButton::Ptr button) const {
+    return parse<PreparedKeyboardButton>(
+        sendRequest(_bot_api_baseurl, _httpClient, "savePreparedKeyboardButton",
+                    std::pair{"user_id", userId},
+                    std::pair{"button", std::move(button)}));
+}
+
+bool Api::deleteMessageReaction(ChatIdType chatId, std::int32_t messageId,
+                                optional<std::int64_t> userId,
+                                optional<std::int64_t> actorChatId) const {
+    return sendRequest(_bot_api_baseurl, _httpClient, "deleteMessageReaction",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"message_id", messageId},
+                       std::pair{"user_id", userId},
+                       std::pair{"actor_chat_id", actorChatId})
+        .get<bool>();
+}
+
+bool Api::deleteAllMessageReactions(ChatIdType chatId,
+                                    optional<std::int64_t> userId,
+                                    optional<std::int64_t> actorChatId) const {
+    return sendRequest(_bot_api_baseurl, _httpClient, "deleteAllMessageReactions",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"user_id", userId},
+                       std::pair{"actor_chat_id", actorChatId})
         .get<bool>();
 }
 

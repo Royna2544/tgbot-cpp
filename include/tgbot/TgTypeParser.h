@@ -687,6 +687,20 @@ IMPLEMENT_PARSERS(RichMessage);
 IMPLEMENT_PARSERS(InputRichMessage);
 IMPLEMENT_PARSERS(InputRichMessageContent);
 
+IMPLEMENT_PARSERS(LivePhoto);
+IMPLEMENT_PARSERS(PaidMediaLivePhoto);
+IMPLEMENT_PARSERS(Link);
+IMPLEMENT_PARSERS(PollMedia);
+IMPLEMENT_PARSERS(ManagedBotCreated);
+IMPLEMENT_PARSERS(ManagedBotUpdated);
+IMPLEMENT_PARSERS(PollOptionAdded);
+IMPLEMENT_PARSERS(PollOptionDeleted);
+IMPLEMENT_PARSERS(KeyboardButtonRequestManagedBot);
+IMPLEMENT_PARSERS(BotAccessSettings);
+IMPLEMENT_PARSERS(SentGuestMessage);
+IMPLEMENT_PARSERS(PreparedKeyboardButton);
+IMPLEMENT_PARSERS(InputPaidMediaLivePhoto);
+
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
 template <>
 nlohmann::json put(const MaybeInaccessibleMessage& value);

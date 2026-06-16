@@ -99,6 +99,9 @@ def classify(cpp_type):
     m = re.fullmatch(r"std::vector<\s*(.+?)\s*>", inner)
     if m:
         return ("prim_array" if opt else "prim_array_req"), m.group(1)
+    if inner == "MaybeInaccessibleMessage":
+        # A std::variant alias parsed via the non-template parse(json) overload.
+        return ("maybe_msg_opt" if opt else "maybe_msg_req"), inner
     m = re.fullmatch(r"(\w+)::Ptr", inner)
     if m:
         return ("ptr_opt" if opt else "ptr_req"), m.group(1)
@@ -136,6 +139,13 @@ def gen_field(field, members):
                 f'        json.put("{snake}", object->{camel});')
     if kind == "prim_array_req":
         return (f'    result->{camel} = parsePrimitiveRequiredArray<{inner}>(data, "{snake}");',
+                f'        json.put("{snake}", object->{camel});')
+    if kind == "maybe_msg_opt":
+        return (f'    if (data.contains("{snake}") && !data["{snake}"].is_null()) {{\n'
+                f'        result->{camel} = parse(data["{snake}"]);\n    }}',
+                f'        json.put("{snake}", object->{camel});')
+    if kind == "maybe_msg_req":
+        return (f'    result->{camel} = parse(data["{snake}"]);',
                 f'        json.put("{snake}", object->{camel});')
     return None  # enum -> not modelled (kept hand-written)
 
