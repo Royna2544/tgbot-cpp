@@ -16,6 +16,7 @@ DECLARE_PARSER_FROM_JSON(ChatPermissions) {
     parse(data, "can_send_polls", &result->canSendPolls);
     parse(data, "can_send_other_messages", &result->canSendOtherMessages);
     parse(data, "can_add_web_page_previews", &result->canAddWebPagePreviews);
+    parse(data, "can_react_to_messages", &result->canReactToMessages);
     parse(data, "can_edit_tag", &result->canEditTag);
     parse(data, "can_change_info", &result->canChangeInfo);
     parse(data, "can_invite_users", &result->canInviteUsers);
@@ -37,6 +38,7 @@ DECLARE_PARSER_TO_JSON(ChatPermissions) {
         json.put("can_send_polls", object->canSendPolls);
         json.put("can_send_other_messages", object->canSendOtherMessages);
         json.put("can_add_web_page_previews", object->canAddWebPagePreviews);
+        json.put("can_react_to_messages", object->canReactToMessages);
         json.put("can_edit_tag", object->canEditTag);
         json.put("can_change_info", object->canChangeInfo);
         json.put("can_invite_users", object->canInviteUsers);

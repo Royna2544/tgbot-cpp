@@ -373,6 +373,11 @@
 #include "tgbot/types/SentGuestMessage.h"
 #include "tgbot/types/PreparedKeyboardButton.h"
 #include "tgbot/types/InputPaidMediaLivePhoto.h"
+#include "tgbot/types/InputMediaLink.h"
+#include "tgbot/types/InputMediaSticker.h"
+#include "tgbot/types/InputMediaLocation.h"
+#include "tgbot/types/InputMediaVenue.h"
+#include "tgbot/types/InputMediaLivePhoto.h"
 
 
 /**

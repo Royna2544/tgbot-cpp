@@ -19,6 +19,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HDR_DIR = os.path.join(ROOT, "include", "tgbot", "types")
 
 
+# The spec splits input media across three overlapping "bases" (InputMedia,
+# InputPollMedia, InputPollOptionMedia) that share leaves -- the same leaf
+# (e.g. InputMediaPhoto) belongs to several. Since these are put-only (never
+# parsed) and serve only as a method-parameter type, we collapse the two poll
+# bases into InputMedia (runtime-validated): every leaf inherits InputMedia and
+# any field/param typed as a poll base is spelled InputMedia. See InputMedia.cpp.
+MEDIA_COLLAPSE = {"InputPollMedia": "InputMedia",
+                  "InputPollOptionMedia": "InputMedia"}
+
+
 def snake_to_camel(s):
     p = s.split("_")
     return p[0] + "".join(x.title() for x in p[1:])
@@ -52,6 +62,7 @@ def elem_type(t, spec):
         return f"std::vector<{elem_type(t[len('Array of '):], spec)}>"
     if t == "MaybeInaccessibleMessage":
         return "MaybeInaccessibleMessage"  # a std::variant alias, not a ::Ptr
+    t = MEDIA_COLLAPSE.get(t, t)  # poll media bases collapse into InputMedia
     return f"{t}::Ptr"  # object type
 
 
@@ -86,6 +97,7 @@ def gen_header(spec, name):
     info = spec["types"][name]
     fields = info.get("fields") or []
     base = (info.get("subtype_of") or [None])[0]
+    base = MEDIA_COLLAPSE.get(base, base)  # leaves of poll bases inherit InputMedia
     is_base = bool(info.get("subtypes"))
 
     disc_field = None

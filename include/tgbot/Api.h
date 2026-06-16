@@ -1503,7 +1503,10 @@ class TGBOT_API Api {
         const std::vector<std::string>& countryCodes = {},
         const std::vector<std::int32_t>& correctOptionIds = {},
         const optional<ParseMode> descriptionParseMode = {},
-        const std::vector<MessageEntity::Ptr>& descriptionEntities = {}) const;
+        const std::vector<MessageEntity::Ptr>& descriptionEntities = {},
+        const optional<std::string_view> description = {},
+        InputMedia::Ptr media = nullptr,
+        InputMedia::Ptr explanationMedia = nullptr) const;
 
     /**
      * @brief Use this method to send an animated emoji that will display a
@@ -2735,7 +2738,8 @@ class TGBOT_API Api {
         LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
         InlineKeyboardMarkup::Ptr replyMarkup = nullptr,
         const std::vector<MessageEntity::Ptr>& entities = {},
-        const optional<std::string_view> businessConnectionId = {}) const;
+        const optional<std::string_view> businessConnectionId = {},
+        InputRichMessage::Ptr richMessage = nullptr) const;
 
     /**
      * @brief Use this method to edit captions of messages.

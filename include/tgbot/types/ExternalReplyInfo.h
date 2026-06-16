@@ -2,6 +2,7 @@
 #define TGBOT_EXTERNALREPLYINFO_H
 
 #include "tgbot/types/PaidMediaInfo.h"
+#include "tgbot/types/LivePhoto.h"
 #include "tgbot/types/Checklist.h"
 
 #include "tgbot/types/MessageOrigin.h"
@@ -175,6 +176,11 @@ public:
      * @brief Optional. Message is a checklist
      */
     std::optional<Checklist::Ptr> checklist;
+    /**
+     * @brief Optional. Message is a live photo, information about the live photo
+     */
+    std::optional<LivePhoto::Ptr> livePhoto;
+
 };
 }
 

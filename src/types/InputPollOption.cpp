@@ -9,6 +9,7 @@ DECLARE_PARSER_FROM_JSON(InputPollOption) {
     parse(data, "text", &result->text);
     parse(data, "text_parse_mode", &result->textParseMode);
     result->textEntities = parseArray<MessageEntity>(data, "text_entities");
+    result->media = parse<InputMedia>(data, "media");
     return result;
 }
 
@@ -18,6 +19,7 @@ DECLARE_PARSER_TO_JSON(InputPollOption) {
         json.put("text", object->text);
         json.put("text_parse_mode", object->textParseMode);
         json.put("text_entities", object->textEntities);
+        json.put("media", object->media);
     }
     return json;
 }

@@ -15,11 +15,18 @@ DECLARE_PARSER_FROM_JSON(Poll) {
     parse(data, "is_anonymous", &result->isAnonymous);
     parse(data, "type", &result->type);
     parse(data, "allows_multiple_answers", &result->allowsMultipleAnswers);
-    parse(data, "correct_option_id", &result->correctOptionId);
+    parse(data, "allows_revoting", &result->allowsRevoting);
+    parse(data, "members_only", &result->membersOnly);
+    result->countryCodes = parsePrimitiveArray<std::string>(data, "country_codes");
+    result->correctOptionIds = parsePrimitiveArray<std::int64_t>(data, "correct_option_ids");
     parse(data, "explanation", &result->explanation);
     result->explanationEntities = parseArray<MessageEntity>(data, "explanation_entities");
+    result->explanationMedia = parse<PollMedia>(data, "explanation_media");
     parse(data, "open_period", &result->openPeriod);
     parse(data, "close_date", &result->closeDate);
+    parse(data, "description", &result->description);
+    result->descriptionEntities = parseArray<MessageEntity>(data, "description_entities");
+    result->media = parse<PollMedia>(data, "media");
     return result;
 }
 
@@ -35,11 +42,18 @@ DECLARE_PARSER_TO_JSON(Poll) {
         json.put("is_anonymous", object->isAnonymous);
         json.put("type", object->type);
         json.put("allows_multiple_answers", object->allowsMultipleAnswers);
-        json.put("correct_option_id", object->correctOptionId);
+        json.put("allows_revoting", object->allowsRevoting);
+        json.put("members_only", object->membersOnly);
+        json.put("country_codes", object->countryCodes);
+        json.put("correct_option_ids", object->correctOptionIds);
         json.put("explanation", object->explanation);
         json.put("explanation_entities", object->explanationEntities);
+        json.put("explanation_media", object->explanationMedia);
         json.put("open_period", object->openPeriod);
         json.put("close_date", object->closeDate);
+        json.put("description", object->description);
+        json.put("description_entities", object->descriptionEntities);
+        json.put("media", object->media);
     }
     return json;
 }

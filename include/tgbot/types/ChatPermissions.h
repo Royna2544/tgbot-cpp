@@ -96,6 +96,11 @@ public:
      * @brief Optional. True, if the user is allowed to edit their own tag
      */
     std::optional<bool> canEditTag;
+    /**
+     * @brief Optional. True, if the user is allowed to react to messages. If omitted, defaults to the value of can_send_messages.
+     */
+    std::optional<bool> canReactToMessages;
+
 };
 }
 

@@ -14,6 +14,7 @@ DECLARE_PARSER_FROM_JSON(ReplyParameters) {
     result->quoteEntities = parseArray<MessageEntity>(data, "quote_entities");
     parse(data, "quote_position", &result->quotePosition);
     parse(data, "checklist_task_id", &result->checklistTaskId);
+    parse(data, "poll_option_id", &result->pollOptionId);
     return result;
 }
 
@@ -28,6 +29,7 @@ DECLARE_PARSER_TO_JSON(ReplyParameters) {
         json.put("quote_entities", object->quoteEntities);
         json.put("quote_position", object->quotePosition);
         json.put("checklist_task_id", object->checklistTaskId);
+        json.put("poll_option_id", object->pollOptionId);
     }
     return json;
 }

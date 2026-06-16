@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "tgbot/types/AcceptedGiftTypes.h"
+#include "tgbot/types/User.h"
 #include "tgbot/types/Audio.h"
 #include "tgbot/types/BusinessIntro.h"
 #include "tgbot/types/BusinessLocation.h"
@@ -287,6 +288,11 @@ public:
      * @brief Optional. The number of Telegram Stars a general user have to pay to send a message to the chat
      */
     std::optional<std::int64_t> paidMessageStarCount;
+
+    /**
+     * @brief Optional. The bot that processes join request queries in the chat. The field is only available to chat administrators.
+     */
+    std::optional<User::Ptr> guardBot;
 
 };
 }

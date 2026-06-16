@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "tgbot/types/MessageEntity.h"
+#include "tgbot/types/InputMedia.h"
 
 namespace TgBot {
 
@@ -34,6 +35,11 @@ public:
      * @brief Optional. A JSON-serialized list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode
      */
     std::optional<std::vector<MessageEntity::Ptr>> textEntities;
+
+    /**
+     * @brief Optional. Media added to the poll option
+     */
+    std::optional<InputMedia::Ptr> media;
 
 };
 }

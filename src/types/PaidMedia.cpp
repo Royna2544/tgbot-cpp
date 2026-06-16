@@ -1,5 +1,6 @@
 #include <tgbot/TgTypeParser.h>
 #include <tgbot/types/PaidMedia.h>
+#include <tgbot/types/PaidMediaLivePhoto.h>
 #include <tgbot/types/PaidMediaPhoto.h>
 #include <tgbot/types/PaidMediaPreview.h>
 #include <tgbot/types/PaidMediaVideo.h>
@@ -11,10 +12,12 @@ DECLARE_PARSER_FROM_JSON(PaidMedia) {
     std::string type;
     PaidMedia::Ptr result;
     parse(data, "type", &type);
-    if (type == "preview") {
-        result = parse<PaidMediaPreview>(data);
+    if (type == "live_photo") {
+        result = parse<PaidMediaLivePhoto>(data);
     } else if (type == "photo") {
         result = parse<PaidMediaPhoto>(data);
+    } else if (type == "preview") {
+        result = parse<PaidMediaPreview>(data);
     } else if (type == "video") {
         result = parse<PaidMediaVideo>(data);
     } else {
@@ -28,10 +31,12 @@ DECLARE_PARSER_TO_JSON(PaidMedia) {
     JsonWrapper json;
     if (object) {
         json.put("type", object->type);
-        if (object->type == "preview") {
-            json += put<PaidMediaPreview>(object);
+        if (object->type == "live_photo") {
+            json += put<PaidMediaLivePhoto>(object);
         } else if (object->type == "photo") {
             json += put<PaidMediaPhoto>(object);
+        } else if (object->type == "preview") {
+            json += put<PaidMediaPreview>(object);
         } else if (object->type == "video") {
             json += put<PaidMediaVideo>(object);
         } else {

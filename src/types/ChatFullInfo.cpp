@@ -57,6 +57,7 @@ DECLARE_PARSER_FROM_JSON(ChatFullInfo) {
     result->firstProfileAudio = parse<Audio>(data, "first_profile_audio");
     result->uniqueGiftColors = parse<UniqueGiftColors>(data, "unique_gift_colors");
     parse(data, "paid_message_star_count", &result->paidMessageStarCount);
+    result->guardBot = parse<User>(data, "guard_bot");
     return result;
 }
 
@@ -114,6 +115,7 @@ DECLARE_PARSER_TO_JSON(ChatFullInfo) {
         json.put("first_profile_audio", object->firstProfileAudio);
         json.put("unique_gift_colors", object->uniqueGiftColors);
         json.put("paid_message_star_count", object->paidMessageStarCount);
+        json.put("guard_bot", object->guardBot);
     }
     return json;
 }

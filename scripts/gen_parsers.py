@@ -41,6 +41,26 @@ HAND_WRITTEN = {
     "InputFile", "CallbackGame",
 }
 
+# Input media is split in the spec across three overlapping "bases" -- InputMedia
+# and the two poll bases InputPollMedia / InputPollOptionMedia -- that share
+# leaves. These are put-only (never parsed) and serve only as a method-parameter
+# type, so we collapse the poll bases into the single base InputMedia: it is not
+# emitted as its own class/.cpp, and InputMedia's dispatcher covers the union of
+# all leaves. (gen_types collapses the leaf inheritance + field types to match.)
+MEDIA_BASE = "InputMedia"
+MEDIA_COLLAPSED = {"InputPollMedia", "InputPollOptionMedia"}
+
+
+def media_union_subtypes(spec):
+    """All input-media leaves, deduped, in a stable order (InputMedia's own
+    leaves first, then the poll-only extras)."""
+    out = []
+    for b in [MEDIA_BASE, "InputPollMedia", "InputPollOptionMedia"]:
+        for s in spec["types"].get(b, {}).get("subtypes", []) or []:
+            if s not in out:
+                out.append(s)
+    return out
+
 
 def snake_to_camel(s):
     parts = s.split("_")
@@ -150,11 +170,11 @@ def gen_field(field, members):
     return None  # enum -> not modelled (kept hand-written)
 
 
-def discriminator_values(spec, base):
+def discriminator_values(spec, subtypes):
     """(field_name, {subtype C++ name -> discriminator string}) from the spec."""
     out = {}
     field_name = None
-    for sub in spec["types"][base].get("subtypes", []):
+    for sub in subtypes:
         for f in spec["types"].get(sub, {}).get("fields", []):
             mm = re.search(r'(?:always|must be)\s+"?([\w-]+)"?',
                            f.get("description", ""))
@@ -169,6 +189,8 @@ def gen_type(spec, name):
     info = spec["types"][name]
     fields = info.get("fields", [])
     subtypes = info.get("subtypes", [])
+    if name == MEDIA_BASE:
+        subtypes = media_union_subtypes(spec)  # collapse the poll bases in
 
     inc = ["#include <tgbot/TgTypeParser.h>",
            f"#include <tgbot/types/{name}.h>"]
@@ -176,7 +198,7 @@ def gen_type(spec, name):
 
     if subtypes:
         # Polymorphic base: dispatch on the discriminator field.
-        df, disc = discriminator_values(spec, name)
+        df, disc = discriminator_values(spec, subtypes)
         if df is None or len(disc) != len(subtypes):
             return None, "base:missing-discriminator"
         if len(set(disc.values())) != len(disc):
@@ -257,6 +279,8 @@ def main():
     for name in spec["types"]:
         if only and name not in only:
             continue
+        if name in MEDIA_COLLAPSED:
+            continue  # not emitted as a class; folded into InputMedia
         if name in HAND_WRITTEN:
             skip_list.append((name, "hand-written"))
             continue

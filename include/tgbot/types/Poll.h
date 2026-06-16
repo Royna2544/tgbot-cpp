@@ -2,6 +2,7 @@
 #define TGBOT_POLL_H
 
 #include "tgbot/types/PollOption.h"
+#include "tgbot/types/PollMedia.h"
 #include "tgbot/types/MessageEntity.h"
 
 #include <cstdint>
@@ -92,6 +93,46 @@ public:
      * @brief Optional. Special entities that appear in the question. Currently, only custom emoji entities are allowed in poll questions
      */
     std::optional<std::vector<MessageEntity::Ptr>> questionEntities;
+    /**
+     * @brief True, if the poll allows to change the chosen answer options
+     */
+    bool allowsRevoting;
+
+    /**
+     * @brief True if voting is limited to users who have been members of the chat where the poll was originally sent for more than 24 hours
+     */
+    bool membersOnly;
+
+    /**
+     * @brief Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which users can vote in the poll. The country code "FT" is used for users with anonymous numbers. If omitted, then users from any country can participate in the poll.
+     */
+    std::optional<std::vector<std::string>> countryCodes;
+
+    /**
+     * @brief Optional. Array of 0-based identifiers of the correct answer options. Available only for polls in quiz mode which are closed or were sent (not forwarded) by the bot or to the private chat with the bot.
+     */
+    std::optional<std::vector<std::int64_t>> correctOptionIds;
+
+    /**
+     * @brief Optional. Media added to the quiz explanation
+     */
+    std::optional<PollMedia::Ptr> explanationMedia;
+
+    /**
+     * @brief Optional. Description of the poll; for polls inside the Message object only
+     */
+    std::optional<std::string> description;
+
+    /**
+     * @brief Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the description
+     */
+    std::optional<std::vector<MessageEntity::Ptr>> descriptionEntities;
+
+    /**
+     * @brief Optional. Media added to the poll description; for polls inside the Message object only
+     */
+    std::optional<PollMedia::Ptr> media;
+
 };
 }
 

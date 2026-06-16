@@ -13,6 +13,7 @@ DECLARE_PARSER_FROM_JSON(ExternalReplyInfo) {
     result->animation = parse<Animation>(data, "animation");
     result->audio = parse<Audio>(data, "audio");
     result->document = parse<Document>(data, "document");
+    result->livePhoto = parse<LivePhoto>(data, "live_photo");
     result->paidMedia = parse<PaidMediaInfo>(data, "paid_media");
     result->photo = parseArray<PhotoSize>(data, "photo");
     result->sticker = parse<Sticker>(data, "sticker");
@@ -44,6 +45,7 @@ DECLARE_PARSER_TO_JSON(ExternalReplyInfo) {
         json.put("animation", object->animation);
         json.put("audio", object->audio);
         json.put("document", object->document);
+        json.put("live_photo", object->livePhoto);
         json.put("paid_media", object->paidMedia);
         json.put("photo", object->photo);
         json.put("sticker", object->sticker);

@@ -10,6 +10,7 @@ DECLARE_PARSER_FROM_JSON(PollAnswer) {
     result->voterChat = parse<Chat>(data, "voter_chat");
     result->user = parse<User>(data, "user");
     result->optionIds = parsePrimitiveRequiredArray<std::int32_t>(data, "option_ids");
+    result->optionPersistentIds = parsePrimitiveRequiredArray<std::string>(data, "option_persistent_ids");
     return result;
 }
 
@@ -20,6 +21,7 @@ DECLARE_PARSER_TO_JSON(PollAnswer) {
         json.put("voter_chat", object->voterChat);
         json.put("user", object->user);
         json.put("option_ids", object->optionIds);
+        json.put("option_persistent_ids", object->optionPersistentIds);
     }
     return json;
 }

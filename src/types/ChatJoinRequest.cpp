@@ -12,6 +12,7 @@ DECLARE_PARSER_FROM_JSON(ChatJoinRequest) {
     parse(data, "date", &result->date);
     parse(data, "bio", &result->bio);
     result->inviteLink = parse<ChatInviteLink>(data, "invite_link");
+    parse(data, "query_id", &result->queryId);
     return result;
 }
 
@@ -24,6 +25,7 @@ DECLARE_PARSER_TO_JSON(ChatJoinRequest) {
         json.put("date", object->date);
         json.put("bio", object->bio);
         json.put("invite_link", object->inviteLink);
+        json.put("query_id", object->queryId);
     }
     return json;
 }

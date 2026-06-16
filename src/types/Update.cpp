@@ -15,6 +15,7 @@ DECLARE_PARSER_FROM_JSON(Update) {
     result->businessMessage = parse<Message>(data, "business_message");
     result->editedBusinessMessage = parse<Message>(data, "edited_business_message");
     result->deletedBusinessMessages = parse<BusinessMessagesDeleted>(data, "deleted_business_messages");
+    result->guestMessage = parse<Message>(data, "guest_message");
     result->messageReaction = parse<MessageReactionUpdated>(data, "message_reaction");
     result->messageReactionCount = parse<MessageReactionCountUpdated>(data, "message_reaction_count");
     result->inlineQuery = parse<InlineQuery>(data, "inline_query");
@@ -30,6 +31,7 @@ DECLARE_PARSER_FROM_JSON(Update) {
     result->chatJoinRequest = parse<ChatJoinRequest>(data, "chat_join_request");
     result->chatBoost = parse<ChatBoostUpdated>(data, "chat_boost");
     result->removedChatBoost = parse<ChatBoostRemoved>(data, "removed_chat_boost");
+    result->managedBot = parse<ManagedBotUpdated>(data, "managed_bot");
     return result;
 }
 
@@ -45,6 +47,7 @@ DECLARE_PARSER_TO_JSON(Update) {
         json.put("business_message", object->businessMessage);
         json.put("edited_business_message", object->editedBusinessMessage);
         json.put("deleted_business_messages", object->deletedBusinessMessages);
+        json.put("guest_message", object->guestMessage);
         json.put("message_reaction", object->messageReaction);
         json.put("message_reaction_count", object->messageReactionCount);
         json.put("inline_query", object->inlineQuery);
@@ -60,6 +63,7 @@ DECLARE_PARSER_TO_JSON(Update) {
         json.put("chat_join_request", object->chatJoinRequest);
         json.put("chat_boost", object->chatBoost);
         json.put("removed_chat_boost", object->removedChatBoost);
+        json.put("managed_bot", object->managedBot);
     }
     return json;
 }

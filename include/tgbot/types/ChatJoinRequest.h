@@ -55,6 +55,11 @@ public:
      * @brief Optional. Chat invite link that was used by the user to send the join request
      */
     std::optional<ChatInviteLink::Ptr> inviteLink;
+    /**
+     * @brief Optional. Identifier of the join request query. If present, then the bot must call sendChatJoinRequestWebApp or directly call answerChatJoinRequestQuery within 10 seconds.
+     */
+    std::optional<std::string> queryId;
+
 };
 }
 

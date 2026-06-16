@@ -103,6 +103,21 @@ public:
      * @brief Optional. True, if the bot allows users to create and delete topics in private chats. Returned only in getMe.
      */
     std::optional<bool> allowsUsersToCreateTopics;
+    /**
+     * @brief Optional. True, if the bot supports guest queries from chats it is not a member of. Returned only in getMe.
+     */
+    std::optional<bool> supportsGuestQueries;
+
+    /**
+     * @brief Optional. True, if other bots can be created to be controlled by the bot. Returned only in getMe.
+     */
+    std::optional<bool> canManageBots;
+
+    /**
+     * @brief Optional. True, if the bot supports join request queries and can be assigned to process them. Returned only in getMe.
+     */
+    std::optional<bool> supportsJoinRequestQueries;
+
 };
 }
 

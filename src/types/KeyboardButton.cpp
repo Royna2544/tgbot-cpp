@@ -11,6 +11,7 @@ DECLARE_PARSER_FROM_JSON(KeyboardButton) {
     parse(data, "style", &result->style);
     result->requestUsers = parse<KeyboardButtonRequestUsers>(data, "request_users");
     result->requestChat = parse<KeyboardButtonRequestChat>(data, "request_chat");
+    result->requestManagedBot = parse<KeyboardButtonRequestManagedBot>(data, "request_managed_bot");
     parse(data, "request_contact", &result->requestContact);
     parse(data, "request_location", &result->requestLocation);
     result->requestPoll = parse<KeyboardButtonPollType>(data, "request_poll");
@@ -26,6 +27,7 @@ DECLARE_PARSER_TO_JSON(KeyboardButton) {
         json.put("style", object->style);
         json.put("request_users", object->requestUsers);
         json.put("request_chat", object->requestChat);
+        json.put("request_managed_bot", object->requestManagedBot);
         json.put("request_contact", object->requestContact);
         json.put("request_location", object->requestLocation);
         json.put("request_poll", object->requestPoll);

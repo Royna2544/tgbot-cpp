@@ -117,6 +117,11 @@ public:
      * @brief True, if the user is allowed to edit their own tag
      */
     bool canEditTag;
+    /**
+     * @brief True, if the user is allowed to react to messages
+     */
+    bool canReactToMessages;
+
 };
 }
 

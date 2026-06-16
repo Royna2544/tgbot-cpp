@@ -9,7 +9,7 @@ Documentation is located [here](http://reo7sp.github.io/tgbot-cpp).
 
 ## State
 
-This library implements most features from **Telegram Bot API 9.4** with additional features from later versions.
+This library implements all types and methods of **Telegram Bot API 10.1**. The type parsers are generated from the [machine-readable spec](https://github.com/PaulSonOfLars/telegram-bot-api-spec) (pinned in `scripts/api_spec.ref`) and a CI parity gate (`scripts/gen_parsers.py --check`) keeps them in sync.
 
 ## Sample
 

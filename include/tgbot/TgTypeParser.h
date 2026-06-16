@@ -701,6 +701,12 @@ IMPLEMENT_PARSERS(SentGuestMessage);
 IMPLEMENT_PARSERS(PreparedKeyboardButton);
 IMPLEMENT_PARSERS(InputPaidMediaLivePhoto);
 
+IMPLEMENT_PARSERS(InputMediaLink);
+IMPLEMENT_PARSERS(InputMediaSticker);
+IMPLEMENT_PARSERS(InputMediaLocation);
+IMPLEMENT_PARSERS(InputMediaVenue);
+IMPLEMENT_PARSERS(InputMediaLivePhoto);
+
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
 template <>
 nlohmann::json put(const MaybeInaccessibleMessage& value);

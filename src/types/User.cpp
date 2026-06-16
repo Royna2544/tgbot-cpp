@@ -16,11 +16,14 @@ DECLARE_PARSER_FROM_JSON(User) {
     parse(data, "added_to_attachment_menu", &result->addedToAttachmentMenu);
     parse(data, "can_join_groups", &result->canJoinGroups);
     parse(data, "can_read_all_group_messages", &result->canReadAllGroupMessages);
+    parse(data, "supports_guest_queries", &result->supportsGuestQueries);
     parse(data, "supports_inline_queries", &result->supportsInlineQueries);
     parse(data, "can_connect_to_business", &result->canConnectToBusiness);
     parse(data, "has_main_web_app", &result->hasMainWebApp);
     parse(data, "has_topics_enabled", &result->hasTopicsEnabled);
     parse(data, "allows_users_to_create_topics", &result->allowsUsersToCreateTopics);
+    parse(data, "can_manage_bots", &result->canManageBots);
+    parse(data, "supports_join_request_queries", &result->supportsJoinRequestQueries);
     return result;
 }
 
@@ -37,11 +40,14 @@ DECLARE_PARSER_TO_JSON(User) {
         json.put("added_to_attachment_menu", object->addedToAttachmentMenu);
         json.put("can_join_groups", object->canJoinGroups);
         json.put("can_read_all_group_messages", object->canReadAllGroupMessages);
+        json.put("supports_guest_queries", object->supportsGuestQueries);
         json.put("supports_inline_queries", object->supportsInlineQueries);
         json.put("can_connect_to_business", object->canConnectToBusiness);
         json.put("has_main_web_app", object->hasMainWebApp);
         json.put("has_topics_enabled", object->hasTopicsEnabled);
         json.put("allows_users_to_create_topics", object->allowsUsersToCreateTopics);
+        json.put("can_manage_bots", object->canManageBots);
+        json.put("supports_join_request_queries", object->supportsJoinRequestQueries);
     }
     return json;
 }

@@ -2,6 +2,7 @@
 #define TGBOT_KEYBOARDBUTTON_H
 
 #include "tgbot/types/KeyboardButtonRequestUsers.h"
+#include "tgbot/types/KeyboardButtonRequestManagedBot.h"
 #include "tgbot/types/KeyboardButtonRequestChat.h"
 #include "tgbot/types/KeyboardButtonPollType.h"
 #include "tgbot/types/WebAppInfo.h"
@@ -89,6 +90,11 @@ public:
      * @brief Optional. Style of the button. Must be one of "danger" (red), "success" (green) or "primary" (blue). If omitted, then an app-specific style is used.
      */
     std::optional<std::string> style;
+    /**
+     * @brief Optional. If specified, pressing the button will ask the user to create and share a bot that will be managed by the current bot. Available for bots that enabled management of other bots in the @BotFather Mini App. Available in private chats only.
+     */
+    std::optional<KeyboardButtonRequestManagedBot::Ptr> requestManagedBot;
+
 };
 }
 

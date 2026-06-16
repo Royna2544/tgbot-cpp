@@ -2,6 +2,7 @@
 #define TGBOT_UPDATE_H
 
 #include "tgbot/types/PaidMediaPurchased.h"
+#include "tgbot/types/ManagedBotUpdated.h"
 
 #include <cstdint>
 #include <memory>
@@ -243,6 +244,16 @@ class Update {
      * @brief Optional. A user purchased paid media with a non-empty payload sent by the bot in a non-channel chat
      */
     std::optional<PaidMediaPurchased::Ptr> purchasedPaidMedia;
+    /**
+     * @brief Optional. New guest message. The bot can use the field Message.guest_query_id and the method answerGuestQuery to send a message in response.
+     */
+    std::optional<Message::Ptr> guestMessage;
+
+    /**
+     * @brief Optional. A new bot was created to be managed by the bot, or token or owner of a managed bot was changed
+     */
+    std::optional<ManagedBotUpdated::Ptr> managedBot;
+
 };
 }  // namespace TgBot
 

@@ -72,6 +72,11 @@ public:
      * @brief Optional. Identifier of the specific checklist task to be replied to
      */
     std::optional<std::int32_t> checklistTaskId;
+    /**
+     * @brief Optional. Persistent identifier of the specific poll option to be replied to
+     */
+    std::optional<std::string> pollOptionId;
+
 };
 }
 

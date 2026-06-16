@@ -43,6 +43,11 @@ public:
      * May be empty if the vote was retracted.
      */
     std::vector<std::int32_t> optionIds;
+    /**
+     * @brief Persistent identifiers of the chosen answer options. May be empty if the vote was retracted.
+     */
+    std::vector<std::string> optionPersistentIds;
+
 };
 }
 

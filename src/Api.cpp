@@ -1020,7 +1020,9 @@ Message::Ptr Api::sendPoll(
     optional<bool> membersOnly, const std::vector<std::string>& countryCodes,
     const std::vector<std::int32_t>& correctOptionIds,
     const optional<ParseMode> descriptionParseMode,
-    const std::vector<MessageEntity::Ptr>& descriptionEntities) const {
+    const std::vector<MessageEntity::Ptr>& descriptionEntities,
+    const optional<std::string_view> description, InputMedia::Ptr media,
+    InputMedia::Ptr explanationMedia) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendPoll",
         std::pair{"chat_id", std::move(chatId)},
@@ -1051,7 +1053,9 @@ Message::Ptr Api::sendPoll(
         std::pair{"country_codes", countryCodes},
         std::pair{"correct_option_ids", correctOptionIds},
         std::pair{"description_parse_mode", descriptionParseMode},
-        std::pair{"description_entities", descriptionEntities}));
+        std::pair{"description_entities", descriptionEntities},
+        std::pair{"description", description}, std::pair{"media", std::move(media)},
+        std::pair{"explanation_media", std::move(explanationMedia)}));
 }
 
 Message::Ptr Api::sendDice(
@@ -1620,7 +1624,8 @@ Message::Ptr Api::editMessageText(
     LinkPreviewOptions::Ptr linkPreviewOptions,
     InlineKeyboardMarkup::Ptr replyMarkup,
     const std::vector<MessageEntity::Ptr>& entities,
-    const optional<std::string_view> businessConnectionId) const {
+    const optional<std::string_view> businessConnectionId,
+    InputRichMessage::Ptr richMessage) const {
     const auto p = sendRequest(
         _bot_api_baseurl, _httpClient, "editMessageText",
         std::pair{"text", text}, std::pair{"chat_id", std::move(chatId)},
@@ -1630,7 +1635,8 @@ Message::Ptr Api::editMessageText(
         std::pair{"reply_markup", std::move(replyMarkup)},
         std::pair{"entities", entities},
         std::pair{"business_connection_id", businessConnectionId},
-        std::pair{"link_preview_options", std::move(linkPreviewOptions)});
+        std::pair{"link_preview_options", std::move(linkPreviewOptions)},
+        std::pair{"rich_message", std::move(richMessage)});
     if (p.contains("message_id")) {
         return parse<Message>(p);
     } else {
