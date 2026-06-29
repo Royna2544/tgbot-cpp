@@ -76,6 +76,7 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
                            $<INSTALL_INTERFACE:include>)
 # cpp-httplib is vendored (single header) and fully hidden behind the library
 # (pimpl), so it is only needed when building the library itself.
@@ -83,12 +84,29 @@ target_include_directories(${PROJECT_NAME} PRIVATE
                            ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIB_LIST})
 include(GNUInstallDirs)
+include(GenerateExportHeader)
+
+generate_export_header(${PROJECT_NAME}
+                       BASE_NAME TGBOT
+                       EXPORT_MACRO_NAME TGBOT_API
+                       NO_EXPORT_MACRO_NAME TGBOT_NO_EXPORT
+                       DEPRECATED_MACRO_NAME TGBOT_DEPRECATED
+                       STATIC_DEFINE TGBOT_STATIC_DEFINE
+                       INCLUDE_GUARD_NAME TGBOT_EXPORT_H
+                       EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/include/tgbot/export.h)
+
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC TGBOT_STATIC_DEFINE)
+endif()
+
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}-targets
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/tgbot/export.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tgbot)
 install(EXPORT ${PROJECT_NAME}-targets
         NAMESPACE ${PROJECT_NAME}::
         FILE ${PROJECT_NAME}Config.cmake
@@ -114,8 +132,4 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
         install(DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR}/doc/html/ TYPE DOC)
-endif()
-
-if(BUILD_SHARED_LIBS)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC TGBOT_DLL)
 endif()
