@@ -2124,10 +2124,9 @@ bool Api::blockedByUser(std::int64_t chatId) const {
         sendChatAction(chatId, ChatAction::typing);
 
     } catch (std::exception& e) {
-        std::string error = e.what();
+        std::string_view error = e.what();
 
-        if (error.find("Forbidden: bot was blocked by the user") ==
-            std::string::npos) {
+        if (error == "Forbidden: bot was blocked by the user") {
             isBotBlocked = true;
         }
     }
