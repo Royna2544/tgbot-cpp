@@ -25,6 +25,8 @@
 #include "tgbot/types/ChatOwnerChanged.h"
 #include "tgbot/types/SuggestedPostDeclined.h"
 #include "tgbot/types/GiftInfo.h"
+#include "tgbot/types/CommunityChatAdded.h"
+#include "tgbot/types/CommunityChatRemoved.h"
 
 #include "tgbot/types/User.h"
 #include "tgbot/types/Chat.h"
@@ -709,6 +711,26 @@ public:
      * @brief Optional. Service message: answer option was deleted from a poll
      */
     std::optional<PollOptionDeleted::Ptr> pollOptionDeleted;
+
+    /**
+     * @brief Optional. For ephemeral messages, the user who received the message
+     */
+    std::optional<User::Ptr> receiverUser;
+
+    /**
+     * @brief Optional. For ephemeral messages, identifier of the ephemeral message inside this chat. The identifier may be reused for another ephemeral message after the message is deleted or expires.
+     */
+    std::optional<std::int32_t> ephemeralMessageId;
+
+    /**
+     * @brief Optional. Service message: chat added to a Community
+     */
+    std::optional<CommunityChatAdded::Ptr> communityChatAdded;
+
+    /**
+     * @brief Optional. Service message: chat removed from a Community
+     */
+    std::optional<CommunityChatRemoved::Ptr> communityChatRemoved;
 
 };
 }

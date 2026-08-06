@@ -383,6 +383,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -400,7 +407,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to forward messages of any kind.
@@ -634,6 +643,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -652,7 +668,9 @@ class TGBOT_API Api {
         optional<bool> showCaptionAboveMedia = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send audio files, if you want Telegram clients
@@ -715,6 +733,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -736,7 +761,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send general files.
@@ -795,6 +822,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -814,7 +848,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send video files, Telegram clients support
@@ -883,6 +919,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -906,7 +949,9 @@ class TGBOT_API Api {
         optional<bool> showCaptionAboveMedia = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send animation files (GIF or H.264/MPEG-4 AVC
@@ -970,6 +1015,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -990,7 +1042,9 @@ class TGBOT_API Api {
         optional<bool> showCaptionAboveMedia = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send audio files, if you want Telegram clients
@@ -1041,6 +1095,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -1059,7 +1120,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send video messages.
@@ -1110,6 +1173,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -1126,7 +1196,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send a group of photos, videos, documents or
@@ -1209,6 +1281,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -1227,7 +1306,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to edit live location messages.
@@ -1335,6 +1416,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -1354,7 +1442,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to send phone contacts.
@@ -1390,6 +1480,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -1407,7 +1504,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Desribes a poll type
@@ -2898,6 +2997,127 @@ class TGBOT_API Api {
                         const std::vector<std::int32_t>& messageIds) const;
 
     /**
+     * @brief Use this method to delete an ephemeral message.
+     *
+     * Note that it is not guaranteed that the user will receive the message
+     * deletion event, especially if they are offline.
+     *
+     * @param chatId Unique identifier for the target chat or username of the
+     * target channel (in the format @channelusername)
+     * @param receiverUserId Identifier of the user who received the message
+     * @param ephemeralMessageId Identifier of the ephemeral message to delete
+     *
+     * @return Returns True on success.
+     */
+    bool deleteEphemeralMessage(ChatIdType chatId, std::int64_t receiverUserId,
+                                std::int32_t ephemeralMessageId) const;
+
+    /**
+     * @brief Use this method to edit the caption of an ephemeral message.
+     *
+     * Note that it is not guaranteed that the user will receive the message
+     * edit event, especially if they are offline.
+     *
+     * @param chatId Unique identifier for the target chat or username of the
+     * target channel (in the format @channelusername)
+     * @param receiverUserId Identifier of the user who received the message
+     * @param ephemeralMessageId Identifier of the ephemeral message to edit
+     * @param caption Optional. New caption of the message, 0-1024 characters
+     * after entities parsing
+     * @param parseMode Optional. Mode for parsing entities in the message
+     * caption. See https://core.telegram.org/bots/api#formatting-options for
+     * more details.
+     * @param captionEntities Optional. List of special entities that appear in
+     * the caption, which can be specified instead of parseMode
+     * @param replyMarkup Optional. A JSON-serialized object for an inline
+     * keyboard.
+     *
+     * @return On success, True is returned.
+     */
+    bool editEphemeralMessageCaption(
+        ChatIdType chatId, std::int64_t receiverUserId,
+        std::int32_t ephemeralMessageId,
+        const optional<std::string_view> caption = {},
+        const optional<ParseMode> parseMode = {},
+        const std::vector<MessageEntity::Ptr>& captionEntities = {},
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to edit the media of an ephemeral message.
+     *
+     * Note that it is not guaranteed that the user will receive the message
+     * edit event, especially if they are offline.
+     *
+     * @param chatId Unique identifier for the target chat or username of the
+     * target channel (in the format @channelusername)
+     * @param receiverUserId Identifier of the user who received the message
+     * @param ephemeralMessageId Identifier of the ephemeral message to edit
+     * @param media A JSON-serialized object for a new media content of the
+     * message
+     * @param replyMarkup Optional. A JSON-serialized object for a new inline
+     * keyboard.
+     *
+     * @return On success, True is returned.
+     */
+    bool editEphemeralMessageMedia(ChatIdType chatId, std::int64_t receiverUserId,
+                                   std::int32_t ephemeralMessageId,
+                                   InputMedia::Ptr media,
+                                   InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to edit only the reply markup of an ephemeral
+     * message.
+     *
+     * Note that it is not guaranteed that the user will receive the message
+     * edit event, especially if they are offline.
+     *
+     * @param chatId Unique identifier for the target chat or username of the
+     * target channel (in the format @channelusername)
+     * @param receiverUserId Identifier of the user who received the message
+     * @param ephemeralMessageId Identifier of the ephemeral message to edit
+     * @param replyMarkup Optional. A JSON-serialized object for an inline
+     * keyboard.
+     *
+     * @return On success, True is returned.
+     */
+    bool editEphemeralMessageReplyMarkup(
+        ChatIdType chatId, std::int64_t receiverUserId,
+        std::int32_t ephemeralMessageId,
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+
+    /**
+     * @brief Use this method to edit an ephemeral text message.
+     *
+     * Note that it is not guaranteed that the user will receive the message
+     * edit event, especially if they are offline.
+     *
+     * @param chatId Unique identifier for the target chat or username of the
+     * target channel (in the format @channelusername)
+     * @param receiverUserId Identifier of the user who received the message
+     * @param ephemeralMessageId Identifier of the ephemeral message to edit
+     * @param text New text of the message, 1-4096 characters after entities
+     * parsing
+     * @param parseMode Optional. Mode for parsing entities in the message text.
+     * See https://core.telegram.org/bots/api#formatting-options for more
+     * details.
+     * @param entities Optional. List of special entities that appear in message
+     * text, which can be specified instead of parseMode
+     * @param linkPreviewOptions Optional. Link preview generation options for
+     * the message
+     * @param replyMarkup Optional. A JSON-serialized object for an inline
+     * keyboard.
+     *
+     * @return On success, True is returned.
+     */
+    bool editEphemeralMessageText(
+        ChatIdType chatId, std::int64_t receiverUserId,
+        std::int32_t ephemeralMessageId, const std::string_view text,
+        const optional<ParseMode> parseMode = {},
+        const std::vector<MessageEntity::Ptr>& entities = {},
+        LinkPreviewOptions::Ptr linkPreviewOptions = nullptr,
+        InlineKeyboardMarkup::Ptr replyMarkup = nullptr) const;
+
+    /**
      * @brief Use this method to send static .WEBP,
      * [animated](https://telegram.org/blog/animated-stickers) .TGS, or
      * [video](https://telegram.org/blog/video-stickers-better-reactions) .WEBM
@@ -2938,6 +3158,13 @@ class TGBOT_API Api {
      * be added to the message
      * @param suggestedPostParameters Optional. A JSON-serialized object
      * containing the parameters of the suggested post to send
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -2953,7 +3180,9 @@ class TGBOT_API Api {
         optional<std::int32_t> directMessagesTopicId = {},
         optional<bool> allowPaidBroadcast = {},
         const optional<std::string_view> messageEffectId = {},
-        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr) const;
+        SuggestedPostParameters::Ptr suggestedPostParameters = nullptr,
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to get a sticker set.
@@ -4132,6 +4361,13 @@ class TGBOT_API Api {
     /**
      * @brief Use this method to send a live photo (a photo with a short looping
      * video).
+     * @param receiverUserId Optional. For outgoing ephemeral messages, unique
+     * identifier of the user who will receive the message; for group and
+     * supergroup chats only. It is not guaranteed that the user will receive
+     * the message, especially if they are offline. See ephemeral message
+     * sending for more details.
+     * @param callbackQueryId Optional. For outgoing ephemeral messages,
+     * identifier of the callback query which triggered the message if any
      *
      * @return On success, the sent Message is returned.
      */
@@ -4150,7 +4386,9 @@ class TGBOT_API Api {
         GenericReply::Ptr replyMarkup = nullptr,
         const optional<std::string_view> businessConnectionId = {},
         optional<std::int32_t> messageThreadId = {},
-        optional<std::int32_t> directMessagesTopicId = {}) const;
+        optional<std::int32_t> directMessagesTopicId = {},
+        optional<std::int64_t> receiverUserId = {},
+        const optional<std::string_view> callbackQueryId = {}) const;
 
     /**
      * @brief Use this method to answer a chat join request query.

@@ -22,9 +22,9 @@ public:
     using Ptr = std::shared_ptr<ReplyParameters>;
 
     /**
-     * @brief Identifier of the message that will be replied to in the current chat, or in the chat chatId if it is specified
+     * @brief Optional. Identifier of the message that will be replied to in the current chat, or in the chat chatId if it is specified. Required if ephemeralMessageId isn't specified.
      */
-    std::int32_t messageId;
+    std::optional<std::int32_t> messageId;
 
     /**
      * @brief Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username of the channel (in the format @channelusername).
@@ -76,6 +76,11 @@ public:
      * @brief Optional. Persistent identifier of the specific poll option to be replied to
      */
     std::optional<std::string> pollOptionId;
+
+    /**
+     * @brief Optional. Identifier of the incoming ephemeral message that will be replied to in the current chat. A reply to an ephemeral message must itself be an ephemeral message. An ephemeral message may only be replied to within 15 seconds of being sent. Required if messageId isn't specified.
+     */
+    std::optional<std::int32_t> ephemeralMessageId;
 
 };
 }

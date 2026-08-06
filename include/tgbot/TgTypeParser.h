@@ -700,6 +700,36 @@ IMPLEMENT_PARSERS(InputMediaSticker);
 IMPLEMENT_PARSERS(InputMediaLocation);
 IMPLEMENT_PARSERS(InputMediaVenue);
 IMPLEMENT_PARSERS(InputMediaLivePhoto);
+IMPLEMENT_PARSERS(InputMediaVoiceNote);
+
+IMPLEMENT_PARSERS(BotSubscriptionUpdated);
+IMPLEMENT_PARSERS(Community);
+IMPLEMENT_PARSERS(CommunityChatAdded);
+IMPLEMENT_PARSERS(CommunityChatRemoved);
+IMPLEMENT_PARSERS(InputRichMessageMedia);
+IMPLEMENT_PARSERS(InputRichBlock);
+IMPLEMENT_PARSERS(InputRichBlockListItem);
+IMPLEMENT_PARSERS(InputRichBlockParagraph);
+IMPLEMENT_PARSERS(InputRichBlockSectionHeading);
+IMPLEMENT_PARSERS(InputRichBlockPreformatted);
+IMPLEMENT_PARSERS(InputRichBlockFooter);
+IMPLEMENT_PARSERS(InputRichBlockDivider);
+IMPLEMENT_PARSERS(InputRichBlockMathematicalExpression);
+IMPLEMENT_PARSERS(InputRichBlockAnchor);
+IMPLEMENT_PARSERS(InputRichBlockList);
+IMPLEMENT_PARSERS(InputRichBlockBlockQuotation);
+IMPLEMENT_PARSERS(InputRichBlockPullQuotation);
+IMPLEMENT_PARSERS(InputRichBlockCollage);
+IMPLEMENT_PARSERS(InputRichBlockSlideshow);
+IMPLEMENT_PARSERS(InputRichBlockTable);
+IMPLEMENT_PARSERS(InputRichBlockDetails);
+IMPLEMENT_PARSERS(InputRichBlockMap);
+IMPLEMENT_PARSERS(InputRichBlockAnimation);
+IMPLEMENT_PARSERS(InputRichBlockAudio);
+IMPLEMENT_PARSERS(InputRichBlockPhoto);
+IMPLEMENT_PARSERS(InputRichBlockVideo);
+IMPLEMENT_PARSERS(InputRichBlockVoiceNote);
+IMPLEMENT_PARSERS(InputRichBlockThinking);
 
 MaybeInaccessibleMessage parse(const nlohmann::json& data);
 template <>

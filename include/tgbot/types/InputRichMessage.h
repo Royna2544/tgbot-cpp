@@ -1,9 +1,13 @@
 #ifndef TGBOT_INPUTRICHMESSAGE_H
 #define TGBOT_INPUTRICHMESSAGE_H
 
+#include "tgbot/types/InputRichBlock.h"
+#include "tgbot/types/InputRichMessageMedia.h"
+
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace TgBot {
 
@@ -35,6 +39,16 @@ public:
      * @brief Optional. Pass True to skip automatic detection of entities (e.g., URLs, email addresses, username mentions, hashtags, cashtags, bot commands, or phone numbers) in the text
      */
     std::optional<bool> skipEntityDetection;
+
+    /**
+     * @brief Optional. Content of the rich message to send described as a list of blocks
+     */
+    std::optional<std::vector<InputRichBlock::Ptr>> blocks;
+
+    /**
+     * @brief Optional. List of media that are specified in the markdown or html fields using tg://photo?id=, tg://video?id=, and tg://audio?id= links
+     */
+    std::optional<std::vector<InputRichMessageMedia::Ptr>> media;
 
 };
 }

@@ -9,6 +9,7 @@ std::shared_ptr<BotCommand> parse(const nlohmann::json &data) {
     auto result = std::make_shared<BotCommand>();
     parse(data, "command", &result->command);
     parse(data, "description", &result->description);
+    parse(data, "is_ephemeral", &result->isEphemeral);
     return result;
 }
 
@@ -18,6 +19,7 @@ nlohmann::json put(const std::shared_ptr<BotCommand> &object) {
     if (object) {
         json.put("command", object->command);
         json.put("description", object->description);
+        json.put("is_ephemeral", object->isEphemeral);
     }
     return json;
 }

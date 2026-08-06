@@ -9,6 +9,7 @@ std::shared_ptr<ReplyParameters> parse(const nlohmann::json &data) {
     auto result = std::make_shared<ReplyParameters>();
     parse(data, "message_id", &result->messageId);
     parse(data, "chat_id", &result->chatId);
+    parse(data, "ephemeral_message_id", &result->ephemeralMessageId);
     parse(data, "allow_sending_without_reply", &result->allowSendingWithoutReply);
     parse(data, "quote", &result->quote);
     parse(data, "quote_parse_mode", &result->quoteParseMode);
@@ -25,6 +26,7 @@ nlohmann::json put(const std::shared_ptr<ReplyParameters> &object) {
     if (object) {
         json.put("message_id", object->messageId);
         json.put("chat_id", object->chatId);
+        json.put("ephemeral_message_id", object->ephemeralMessageId);
         json.put("allow_sending_without_reply", object->allowSendingWithoutReply);
         json.put("quote", object->quote);
         json.put("quote_parse_mode", object->quoteParseMode);

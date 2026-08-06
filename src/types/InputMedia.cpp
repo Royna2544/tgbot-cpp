@@ -10,6 +10,7 @@
 #include <tgbot/types/InputMediaSticker.h>
 #include <tgbot/types/InputMediaVenue.h>
 #include <tgbot/types/InputMediaVideo.h>
+#include <tgbot/types/InputMediaVoiceNote.h>
 #include <nlohmann/json.hpp>
 
 namespace TgBot {
@@ -39,6 +40,8 @@ std::shared_ptr<InputMedia> parse(const nlohmann::json &data) {
         result = parse<InputMediaLink>(data);
     } else if (type == "sticker") {
         result = parse<InputMediaSticker>(data);
+    } else if (type == "voice_note") {
+        result = parse<InputMediaVoiceNote>(data);
     } else {
         throw invalidType("InputMedia", type);
     }
@@ -71,6 +74,8 @@ nlohmann::json put(const std::shared_ptr<InputMedia> &object) {
             json += put<InputMediaLink>(object);
         } else if (object->type == "sticker") {
             json += put<InputMediaSticker>(object);
+        } else if (object->type == "voice_note") {
+            json += put<InputMediaVoiceNote>(object);
         } else {
             throw invalidType("InputMedia", object->type);
         }

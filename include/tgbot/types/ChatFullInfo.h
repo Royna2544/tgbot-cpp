@@ -22,6 +22,7 @@
 #include "tgbot/types/UserRating.h"
 #include "tgbot/types/UniqueGiftColors.h"
 #include "tgbot/types/Birthdate.h"
+#include "tgbot/types/Community.h"
 
 namespace TgBot {
 
@@ -293,6 +294,11 @@ public:
      * @brief Optional. The bot that processes join request queries in the chat. The field is only available to chat administrators.
      */
     std::optional<User::Ptr> guardBot;
+
+    /**
+     * @brief Optional. The Community to which the chat belongs
+     */
+    std::optional<Community::Ptr> community;
 
 };
 }

@@ -3,6 +3,7 @@
 
 #include "tgbot/types/PaidMediaPurchased.h"
 #include "tgbot/types/ManagedBotUpdated.h"
+#include "tgbot/types/BotSubscriptionUpdated.h"
 
 #include <cstdint>
 #include <memory>
@@ -253,6 +254,11 @@ class Update {
      * @brief Optional. A new bot was created to be managed by the bot, or token or owner of a managed bot was changed
      */
     std::optional<ManagedBotUpdated::Ptr> managedBot;
+
+    /**
+     * @brief Optional. User payment subscription has changed
+     */
+    std::optional<BotSubscriptionUpdated::Ptr> subscription;
 
 };
 }  // namespace TgBot

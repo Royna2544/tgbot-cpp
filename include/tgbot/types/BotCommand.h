@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include <optional>
 
 namespace TgBot {
 
@@ -28,6 +29,11 @@ public:
      * @brief description label.
      */
     std::string description;
+
+    /**
+     * @brief Optional. True, if the command sends an ephemeral message, which can be seen only by the sender of the message and the bot
+     */
+    std::optional<bool> isEphemeral;
 
 };
 }

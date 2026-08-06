@@ -122,6 +122,10 @@ std::shared_ptr<Message> parse(const nlohmann::json &data) {
     result->managedBotCreated = parse<ManagedBotCreated>(data, "managed_bot_created");
     result->pollOptionAdded = parse<PollOptionAdded>(data, "poll_option_added");
     result->pollOptionDeleted = parse<PollOptionDeleted>(data, "poll_option_deleted");
+    result->receiverUser = parse<User>(data, "receiver_user");
+    parse(data, "ephemeral_message_id", &result->ephemeralMessageId);
+    result->communityChatAdded = parse<CommunityChatAdded>(data, "community_chat_added");
+    result->communityChatRemoved = parse<CommunityChatRemoved>(data, "community_chat_removed");
     return result;
 }
 
@@ -244,6 +248,10 @@ nlohmann::json put(const std::shared_ptr<Message> &object) {
         json.put("managed_bot_created", object->managedBotCreated);
         json.put("poll_option_added", object->pollOptionAdded);
         json.put("poll_option_deleted", object->pollOptionDeleted);
+        json.put("receiver_user", object->receiverUser);
+        json.put("ephemeral_message_id", object->ephemeralMessageId);
+        json.put("community_chat_added", object->communityChatAdded);
+        json.put("community_chat_removed", object->communityChatRemoved);
     }
     return json;
 }

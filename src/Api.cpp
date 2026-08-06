@@ -469,7 +469,9 @@ Message::Ptr Api::sendMessage(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendMessage",
         std::pair{"chat_id", std::move(chatId)}, std::pair{"text", text},
@@ -486,7 +488,9 @@ Message::Ptr Api::sendMessage(
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
                   std::move(suggestedPostParameters)},
-        std::pair{"link_preview_options", std::move(linkPreviewOptions)}));
+        std::pair{"link_preview_options", std::move(linkPreviewOptions)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::forwardMessage(
@@ -595,7 +599,9 @@ Message::Ptr Api::sendPhoto(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> showCaptionAboveMedia, optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendPhoto",
         std::pair{"chat_id", std::move(chatId)},
@@ -614,7 +620,9 @@ Message::Ptr Api::sendPhoto(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendAudio(
@@ -630,7 +638,9 @@ Message::Ptr Api::sendAudio(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendAudio",
         std::pair{"chat_id", std::move(chatId)},
@@ -649,7 +659,9 @@ Message::Ptr Api::sendAudio(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendDocument(
@@ -664,7 +676,9 @@ Message::Ptr Api::sendDocument(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(
         sendRequest(_bot_api_baseurl, _httpClient, "sendDocument",
                     std::pair{"chat_id", std::move(chatId)},
@@ -685,7 +699,9 @@ Message::Ptr Api::sendDocument(
                     std::pair{"allow_paid_broadcast", allowPaidBroadcast},
                     std::pair{"message_effect_id", messageEffectId},
                     std::pair{"suggested_post_parameters",
-                              std::move(suggestedPostParameters)}));
+                              std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendVideo(
@@ -703,7 +719,9 @@ Message::Ptr Api::sendVideo(
     optional<std::int32_t> startTimestamp, optional<bool> showCaptionAboveMedia,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(
         sendRequest(_bot_api_baseurl, _httpClient, "sendVideo",
                     std::pair{"chat_id", std::move(chatId)},
@@ -729,7 +747,9 @@ Message::Ptr Api::sendVideo(
                     std::pair{"allow_paid_broadcast", allowPaidBroadcast},
                     std::pair{"message_effect_id", messageEffectId},
                     std::pair{"suggested_post_parameters",
-                              std::move(suggestedPostParameters)}));
+                              std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendAnimation(
@@ -746,7 +766,9 @@ Message::Ptr Api::sendAnimation(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> showCaptionAboveMedia, optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(
         sendRequest(_bot_api_baseurl, _httpClient, "sendAnimation",
                     std::pair{"chat_id", std::move(chatId)},
@@ -769,7 +791,9 @@ Message::Ptr Api::sendAnimation(
                     std::pair{"allow_paid_broadcast", allowPaidBroadcast},
                     std::pair{"message_effect_id", messageEffectId},
                     std::pair{"suggested_post_parameters",
-                              std::move(suggestedPostParameters)}));
+                              std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendVoice(
@@ -783,7 +807,9 @@ Message::Ptr Api::sendVoice(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendVoice",
         std::pair{"chat_id", std::move(chatId)},
@@ -801,7 +827,9 @@ Message::Ptr Api::sendVoice(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendVideoNote(
@@ -814,7 +842,9 @@ Message::Ptr Api::sendVideoNote(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendVideoNote",
         std::pair{"chat_id", std::move(chatId)},
@@ -831,7 +861,9 @@ Message::Ptr Api::sendVideoNote(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 std::vector<Message::Ptr> Api::sendMediaGroup(
@@ -868,7 +900,9 @@ Message::Ptr Api::sendLocation(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendLocation",
         std::pair{"chat_id", std::move(chatId)},
@@ -887,7 +921,9 @@ Message::Ptr Api::sendLocation(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::editMessageLiveLocation(
@@ -942,7 +978,9 @@ Message::Ptr Api::sendVenue(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendVenue",
         std::pair{"chat_id", std::move(chatId)},
@@ -962,7 +1000,9 @@ Message::Ptr Api::sendVenue(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendContact(
@@ -975,7 +1015,9 @@ Message::Ptr Api::sendContact(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(
         sendRequest(_bot_api_baseurl, _httpClient, "sendContact",
                     std::pair{"chat_id", std::move(chatId)},
@@ -992,7 +1034,9 @@ Message::Ptr Api::sendContact(
                     std::pair{"allow_paid_broadcast", allowPaidBroadcast},
                     std::pair{"message_effect_id", messageEffectId},
                     std::pair{"suggested_post_parameters",
-                              std::move(suggestedPostParameters)}));
+                              std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 Message::Ptr Api::sendPoll(
@@ -1735,6 +1779,81 @@ bool Api::deleteMessages(ChatIdType chatId,
         .get<bool>();
 }
 
+bool Api::deleteEphemeralMessage(ChatIdType chatId, std::int64_t receiverUserId,
+                                 std::int32_t ephemeralMessageId) const {
+    return sendRequest(_bot_api_baseurl, _httpClient, "deleteEphemeralMessage",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"receiver_user_id", receiverUserId},
+                       std::pair{"ephemeral_message_id", ephemeralMessageId})
+        .get<bool>();
+}
+
+bool Api::editEphemeralMessageCaption(
+    ChatIdType chatId, std::int64_t receiverUserId,
+    std::int32_t ephemeralMessageId, const optional<std::string_view> caption,
+    const optional<ParseMode> parseMode,
+    const std::vector<MessageEntity::Ptr>& captionEntities,
+    InlineKeyboardMarkup::Ptr replyMarkup) const {
+    return sendRequest(_bot_api_baseurl, _httpClient,
+                       "editEphemeralMessageCaption",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"receiver_user_id", receiverUserId},
+                       std::pair{"ephemeral_message_id", ephemeralMessageId},
+                       std::pair{"caption", caption},
+                       std::pair{"parse_mode", parseMode},
+                       std::pair{"caption_entities", captionEntities},
+                       std::pair{"reply_markup", std::move(replyMarkup)})
+        .get<bool>();
+}
+
+bool Api::editEphemeralMessageMedia(ChatIdType chatId,
+                                    std::int64_t receiverUserId,
+                                    std::int32_t ephemeralMessageId,
+                                    InputMedia::Ptr media,
+                                    InlineKeyboardMarkup::Ptr replyMarkup) const {
+    return sendRequest(_bot_api_baseurl, _httpClient,
+                       "editEphemeralMessageMedia",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"receiver_user_id", receiverUserId},
+                       std::pair{"ephemeral_message_id", ephemeralMessageId},
+                       std::pair{"media", std::move(media)},
+                       std::pair{"reply_markup", std::move(replyMarkup)})
+        .get<bool>();
+}
+
+bool Api::editEphemeralMessageReplyMarkup(
+    ChatIdType chatId, std::int64_t receiverUserId,
+    std::int32_t ephemeralMessageId,
+    InlineKeyboardMarkup::Ptr replyMarkup) const {
+    return sendRequest(_bot_api_baseurl, _httpClient,
+                       "editEphemeralMessageReplyMarkup",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"receiver_user_id", receiverUserId},
+                       std::pair{"ephemeral_message_id", ephemeralMessageId},
+                       std::pair{"reply_markup", std::move(replyMarkup)})
+        .get<bool>();
+}
+
+bool Api::editEphemeralMessageText(
+    ChatIdType chatId, std::int64_t receiverUserId,
+    std::int32_t ephemeralMessageId, const std::string_view text,
+    const optional<ParseMode> parseMode,
+    const std::vector<MessageEntity::Ptr>& entities,
+    LinkPreviewOptions::Ptr linkPreviewOptions,
+    InlineKeyboardMarkup::Ptr replyMarkup) const {
+    return sendRequest(_bot_api_baseurl, _httpClient,
+                       "editEphemeralMessageText",
+                       std::pair{"chat_id", std::move(chatId)},
+                       std::pair{"receiver_user_id", receiverUserId},
+                       std::pair{"ephemeral_message_id", ephemeralMessageId},
+                       std::pair{"text", text},
+                       std::pair{"parse_mode", parseMode},
+                       std::pair{"entities", entities},
+                       std::pair{"link_preview_options", std::move(linkPreviewOptions)},
+                       std::pair{"reply_markup", std::move(replyMarkup)})
+        .get<bool>();
+}
+
 Message::Ptr Api::sendSticker(
     ChatIdType chatId, FileHandleType sticker,
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
@@ -1744,7 +1863,9 @@ Message::Ptr Api::sendSticker(
     optional<std::int32_t> directMessagesTopicId,
     optional<bool> allowPaidBroadcast,
     const optional<std::string_view> messageEffectId,
-    SuggestedPostParameters::Ptr suggestedPostParameters) const {
+    SuggestedPostParameters::Ptr suggestedPostParameters,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendSticker",
         std::pair{"chat_id", std::move(chatId)},
@@ -1759,7 +1880,9 @@ Message::Ptr Api::sendSticker(
         std::pair{"allow_paid_broadcast", allowPaidBroadcast},
         std::pair{"message_effect_id", messageEffectId},
         std::pair{"suggested_post_parameters",
-                  std::move(suggestedPostParameters)}));
+                  std::move(suggestedPostParameters)},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 StickerSet::Ptr Api::getStickerSet(const std::string_view name) const {
@@ -2699,7 +2822,9 @@ Message::Ptr Api::sendLivePhoto(
     ReplyParameters::Ptr replyParameters, GenericReply::Ptr replyMarkup,
     const optional<std::string_view> businessConnectionId,
     optional<std::int32_t> messageThreadId,
-    optional<std::int32_t> directMessagesTopicId) const {
+    optional<std::int32_t> directMessagesTopicId,
+    optional<std::int64_t> receiverUserId,
+    const optional<std::string_view> callbackQueryId) const {
     return parse<Message>(sendRequest(
         _bot_api_baseurl, _httpClient, "sendLivePhoto",
         std::pair{"chat_id", std::move(chatId)},
@@ -2718,7 +2843,9 @@ Message::Ptr Api::sendLivePhoto(
         std::pair{"reply_markup", std::move(replyMarkup)},
         std::pair{"business_connection_id", businessConnectionId},
         std::pair{"message_thread_id", messageThreadId},
-        std::pair{"direct_messages_topic_id", directMessagesTopicId}));
+        std::pair{"direct_messages_topic_id", directMessagesTopicId},
+        std::pair{"receiver_user_id", receiverUserId},
+        std::pair{"callback_query_id", callbackQueryId}));
 }
 
 bool Api::answerChatJoinRequestQuery(

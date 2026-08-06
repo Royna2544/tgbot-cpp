@@ -33,6 +33,7 @@ std::shared_ptr<Update> parse(const nlohmann::json &data) {
     result->chatBoost = parse<ChatBoostUpdated>(data, "chat_boost");
     result->removedChatBoost = parse<ChatBoostRemoved>(data, "removed_chat_boost");
     result->managedBot = parse<ManagedBotUpdated>(data, "managed_bot");
+    result->subscription = parse<BotSubscriptionUpdated>(data, "subscription");
     return result;
 }
 
@@ -66,6 +67,7 @@ nlohmann::json put(const std::shared_ptr<Update> &object) {
         json.put("chat_boost", object->chatBoost);
         json.put("removed_chat_boost", object->removedChatBoost);
         json.put("managed_bot", object->managedBot);
+        json.put("subscription", object->subscription);
     }
     return json;
 }

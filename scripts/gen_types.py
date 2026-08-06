@@ -28,6 +28,21 @@ HDR_DIR = os.path.join(ROOT, "include", "tgbot", "types")
 MEDIA_COLLAPSE = {"InputPollMedia": "InputMedia",
                   "InputPollOptionMedia": "InputMedia"}
 
+# InputMediaVoiceNote isn't subtype_of InputMedia in the spec -- it's a standalone
+# type only ever referenced from InputRichMessageMedia's 5-way media union
+# (Animation/Audio/Photo/Video/VoiceNote). Every other member of that union already
+# inherits InputMedia, so forcing this one to as well lets the whole union collapse
+# to a single InputMedia::Ptr (see FIELD_TYPE_OVERRIDE), consistent with the poll
+# media collapse above. See media_union_subtypes() in gen_parsers.py, which folds
+# it into InputMedia's own put dispatcher to match.
+FORCE_BASE = {"InputMediaVoiceNote": "InputMedia"}
+
+# Fields whose spec type is a raw multi-type union (not a modelled "base" type)
+# that happens to be a subset of InputMedia's leaves. gen_types only ever looks at
+# field["types"][0], so these need a manual override -- collapsed to InputMedia::Ptr
+# and runtime-validated, same idea as MEDIA_COLLAPSE.
+FIELD_TYPE_OVERRIDE = {("InputRichMessageMedia", "media"): "InputMedia::Ptr"}
+
 
 def snake_to_camel(s):
     p = s.split("_")
@@ -98,6 +113,7 @@ def gen_header(spec, name):
     fields = info.get("fields") or []
     base = (info.get("subtype_of") or [None])[0]
     base = MEDIA_COLLAPSE.get(base, base)  # leaves of poll bases inherit InputMedia
+    base = FORCE_BASE.get(name, base)
     is_base = bool(info.get("subtypes"))
 
     disc_field = None
@@ -110,7 +126,7 @@ def gen_header(spec, name):
     for f in fields:
         if base and f["name"] == disc_field:
             continue  # discriminator lives on the base
-        cpp = field_cpp_type(f, spec)
+        cpp = FIELD_TYPE_OVERRIDE.get((name, f["name"]), field_cpp_type(f, spec))
         std_inc.add("memory")
         if "std::int" in cpp:
             std_inc.add("cstdint")

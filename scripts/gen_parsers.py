@@ -59,6 +59,11 @@ def media_union_subtypes(spec):
         for s in spec["types"].get(b, {}).get("subtypes", []) or []:
             if s not in out:
                 out.append(s)
+    # InputMediaVoiceNote isn't subtype_of InputMedia in the spec, but gen_types.py's
+    # FORCE_BASE makes it inherit InputMedia anyway (it's only ever used via
+    # InputRichMessageMedia's media union); fold it into the put dispatcher to match.
+    if "InputMediaVoiceNote" not in out:
+        out.append("InputMediaVoiceNote")
     return out
 
 

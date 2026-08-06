@@ -1,0 +1,27 @@
+#include <tgbot/TgTypeParser.h>
+#include <tgbot/types/InputRichBlockVoiceNote.h>
+#include <nlohmann/json.hpp>
+
+namespace TgBot {
+
+template <>
+std::shared_ptr<InputRichBlockVoiceNote> parse(const nlohmann::json &data) {
+    auto result = std::make_shared<InputRichBlockVoiceNote>();
+    parse(data, "type", &result->type);
+    result->voiceNote = parseRequired<InputMediaVoiceNote>(data, "voice_note");
+    result->caption = parse<RichBlockCaption>(data, "caption");
+    return result;
+}
+
+template <>
+nlohmann::json put(const std::shared_ptr<InputRichBlockVoiceNote> &object) {
+    JsonWrapper json;
+    if (object) {
+        json.put("type", object->type);
+        json.put("voice_note", object->voiceNote);
+        json.put("caption", object->caption);
+    }
+    return json;
+}
+
+} // namespace TgBot

@@ -59,6 +59,7 @@ std::shared_ptr<ChatFullInfo> parse(const nlohmann::json &data) {
     result->uniqueGiftColors = parse<UniqueGiftColors>(data, "unique_gift_colors");
     parse(data, "paid_message_star_count", &result->paidMessageStarCount);
     result->guardBot = parse<User>(data, "guard_bot");
+    result->community = parse<Community>(data, "community");
     return result;
 }
 
@@ -118,6 +119,7 @@ nlohmann::json put(const std::shared_ptr<ChatFullInfo> &object) {
         json.put("unique_gift_colors", object->uniqueGiftColors);
         json.put("paid_message_star_count", object->paidMessageStarCount);
         json.put("guard_bot", object->guardBot);
+        json.put("community", object->community);
     }
     return json;
 }
