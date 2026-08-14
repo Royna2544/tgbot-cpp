@@ -21,6 +21,8 @@
 
 #include <functional>
 #include <initializer_list>
+#include <mutex>
+#include <shared_mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -70,6 +72,7 @@ public:
      * @param listener Listener. Pass nullptr to remove listener of command
      */
     inline void onCommand(const std::string& commandName, const MessageListener& listener) {
+        const std::unique_lock lock(_onCommandMutex);
         if (listener) {
             _onCommandListeners[commandName] = listener;
         } else {
@@ -83,6 +86,7 @@ public:
     * @param listener Listener. Pass nullptr to remove listener of commands
     */
     inline void onCommand(const std::initializer_list<std::string>& commandsList, const MessageListener& listener) {
+        const std::unique_lock lock(_onCommandMutex);
         if (listener) {
             for (const auto& command : commandsList) {
                 _onCommandListeners[command] = listener;
@@ -325,6 +329,10 @@ private:
     }
 
     inline bool broadcastCommand(const std::string& command, const Message::Ptr& message) const {
+        // Keep the shared lock through the short dispatch listener. Runtime
+        // unload takes the unique lock, so a listener copied just before erase
+        // can never resume later with a dangling raw module target.
+        const std::shared_lock lock(_onCommandMutex);
         auto iter = _onCommandListeners.find(command);
         if (iter == _onCommandListeners.end()) {
             return false;
@@ -418,6 +426,7 @@ private:
     }
 
     std::vector<MessageListener> _onAnyMessageListeners;
+    mutable std::shared_mutex _onCommandMutex;
     std::unordered_map<std::string, MessageListener> _onCommandListeners;
     std::vector<MessageListener> _onUnknownCommandListeners;
     std::vector<MessageListener> _onNonCommandMessageListeners;
