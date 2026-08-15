@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <filesystem>
 #include <map>
 #include <string>
 
@@ -24,12 +25,16 @@ class MockHttpClient : public HttpClient {
 
     std::string response;
     mutable int callCount = 0;
+    mutable std::string lastProtocol;
+    mutable std::string lastHost;
     mutable std::string lastPath;
     mutable std::map<std::string, std::string> lastArgs;
 
     std::string makeRequest(const Url& url,
                             const HttpReqArg::Vec& args) const override {
         ++callCount;
+        lastProtocol = url.protocol;
+        lastHost = url.host;
         lastPath = url.path;
         lastArgs.clear();
         for (const auto& arg : args) {
@@ -92,6 +97,49 @@ BOOST_AUTO_TEST_CASE(apiError_throwsWithoutRetry) {
     BOOST_CHECK_THROW(api.getMe(), TgException);
     // A deterministic API error must not be retried.
     BOOST_CHECK_EQUAL(http.callCount, 1);
+}
+
+BOOST_AUTO_TEST_CASE(downloadFile_classifiesEveryPathIndependently) {
+    MockHttpClient http;
+    http.response = "file bytes";
+    Api api("TOKEN", &http, "https://api.telegram.org");
+
+    int mapperCalls = 0;
+    const auto mapper = [&mapperCalls](const std::string_view) {
+        ++mapperCalls;
+        return std::string("https://local.example/avatar");
+    };
+
+    BOOST_CHECK_EQUAL(api.downloadFile("photos/relative.jpg", {}, mapper),
+                      http.response);
+    BOOST_CHECK_EQUAL(mapperCalls, 0);
+    BOOST_CHECK_EQUAL(http.lastProtocol, "https");
+    BOOST_CHECK_EQUAL(http.lastHost, "api.telegram.org");
+    BOOST_CHECK_EQUAL(http.lastPath, "/file/botTOKEN/photos/relative.jpg");
+
+    const auto nativeAbsolutePath =
+        std::filesystem::absolute("telegram-avatar.jpg").string();
+    BOOST_REQUIRE(std::filesystem::path(nativeAbsolutePath).is_absolute());
+    BOOST_CHECK_EQUAL(api.downloadFile(nativeAbsolutePath, {}, mapper),
+                      http.response);
+    BOOST_CHECK_EQUAL(mapperCalls, 1);
+    BOOST_CHECK_EQUAL(http.lastProtocol, "https");
+    BOOST_CHECK_EQUAL(http.lastHost, "local.example");
+    BOOST_CHECK_EQUAL(http.lastPath, "/avatar");
+
+    BOOST_CHECK_EQUAL(
+        api.downloadFile("/home/tgbotuser/apiserver/avatar.jpg", {}, mapper),
+        http.response);
+    BOOST_CHECK_EQUAL(mapperCalls, 2);
+    BOOST_CHECK_EQUAL(http.lastProtocol, "https");
+    BOOST_CHECK_EQUAL(http.lastHost, "local.example");
+    BOOST_CHECK_EQUAL(http.lastPath, "/avatar");
+
+    BOOST_CHECK_EQUAL(api.downloadFile("documents/another.bin", {}, mapper),
+                      http.response);
+    BOOST_CHECK_EQUAL(mapperCalls, 2);
+    BOOST_CHECK_EQUAL(http.lastHost, "api.telegram.org");
+    BOOST_CHECK_EQUAL(http.lastPath, "/file/botTOKEN/documents/another.bin");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -2212,11 +2212,12 @@ std::string Api::downloadFile(const std::string_view filePath,
                               LocalFileMapper localFilePathMapper) const {
     std::string url(_url);
 
-    static bool is_local = [&filePath] {
-        std::filesystem::path dir = filePath;
-        // Surely if the path is absolute, it is a local file
-        return dir.is_absolute();
-    }();
+    // getFile() can return relative Telegram paths and absolute local Bot API
+    // paths during the same process lifetime, so classify every download.
+    const std::filesystem::path localPath(filePath);
+    // A remote local Bot API can return a POSIX path to a Windows client.
+    const bool is_local =
+        localPath.is_absolute() || localPath.has_root_directory();
 
     if (is_local && !localFilePathMapper) {
         std::ifstream fileStream(std::string(filePath),
